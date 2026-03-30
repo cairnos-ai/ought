@@ -520,20 +520,45 @@ fn cmd_generate(cli: &Cli, args: &GenerateArgs) -> anyhow::Result<()> {
         };
 
         let clause_count = batch.clauses.len();
-        eprint!(
-            "  {} ({} clauses) ... ",
+
+        // Print section header
+        eprintln!();
+        eprintln!(
+            "  \x1b[1m{}\x1b[0m ({} clauses)",
             group.section_path, clause_count
         );
 
+        // In verbose mode, list the clauses being generated
+        if cli.verbose {
+            for clause in &stale_clauses {
+                eprintln!(
+                    "    \x1b[2m{} {}\x1b[0m",
+                    ought_gen::providers::keyword_str(clause.keyword),
+                    clause.text,
+                );
+            }
+            if !group.conditions.is_empty() {
+                for cond in &group.conditions {
+                    eprintln!("    \x1b[2mGIVEN: {}\x1b[0m", cond);
+                }
+            }
+        }
+
         // Assemble context from the first clause (they share a section/spec)
-        let context = assembler
+        let mut context = assembler
             .assemble(stale_clauses[0], group.spec)
             .unwrap_or_else(|_| ought_gen::context::GenerationContext {
                 spec_context: group.spec.metadata.context.clone(),
                 source_files: vec![],
                 schema_files: vec![],
                 target_language: ought_gen::generator::Language::Rust,
+                verbose: false,
             });
+        context.verbose = cli.verbose;
+
+        if cli.verbose && !context.source_files.is_empty() {
+            eprintln!("    \x1b[2mcontext: {} source files\x1b[0m", context.source_files.len());
+        }
 
         match generator.generate_batch(&batch, &context) {
             Ok(tests) => {
@@ -562,11 +587,22 @@ fn cmd_generate(cli: &Cli, args: &GenerateArgs) -> anyhow::Result<()> {
                         },
                     );
                 }
-                eprintln!("ok ({} tests)", tests.len());
+                eprintln!(
+                    "  \x1b[32m\u{2713}\x1b[0m {} tests generated",
+                    tests.len()
+                );
+                if cli.verbose {
+                    for test in &tests {
+                        eprintln!(
+                            "    \x1b[2mwrote {}\x1b[0m",
+                            test.file_path.display()
+                        );
+                    }
+                }
                 generated_count += tests.len();
             }
             Err(e) => {
-                eprintln!("error: {}", e);
+                eprintln!("  \x1b[31m\u{2717}\x1b[0m error: {}", e);
                 error_count += clause_count;
             }
         }

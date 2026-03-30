@@ -3,7 +3,10 @@ use ought_spec::Clause;
 use crate::context::GenerationContext;
 use crate::generator::{ClauseGroup, GeneratedTest, Generator};
 
-use super::{build_batch_prompt, build_prompt, derive_file_path, exec_cli_with_arg, parse_batch_response};
+use super::{
+    build_batch_prompt, build_prompt, derive_file_path, exec_cli_verbose, exec_cli_with_arg,
+    parse_batch_response,
+};
 
 /// Generates tests by exec-ing the `claude` CLI.
 pub struct ClaudeGenerator {
@@ -24,6 +27,16 @@ impl ClaudeGenerator {
         args.push(prompt);
         args
     }
+
+    fn exec(&self, prompt: String, verbose: bool) -> anyhow::Result<String> {
+        let args = self.build_args(prompt);
+        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+        if verbose {
+            exec_cli_verbose("claude", &args_ref, None)
+        } else {
+            exec_cli_with_arg("claude", &args_ref)
+        }
+    }
 }
 
 impl Generator for ClaudeGenerator {
@@ -33,9 +46,7 @@ impl Generator for ClaudeGenerator {
         context: &GenerationContext,
     ) -> anyhow::Result<GeneratedTest> {
         let prompt = build_prompt(clause, context);
-        let args = self.build_args(prompt);
-        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
-        let code = exec_cli_with_arg("claude", &args_ref)?;
+        let code = self.exec(prompt, context.verbose)?;
         let file_path = derive_file_path(clause, context.target_language);
 
         Ok(GeneratedTest {
@@ -54,18 +65,12 @@ impl Generator for ClaudeGenerator {
         if group.clauses.is_empty() {
             return Ok(vec![]);
         }
-
-        // For single clause, use the simpler per-clause path
         if group.clauses.len() == 1 {
-            let test = self.generate(group.clauses[0], context)?;
-            return Ok(vec![test]);
+            return Ok(vec![self.generate(group.clauses[0], context)?]);
         }
 
         let prompt = build_batch_prompt(group, context);
-        let args = self.build_args(prompt);
-        let args_ref: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
-        let response = exec_cli_with_arg("claude", &args_ref)?;
-
+        let response = self.exec(prompt, context.verbose)?;
         Ok(parse_batch_response(&response, group, context.target_language))
     }
 }

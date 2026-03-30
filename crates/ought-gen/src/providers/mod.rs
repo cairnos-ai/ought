@@ -394,47 +394,118 @@ pub fn derive_file_path(clause: &Clause, language: Language) -> PathBuf {
 }
 
 /// Execute a CLI command with the prompt on stdin, return stdout.
+/// When `verbose` is true, streams stdout to stderr in real-time.
 pub fn exec_cli(
     command: &str,
     args: &[&str],
     prompt: &str,
 ) -> anyhow::Result<String> {
-    use std::io::Write;
-    use std::process::{Command, Stdio};
-
-    let mut child = Command::new(command)
-        .args(args)
-        .stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .spawn()
-        .map_err(|e| cli_spawn_error(command, e))?;
-
-    if let Some(ref mut stdin) = child.stdin {
-        stdin.write_all(prompt.as_bytes())?;
-    }
-    // Drop stdin to signal EOF
-    drop(child.stdin.take());
-
-    collect_output(command, child)
+    exec_cli_inner(command, args, Some(prompt), false)
 }
 
 /// Execute a CLI command with the prompt as an argument (not stdin), return stdout.
+/// When `verbose` is true, streams stdout to stderr in real-time.
 pub fn exec_cli_with_arg(
     command: &str,
     args: &[&str],
 ) -> anyhow::Result<String> {
+    exec_cli_inner(command, args, None, false)
+}
+
+/// Verbose version: streams LLM output to stderr in real-time.
+pub fn exec_cli_verbose(
+    command: &str,
+    args: &[&str],
+    prompt: Option<&str>,
+) -> anyhow::Result<String> {
+    exec_cli_inner(command, args, prompt, true)
+}
+
+fn exec_cli_inner(
+    command: &str,
+    args: &[&str],
+    stdin_data: Option<&str>,
+    verbose: bool,
+) -> anyhow::Result<String> {
+    use std::io::{BufRead, BufReader, Write};
     use std::process::{Command, Stdio};
 
-    let child = Command::new(command)
+    let stdin_cfg = if stdin_data.is_some() {
+        Stdio::piped()
+    } else {
+        Stdio::null()
+    };
+
+    let mut child = Command::new(command)
         .args(args)
-        .stdin(Stdio::null())
+        .stdin(stdin_cfg)
         .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
+        .stderr(if verbose {
+            Stdio::inherit() // let provider stderr (progress, etc.) show through
+        } else {
+            Stdio::piped()
+        })
         .spawn()
         .map_err(|e| cli_spawn_error(command, e))?;
 
-    collect_output(command, child)
+    // Write stdin if provided
+    if let Some(data) = stdin_data {
+        if let Some(ref mut stdin) = child.stdin {
+            stdin.write_all(data.as_bytes())?;
+        }
+        drop(child.stdin.take());
+    }
+
+    if verbose {
+        // Stream stdout to stderr in real-time while accumulating it
+        let stdout_pipe = child
+            .stdout
+            .take()
+            .ok_or_else(|| anyhow::anyhow!("failed to capture stdout from '{}'", command))?;
+
+        let reader = BufReader::new(stdout_pipe);
+        let mut accumulated = String::new();
+        let stderr = std::io::stderr();
+
+        for line in reader.lines() {
+            let line = line?;
+            // Dim the streaming output so it's visually distinct
+            let _ = writeln!(stderr.lock(), "    \x1b[2m{}\x1b[0m", line);
+            accumulated.push_str(&line);
+            accumulated.push('\n');
+        }
+
+        let status = child.wait()?;
+        if !status.success() {
+            anyhow::bail!("'{}' exited with status {}", command, status);
+        }
+
+        Ok(accumulated.trim().to_string())
+    } else {
+        // Non-verbose: buffer everything
+        let output = child.wait_with_output()?;
+
+        if !output.status.success() {
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            let stdout = String::from_utf8_lossy(&output.stdout);
+            let detail = if stderr.trim().is_empty() {
+                stdout.trim().to_string()
+            } else {
+                stderr.trim().to_string()
+            };
+            anyhow::bail!(
+                "'{}' exited with status {}:\n{}",
+                command,
+                output.status,
+                detail
+            );
+        }
+
+        let stdout = String::from_utf8(output.stdout)
+            .map_err(|e| anyhow::anyhow!("invalid UTF-8 from '{}': {}", command, e))?;
+
+        Ok(stdout.trim().to_string())
+    }
 }
 
 fn cli_spawn_error(command: &str, e: std::io::Error) -> anyhow::Error {
@@ -448,32 +519,7 @@ fn cli_spawn_error(command: &str, e: std::io::Error) -> anyhow::Error {
     }
 }
 
-fn collect_output(command: &str, child: std::process::Child) -> anyhow::Result<String> {
-    let output = child.wait_with_output()?;
-
-    if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        let stdout = String::from_utf8_lossy(&output.stdout);
-        let detail = if stderr.trim().is_empty() {
-            stdout.trim().to_string()
-        } else {
-            stderr.trim().to_string()
-        };
-        anyhow::bail!(
-            "'{}' exited with status {}:\n{}",
-            command,
-            output.status,
-            detail
-        );
-    }
-
-    let stdout = String::from_utf8(output.stdout)
-        .map_err(|e| anyhow::anyhow!("invalid UTF-8 from '{}': {}", command, e))?;
-
-    Ok(stdout.trim().to_string())
-}
-
-fn keyword_str(kw: ought_spec::Keyword) -> &'static str {
+pub fn keyword_str(kw: ought_spec::Keyword) -> &'static str {
     match kw {
         ought_spec::Keyword::Must => "MUST",
         ought_spec::Keyword::MustNot => "MUST NOT",

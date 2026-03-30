@@ -18,6 +18,8 @@ pub struct GenerationContext {
     pub source_files: Vec<SourceFile>,
     pub schema_files: Vec<SourceFile>,
     pub target_language: Language,
+    /// Stream LLM output to stderr in real-time.
+    pub verbose: bool,
 }
 
 /// Assembles context for LLM generation by reading source files,
@@ -86,6 +88,7 @@ impl<'a> ContextAssembler<'a> {
             source_files,
             schema_files,
             target_language,
+            verbose: false,
         })
     }
 

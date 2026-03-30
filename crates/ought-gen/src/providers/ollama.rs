@@ -3,7 +3,10 @@ use ought_spec::Clause;
 use crate::context::GenerationContext;
 use crate::generator::{ClauseGroup, GeneratedTest, Generator};
 
-use super::{build_batch_prompt, build_prompt, derive_file_path, exec_cli, parse_batch_response};
+use super::{
+    build_batch_prompt, build_prompt, derive_file_path, exec_cli, exec_cli_verbose,
+    parse_batch_response,
+};
 
 /// Generates tests by exec-ing the `ollama` CLI for local models.
 pub struct OllamaGenerator {
@@ -14,6 +17,14 @@ impl OllamaGenerator {
     pub fn new(model: String) -> Self {
         Self { model }
     }
+
+    fn exec_prompt(&self, prompt: &str, verbose: bool) -> anyhow::Result<String> {
+        if verbose {
+            exec_cli_verbose("ollama", &["run", &self.model], Some(prompt))
+        } else {
+            exec_cli("ollama", &["run", &self.model], prompt)
+        }
+    }
 }
 
 impl Generator for OllamaGenerator {
@@ -23,7 +34,7 @@ impl Generator for OllamaGenerator {
         context: &GenerationContext,
     ) -> anyhow::Result<GeneratedTest> {
         let prompt = build_prompt(clause, context);
-        let code = exec_cli("ollama", &["run", &self.model], &prompt)?;
+        let code = self.exec_prompt(&prompt, context.verbose)?;
         let file_path = derive_file_path(clause, context.target_language);
 
         Ok(GeneratedTest {
@@ -47,7 +58,7 @@ impl Generator for OllamaGenerator {
         }
 
         let prompt = build_batch_prompt(group, context);
-        let response = exec_cli("ollama", &["run", &self.model], &prompt)?;
+        let response = self.exec_prompt(&prompt, context.verbose)?;
         Ok(parse_batch_response(&response, group, context.target_language))
     }
 }
