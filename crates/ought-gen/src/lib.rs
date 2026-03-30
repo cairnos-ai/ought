@@ -4,5 +4,5 @@ pub mod manifest;
 pub mod providers;
 
 pub use context::ContextAssembler;
-pub use generator::{GeneratedTest, Generator};
+pub use generator::{ClauseGroup, GeneratedTest, Generator};
 pub use manifest::{Manifest, ManifestEntry};

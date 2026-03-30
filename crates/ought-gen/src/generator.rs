@@ -23,6 +23,18 @@ pub enum Language {
     Go,
 }
 
+/// A group of related clauses from one section, to be generated in a single
+/// LLM call. GIVEN conditions are included as context, not as testable clauses.
+#[derive(Debug, Clone)]
+pub struct ClauseGroup<'a> {
+    /// Section path for display (e.g. "Auth API > Login").
+    pub section_path: String,
+    /// Testable clauses (MUST, SHOULD, MAY, WONT, MUST ALWAYS, MUST BY, OTHERWISE).
+    pub clauses: Vec<&'a Clause>,
+    /// GIVEN conditions that scope clauses in this group (context, not testable).
+    pub conditions: Vec<String>,
+}
+
 /// Trait implemented by each LLM provider.
 ///
 /// Providers are invoked by exec-ing their CLI tools (e.g. `claude`, `chatgpt`,
@@ -34,4 +46,20 @@ pub trait Generator: Send + Sync {
         clause: &Clause,
         context: &GenerationContext,
     ) -> anyhow::Result<GeneratedTest>;
+
+    /// Generate tests for a batch of related clauses in a single LLM call.
+    /// Returns one GeneratedTest per clause in the group.
+    ///
+    /// Default implementation falls back to per-clause generation.
+    fn generate_batch(
+        &self,
+        group: &ClauseGroup<'_>,
+        context: &GenerationContext,
+    ) -> anyhow::Result<Vec<GeneratedTest>> {
+        let mut results = Vec::new();
+        for clause in &group.clauses {
+            results.push(self.generate(clause, context)?);
+        }
+        Ok(results)
+    }
 }

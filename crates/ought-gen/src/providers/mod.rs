@@ -9,7 +9,7 @@ use std::path::PathBuf;
 use ought_spec::Clause;
 
 use crate::context::GenerationContext;
-use crate::generator::{Generator, Language};
+use crate::generator::{ClauseGroup, GeneratedTest, Generator, Language};
 
 /// Create a generator from the provider name in config.
 pub fn from_config(provider: &str, model: Option<&str>) -> anyhow::Result<Box<dyn Generator>> {
@@ -161,6 +161,222 @@ pub fn build_prompt(clause: &Clause, context: &GenerationContext) -> String {
     }
 
     prompt
+}
+
+/// The marker used to separate test functions in batch output.
+pub const BATCH_MARKER: &str = "// === CLAUSE:";
+
+/// Build a prompt for a batch of clauses from the same section.
+/// Asks the LLM to output all test functions separated by marker comments.
+pub fn build_batch_prompt(group: &ClauseGroup<'_>, context: &GenerationContext) -> String {
+    let mut prompt = String::new();
+    let lang_name = language_name(context.target_language);
+
+    // Instructions
+    let _ = writeln!(
+        prompt,
+        "You are a test generation assistant. Generate self-contained {lang_name} test functions \
+         for the following specification clauses. These clauses belong to the same section and \
+         should be understood together.\n\
+         \n\
+         Output ONLY the test code with no explanation and no markdown fences.\n\
+         \n\
+         IMPORTANT: Separate each test function with a marker comment on its own line:\n\
+         {BATCH_MARKER} <clause_id> ===\n\
+         \n\
+         For example:\n\
+         {BATCH_MARKER} auth::login::must_return_jwt ===\n\
+         #[test]\n\
+         fn test_auth__login__must_return_jwt() {{ ... }}\n\
+         \n\
+         {BATCH_MARKER} auth::login::must_return_401 ===\n\
+         #[test]\n\
+         fn test_auth__login__must_return_401() {{ ... }}"
+    );
+    prompt.push('\n');
+
+    // Section context
+    let _ = writeln!(prompt, "## Section: {}", group.section_path);
+    prompt.push('\n');
+
+    // GIVEN conditions as context
+    if !group.conditions.is_empty() {
+        let _ = writeln!(prompt, "## Preconditions (GIVEN)");
+        let _ = writeln!(
+            prompt,
+            "The following conditions apply to clauses in this section. \
+             Use them to set up test preconditions:"
+        );
+        for cond in &group.conditions {
+            let _ = writeln!(prompt, "- GIVEN {cond}");
+        }
+        prompt.push('\n');
+    }
+
+    // List all clauses
+    let _ = writeln!(prompt, "## Clauses to test ({} total)", group.clauses.len());
+    for clause in &group.clauses {
+        let _ = write!(prompt, "\n### {} {}", keyword_str(clause.keyword), clause.text);
+        let _ = writeln!(prompt, "  (ID: {})", clause.id);
+
+        if let Some(ref condition) = clause.condition {
+            let _ = writeln!(prompt, "  GIVEN: {condition}");
+        }
+        if let Some(ref temporal) = clause.temporal {
+            match temporal {
+                ought_spec::Temporal::Invariant => {
+                    let _ = writeln!(prompt, "  Temporal: MUST ALWAYS (invariant). Generate property-based or fuzz-style tests.");
+                }
+                ought_spec::Temporal::Deadline(dur) => {
+                    let _ = writeln!(prompt, "  Temporal: MUST BY {dur:?}. Assert operation completes within this duration.");
+                }
+            }
+        }
+        if !clause.otherwise.is_empty() {
+            for ow in &clause.otherwise {
+                let _ = writeln!(prompt, "  OTHERWISE: {} (ID: {})", ow.text, ow.id);
+            }
+        }
+        if clause.keyword == ought_spec::Keyword::Wont {
+            let _ = writeln!(prompt, "  (WONT: generate an absence or prevention test)");
+        }
+        if !clause.hints.is_empty() {
+            for hint in &clause.hints {
+                let _ = writeln!(prompt, "  Hint:\n  ```\n  {hint}\n  ```");
+            }
+        }
+    }
+    prompt.push('\n');
+
+    // Spec-level context
+    if let Some(ref ctx) = context.spec_context {
+        let _ = writeln!(prompt, "## Context\n{ctx}\n");
+    }
+
+    // Source code
+    if !context.source_files.is_empty() {
+        let _ = writeln!(prompt, "## Source Code");
+        for sf in &context.source_files {
+            let _ = writeln!(prompt, "### File: {}", sf.path.display());
+            let _ = writeln!(prompt, "```\n{}\n```\n", sf.content);
+        }
+    }
+
+    // Schema files
+    if !context.schema_files.is_empty() {
+        let _ = writeln!(prompt, "## Schema Files");
+        for sf in &context.schema_files {
+            let _ = writeln!(prompt, "### File: {}", sf.path.display());
+            let _ = writeln!(prompt, "```\n{}\n```\n", sf.content);
+        }
+    }
+
+    // Output requirements
+    let _ = writeln!(prompt, "## Requirements");
+    let _ = writeln!(prompt, "- Include the original clause text as a doc comment on each test function.");
+    let _ = writeln!(prompt, "- Each test must be self-contained with no cross-test dependencies.");
+    let _ = writeln!(prompt, "- Separate each test function with: {BATCH_MARKER} <clause_id> ===");
+
+    match context.target_language {
+        Language::Rust => {
+            let _ = writeln!(prompt, "- Use #[test] attribute and assert! macros.");
+        }
+        Language::Python => {
+            let _ = writeln!(prompt, "- Use def test_... function with assert statements.");
+        }
+        Language::TypeScript | Language::JavaScript => {
+            let _ = writeln!(prompt, "- Use test() or it() with expect() assertions (Jest style).");
+        }
+        Language::Go => {
+            let _ = writeln!(prompt, "- Use func Test...(t *testing.T) with t.Error/t.Fatal.");
+        }
+    }
+
+    prompt
+}
+
+/// Parse batch LLM output into individual test functions, keyed by clause ID.
+/// Splits on `// === CLAUSE: <id> ===` markers.
+pub fn parse_batch_response(
+    response: &str,
+    group: &ClauseGroup<'_>,
+    language: Language,
+) -> Vec<GeneratedTest> {
+    let mut tests = Vec::new();
+    let mut current_id: Option<String> = None;
+    let mut current_code = String::new();
+
+    for line in response.lines() {
+        if let Some(rest) = line.trim().strip_prefix(BATCH_MARKER) {
+            // Flush previous
+            if let Some(id) = current_id.take() {
+                let code = current_code.trim().to_string();
+                if !code.is_empty() {
+                    let clause_id = ought_spec::ClauseId(id);
+                    let file_path = derive_file_path_from_id(&clause_id, language);
+                    tests.push(GeneratedTest {
+                        clause_id,
+                        code,
+                        language,
+                        file_path,
+                    });
+                }
+                current_code.clear();
+            }
+            // Parse the clause ID from the marker
+            let id = rest.trim().trim_end_matches("===").trim().to_string();
+            if !id.is_empty() {
+                current_id = Some(id);
+            }
+        } else if current_id.is_some() {
+            current_code.push_str(line);
+            current_code.push('\n');
+        }
+    }
+
+    // Flush last
+    if let Some(id) = current_id.take() {
+        let code = current_code.trim().to_string();
+        if !code.is_empty() {
+            let clause_id = ought_spec::ClauseId(id);
+            let file_path = derive_file_path_from_id(&clause_id, language);
+            tests.push(GeneratedTest {
+                clause_id,
+                code,
+                language,
+                file_path,
+            });
+        }
+    }
+
+    // If parsing failed (no markers found), and there's only one clause,
+    // treat the whole response as that clause's test
+    if tests.is_empty() && group.clauses.len() == 1 {
+        let clause = group.clauses[0];
+        let code = response.trim().to_string();
+        if !code.is_empty() {
+            tests.push(GeneratedTest {
+                clause_id: clause.id.clone(),
+                code,
+                language,
+                file_path: derive_file_path(clause, language),
+            });
+        }
+    }
+
+    tests
+}
+
+fn derive_file_path_from_id(clause_id: &ought_spec::ClauseId, language: Language) -> PathBuf {
+    let ext = match language {
+        Language::Rust => "_test.rs",
+        Language::Python => "_test.py",
+        Language::TypeScript => ".test.ts",
+        Language::JavaScript => ".test.js",
+        Language::Go => "_test.go",
+    };
+    let path_str = clause_id.0.replace("::", "/");
+    PathBuf::from(format!("{path_str}{ext}"))
 }
 
 /// Derive the output file path from a clause ID and target language.

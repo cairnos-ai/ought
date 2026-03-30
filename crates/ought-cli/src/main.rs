@@ -216,34 +216,89 @@ fn load_specs(config: &Config, config_path: &std::path::Path) -> anyhow::Result<
     })
 }
 
-/// Collect all clauses from all specs, flattened.
-fn collect_clauses(specs: &SpecGraph) -> Vec<&ought_spec::Clause> {
-    let mut clauses = Vec::new();
-    for spec in specs.specs() {
-        collect_clauses_from_sections(&spec.sections, &mut clauses);
-    }
-    clauses
+/// A section group ready for batch generation.
+struct SectionGroup<'a> {
+    spec: &'a ought_spec::Spec,
+    section_path: String,
+    testable_clauses: Vec<&'a ought_spec::Clause>,
+    conditions: Vec<String>,
 }
 
-fn collect_clauses_from_sections<'a>(
+/// Collect section groups from all specs. Each section becomes one batch.
+/// GIVEN clauses become conditions (context), not testable clauses.
+/// OTHERWISE clauses are included with their parent.
+fn collect_section_groups(specs: &SpecGraph) -> Vec<SectionGroup<'_>> {
+    let mut groups = Vec::new();
+    for spec in specs.specs() {
+        collect_groups_from_sections(spec, &spec.sections, &spec.name, &mut groups);
+    }
+    groups
+}
+
+fn collect_groups_from_sections<'a>(
+    spec: &'a ought_spec::Spec,
     sections: &'a [ought_spec::Section],
-    out: &mut Vec<&'a ought_spec::Clause>,
+    parent_path: &str,
+    groups: &mut Vec<SectionGroup<'a>>,
 ) {
     for section in sections {
+        let section_path = format!("{} > {}", parent_path, section.title);
+        let mut testable = Vec::new();
+        let mut conditions = Vec::new();
+
         for clause in &section.clauses {
-            out.push(clause);
-            collect_otherwise_clauses(clause, out);
+            match clause.keyword {
+                ought_spec::Keyword::Given => {
+                    // GIVEN is context, not testable. Collect the condition text.
+                    if let Some(ref cond) = clause.condition {
+                        conditions.push(cond.clone());
+                    } else {
+                        conditions.push(clause.text.clone());
+                    }
+                    // But clauses *nested under* a GIVEN (which already have
+                    // the condition attached) ARE testable — they'll appear
+                    // as separate clauses with `condition` set by the parser.
+                }
+                _ => {
+                    testable.push(clause);
+                    // OTHERWISE children are part of the parent's test —
+                    // the prompt builder handles them via clause.otherwise.
+                    // Don't add them as separate testable clauses.
+                }
+            }
         }
-        collect_clauses_from_sections(&section.subsections, out);
+
+        if !testable.is_empty() {
+            groups.push(SectionGroup {
+                spec,
+                section_path: section_path.clone(),
+                testable_clauses: testable,
+                conditions,
+            });
+        }
+
+        // Recurse into subsections
+        collect_groups_from_sections(spec, &section.subsections, &section_path, groups);
     }
 }
 
-fn collect_otherwise_clauses<'a>(
-    clause: &'a ought_spec::Clause,
-    out: &mut Vec<&'a ought_spec::Clause>,
-) {
-    for ow in &clause.otherwise {
-        out.push(ow);
+/// Collect all testable clause IDs for manifest cleanup.
+fn collect_all_testable_ids(specs: &SpecGraph) -> Vec<ought_spec::ClauseId> {
+    let mut ids = Vec::new();
+    for spec in specs.specs() {
+        collect_ids_from_sections(&spec.sections, &mut ids);
+    }
+    ids
+}
+
+fn collect_ids_from_sections(sections: &[ought_spec::Section], ids: &mut Vec<ought_spec::ClauseId>) {
+    for section in sections {
+        for clause in &section.clauses {
+            if clause.keyword != ought_spec::Keyword::Given {
+                ids.push(clause.id.clone());
+            }
+        }
+        collect_ids_from_sections(&section.subsections, ids);
     }
 }
 
@@ -420,105 +475,118 @@ fn cmd_generate(cli: &Cli, args: &GenerateArgs) -> anyhow::Result<()> {
     let mut manifest = Manifest::load(&manifest_path).unwrap_or_default();
 
     let assembler = ought_gen::ContextAssembler::new(&config);
-    let clauses = collect_clauses(&specs);
-    let all_specs = specs.specs();
+    let groups = collect_section_groups(&specs);
 
     let mut generated_count = 0;
     let mut skipped_count = 0;
     let mut error_count = 0;
+    let mut stale_count = 0;
 
-    for clause in &clauses {
-        // Skip non-testable keywords
-        if clause.keyword == ought_spec::Keyword::Given {
-            continue;
-        }
+    for group in &groups {
+        // Filter to only stale clauses in this group
+        let stale_clauses: Vec<&ought_spec::Clause> = group
+            .testable_clauses
+            .iter()
+            .filter(|c| {
+                if args.force {
+                    true
+                } else {
+                    manifest.is_stale(&c.id, &c.content_hash, "")
+                }
+            })
+            .copied()
+            .collect();
 
-        let clause_key = clause.id.0.clone();
+        let fresh_count = group.testable_clauses.len() - stale_clauses.len();
+        skipped_count += fresh_count;
 
-        // Check if stale
-        if !args.force && !manifest.is_stale(&clause.id, &clause.content_hash, "") {
-            if args.check {
-                // In check mode, just count
-            }
-            skipped_count += 1;
+        if stale_clauses.is_empty() {
             continue;
         }
 
         if args.check {
-            // Check mode: just report that it's stale
-            eprintln!("  stale: {}", clause.id);
-            error_count += 1;
+            for clause in &stale_clauses {
+                eprintln!("  stale: {}", clause.id);
+            }
+            stale_count += stale_clauses.len();
             continue;
         }
 
-        // Find the spec this clause belongs to
-        let spec = all_specs
-            .iter()
-            .find(|s| {
-                s.sections
-                    .iter()
-                    .any(|sec| sec.clauses.iter().any(|c| c.id == clause.id))
-            })
-            .unwrap_or(&all_specs[0]);
+        // Build the batch group
+        let batch = ought_gen::ClauseGroup {
+            section_path: group.section_path.clone(),
+            clauses: stale_clauses.clone(),
+            conditions: group.conditions.clone(),
+        };
 
-        eprint!("  generating: {} ... ", clause.id);
+        let clause_count = batch.clauses.len();
+        eprint!(
+            "  {} ({} clauses) ... ",
+            group.section_path, clause_count
+        );
 
-        let context = assembler.assemble(clause, spec).unwrap_or_else(|_| {
-            ought_gen::context::GenerationContext {
-                spec_context: spec.metadata.context.clone(),
+        // Assemble context from the first clause (they share a section/spec)
+        let context = assembler
+            .assemble(stale_clauses[0], group.spec)
+            .unwrap_or_else(|_| ought_gen::context::GenerationContext {
+                spec_context: group.spec.metadata.context.clone(),
                 source_files: vec![],
                 schema_files: vec![],
                 target_language: ought_gen::generator::Language::Rust,
-            }
-        });
+            });
 
-        match generator.generate(clause, &context) {
-            Ok(test) => {
-                // Write the test file
-                let file_path = test_dir.join(&test.file_path);
-                if let Some(parent) = file_path.parent() {
-                    std::fs::create_dir_all(parent)?;
+        match generator.generate_batch(&batch, &context) {
+            Ok(tests) => {
+                for test in &tests {
+                    let file_path = test_dir.join(&test.file_path);
+                    if let Some(parent) = file_path.parent() {
+                        std::fs::create_dir_all(parent)?;
+                    }
+                    std::fs::write(&file_path, &test.code)?;
+
+                    manifest.entries.insert(
+                        test.clause_id.0.clone(),
+                        ought_gen::manifest::ManifestEntry {
+                            clause_hash: stale_clauses
+                                .iter()
+                                .find(|c| c.id == test.clause_id)
+                                .map(|c| c.content_hash.clone())
+                                .unwrap_or_default(),
+                            source_hash: String::new(),
+                            generated_at: chrono::Utc::now(),
+                            model: config
+                                .generator
+                                .model
+                                .clone()
+                                .unwrap_or_else(|| "default".into()),
+                        },
+                    );
                 }
-                std::fs::write(&file_path, &test.code)?;
-
-                // Update manifest
-                manifest.entries.insert(
-                    clause_key,
-                    ought_gen::manifest::ManifestEntry {
-                        clause_hash: clause.content_hash.clone(),
-                        source_hash: String::new(),
-                        generated_at: chrono::Utc::now(),
-                        model: config
-                            .generator
-                            .model
-                            .clone()
-                            .unwrap_or_else(|| "default".into()),
-                    },
-                );
-
-                eprintln!("ok");
-                generated_count += 1;
+                eprintln!("ok ({} tests)", tests.len());
+                generated_count += tests.len();
             }
             Err(e) => {
                 eprintln!("error: {}", e);
-                error_count += 1;
+                error_count += clause_count;
             }
         }
     }
 
     // Remove orphaned entries
-    let valid_ids: Vec<&ought_spec::ClauseId> = clauses.iter().map(|c| &c.id).collect();
-    manifest.remove_orphans(&valid_ids);
+    let all_ids = collect_all_testable_ids(&specs);
+    let id_refs: Vec<&ought_spec::ClauseId> = all_ids.iter().collect();
+    manifest.remove_orphans(&id_refs);
 
     // Save manifest
     manifest.save(&manifest_path)?;
 
     eprintln!(
-        "\n{} generated, {} skipped, {} errors",
+        "\n{} generated, {} up-to-date, {} errors",
         generated_count, skipped_count, error_count
     );
 
-    if args.check && error_count > 0 {
+    if args.check && stale_count > 0 {
+        eprintln!("{} stale clauses", stale_count);
         process::exit(1);
     }
 
