@@ -192,16 +192,7 @@ pub fn exec_cli(
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .spawn()
-        .map_err(|e| {
-            if e.kind() == std::io::ErrorKind::NotFound {
-                anyhow::anyhow!(
-                    "CLI tool '{}' not found. Please install it and ensure it is on your PATH.",
-                    command
-                )
-            } else {
-                anyhow::anyhow!("failed to spawn '{}': {}", command, e)
-            }
-        })?;
+        .map_err(|e| cli_spawn_error(command, e))?;
 
     if let Some(ref mut stdin) = child.stdin {
         stdin.write_all(prompt.as_bytes())?;
@@ -209,15 +200,54 @@ pub fn exec_cli(
     // Drop stdin to signal EOF
     drop(child.stdin.take());
 
+    collect_output(command, child)
+}
+
+/// Execute a CLI command with the prompt as an argument (not stdin), return stdout.
+pub fn exec_cli_with_arg(
+    command: &str,
+    args: &[&str],
+) -> anyhow::Result<String> {
+    use std::process::{Command, Stdio};
+
+    let child = Command::new(command)
+        .args(args)
+        .stdin(Stdio::null())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .map_err(|e| cli_spawn_error(command, e))?;
+
+    collect_output(command, child)
+}
+
+fn cli_spawn_error(command: &str, e: std::io::Error) -> anyhow::Error {
+    if e.kind() == std::io::ErrorKind::NotFound {
+        anyhow::anyhow!(
+            "CLI tool '{}' not found. Please install it and ensure it is on your PATH.",
+            command
+        )
+    } else {
+        anyhow::anyhow!("failed to spawn '{}': {}", command, e)
+    }
+}
+
+fn collect_output(command: &str, child: std::process::Child) -> anyhow::Result<String> {
     let output = child.wait_with_output()?;
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        let detail = if stderr.trim().is_empty() {
+            stdout.trim().to_string()
+        } else {
+            stderr.trim().to_string()
+        };
         anyhow::bail!(
-            "'{}' exited with status {}: {}",
+            "'{}' exited with status {}:\n{}",
             command,
             output.status,
-            stderr.trim()
+            detail
         );
     }
 
