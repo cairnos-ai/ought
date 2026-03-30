@@ -11,6 +11,31 @@ use ought_spec::Clause;
 use crate::context::GenerationContext;
 use crate::generator::{ClauseGroup, GeneratedTest, Generator, Language};
 
+/// Strip markdown code fences from LLM output.
+/// LLMs frequently wrap code in ```lang ... ``` despite being told not to.
+pub fn strip_markdown_fences(code: &str) -> String {
+    let trimmed = code.trim();
+
+    // Check if it starts with a fence like ```rust, ```python, ``` etc.
+    if let Some(rest) = trimmed.strip_prefix("```") {
+        // Skip the language identifier on the first line
+        let after_lang = if let Some(idx) = rest.find('\n') {
+            &rest[idx + 1..]
+        } else {
+            rest
+        };
+        // Strip trailing fence
+        let stripped = if let Some(body) = after_lang.strip_suffix("```") {
+            body
+        } else {
+            after_lang
+        };
+        stripped.trim().to_string()
+    } else {
+        trimmed.to_string()
+    }
+}
+
 /// Create a generator from the provider name in config.
 pub fn from_config(provider: &str, model: Option<&str>) -> anyhow::Result<Box<dyn Generator>> {
     match provider.to_lowercase().as_str() {
@@ -480,7 +505,7 @@ fn exec_cli_inner(
             anyhow::bail!("'{}' exited with status {}", command, status);
         }
 
-        Ok(accumulated.trim().to_string())
+        Ok(strip_markdown_fences(&accumulated))
     } else {
         // Non-verbose: buffer everything
         let output = child.wait_with_output()?;
@@ -504,7 +529,7 @@ fn exec_cli_inner(
         let stdout = String::from_utf8(output.stdout)
             .map_err(|e| anyhow::anyhow!("invalid UTF-8 from '{}': {}", command, e))?;
 
-        Ok(stdout.trim().to_string())
+        Ok(strip_markdown_fences(&stdout))
     }
 }
 
