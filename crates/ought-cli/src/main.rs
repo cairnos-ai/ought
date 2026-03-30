@@ -415,6 +415,18 @@ fn cmd_run(cli: &Cli, args: &RunArgs) -> anyhow::Result<()> {
 
     if generated_tests.is_empty() {
         eprintln!("No generated tests found. Run `ought generate` first.");
+        // Still write empty JUnit/JSON if requested
+        let empty_results = ought_run::RunResult {
+            results: vec![],
+            total_duration: std::time::Duration::ZERO,
+        };
+        if let Some(junit_path) = &cli.junit {
+            ought_report::junit::report(&empty_results, specs.specs(), junit_path)?;
+        }
+        if cli.json {
+            let json = ought_report::json::report(&empty_results, specs.specs())?;
+            println!("{}", json);
+        }
         return Ok(());
     }
 
@@ -673,12 +685,30 @@ fn cmd_inspect(cli: &Cli, args: &InspectArgs) -> anyhow::Result<()> {
         .map(|r| config_dir.join(&r.test_dir))
         .unwrap_or_else(|| config_dir.join("ought/ought-gen"));
 
-    // Find a file matching the clause ID
+    // Try to find the clause in the specs to show its text
+    if let Ok(specs) = load_specs(&config, &config_path) {
+        // Try exact match first, then partial match on the clause ID
+        let clause = find_clause_by_id(&specs, &args.clause)
+            .or_else(|| find_clause_by_partial_id(&specs, &args.clause));
+        if let Some(clause) = clause {
+            println!("// Clause: {} {}", ought_gen::providers::keyword_str(clause.keyword), clause.text);
+            if let Some(ref cond) = clause.condition {
+                println!("//   GIVEN: {}", cond);
+            }
+            println!();
+        }
+    }
+
+    // Find a file matching the clause ID (try multiple extensions and naming conventions)
     let clause_path = args.clause.replace("::", "/");
     let candidates = [
+        test_dir.join(format!("{}_test.rs", clause_path)),
         test_dir.join(format!("{}.rs", clause_path)),
+        test_dir.join(format!("{}_test.py", clause_path)),
         test_dir.join(format!("{}.py", clause_path)),
+        test_dir.join(format!("{}.test.ts", clause_path)),
         test_dir.join(format!("{}.ts", clause_path)),
+        test_dir.join(format!("{}_test.go", clause_path)),
         test_dir.join(format!("{}.go", clause_path)),
     ];
 
@@ -695,6 +725,104 @@ fn cmd_inspect(cli: &Cli, args: &InspectArgs) -> anyhow::Result<()> {
         args.clause,
         test_dir.display()
     );
+}
+
+/// Find a clause by its ID string across all specs.
+fn find_clause_by_id<'a>(
+    specs: &'a SpecGraph,
+    clause_id: &str,
+) -> Option<&'a ought_spec::Clause> {
+    for spec in specs.specs() {
+        if let Some(c) = find_clause_in_sections(&spec.sections, clause_id) {
+            return Some(c);
+        }
+    }
+    None
+}
+
+/// Find a clause by partial ID match (clause ID contains the search string).
+fn find_clause_by_partial_id<'a>(
+    specs: &'a SpecGraph,
+    partial_id: &str,
+) -> Option<&'a ought_spec::Clause> {
+    let search = partial_id.to_lowercase();
+    for spec in specs.specs() {
+        if let Some(c) = find_clause_partial_in_sections(&spec.sections, &search) {
+            return Some(c);
+        }
+    }
+    None
+}
+
+fn find_clause_partial_in_sections<'a>(
+    sections: &'a [ought_spec::Section],
+    search: &str,
+) -> Option<&'a ought_spec::Clause> {
+    // Split search into path segments for fuzzy matching
+    let search_parts: Vec<&str> = search.split("::").collect();
+
+    for section in sections {
+        for clause in &section.clauses {
+            if clause_id_matches(&clause.id.0, &search_parts) {
+                return Some(clause);
+            }
+            for ow in &clause.otherwise {
+                if clause_id_matches(&ow.id.0, &search_parts) {
+                    return Some(ow);
+                }
+            }
+        }
+        if let Some(c) = find_clause_partial_in_sections(&section.subsections, search) {
+            return Some(c);
+        }
+    }
+    None
+}
+
+/// Check if a clause ID matches a search pattern.
+/// Each segment of the search must fuzzy-match the corresponding segment of the ID.
+/// Fuzzy match: all underscore-separated words in the search segment must appear in the ID segment.
+fn clause_id_matches(clause_id: &str, search_parts: &[&str]) -> bool {
+    let id_lower = clause_id.to_lowercase();
+    let id_parts: Vec<&str> = id_lower.split("::").collect();
+
+    if search_parts.len() > id_parts.len() {
+        return false;
+    }
+
+    let offset = id_parts.len().saturating_sub(search_parts.len());
+    for (i, search_part) in search_parts.iter().enumerate() {
+        let id_part = id_parts.get(offset + i).unwrap_or(&"");
+        // All words in the search segment must appear in the ID segment
+        let search_words: Vec<&str> = search_part.split('_').filter(|w| !w.is_empty()).collect();
+        let matches = search_words.iter().all(|w| id_part.contains(w));
+        if !matches {
+            return false;
+        }
+    }
+    true
+}
+
+fn find_clause_in_sections<'a>(
+    sections: &'a [ought_spec::Section],
+    clause_id: &str,
+) -> Option<&'a ought_spec::Clause> {
+    for section in sections {
+        for clause in &section.clauses {
+            if clause.id.0 == clause_id {
+                return Some(clause);
+            }
+            for ow in &clause.otherwise {
+                if ow.id.0 == clause_id {
+                    return Some(ow);
+                }
+            }
+        }
+        if let Some(c) = find_clause_in_sections(&section.subsections, clause_id) {
+            return Some(c);
+        }
+    }
+    None
 }
 
 /// Collect GeneratedTest structs from files in the ought-gen directory.
