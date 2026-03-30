@@ -1,5 +1,5 @@
 use std::collections::{HashMap, VecDeque};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use crate::parser::Parser;
 use crate::types::{ParseError, Spec};
@@ -8,6 +8,7 @@ use crate::types::{ParseError, Spec};
 ///
 /// Handles cross-file dependencies, detects circular references,
 /// and provides topological ordering for execution.
+#[derive(Debug)]
 pub struct SpecGraph {
     specs: Vec<Spec>,
 }
@@ -50,6 +51,35 @@ impl SpecGraph {
             match Parser::parse_file(file) {
                 Ok(spec) => specs.push(spec),
                 Err(errors) => all_errors.extend(errors),
+            }
+        }
+
+        // Validate that cross-references resolve to existing files
+        let known_paths: std::collections::HashSet<PathBuf> = specs
+            .iter()
+            .map(|s| s.source_path.clone())
+            .collect();
+
+        for spec in &specs {
+            for req in &spec.metadata.requires {
+                // Resolve the requires path relative to the spec's directory
+                let base_dir = spec.source_path.parent().unwrap_or(Path::new("."));
+                let resolved = base_dir.join(&req.path);
+                let canonical = resolved.canonicalize().unwrap_or(resolved.clone());
+
+                if !canonical.exists() && !known_paths.iter().any(|p| {
+                    p.canonicalize().unwrap_or(p.clone()) == canonical
+                }) {
+                    all_errors.push(ParseError {
+                        file: spec.source_path.clone(),
+                        line: 0,
+                        message: format!(
+                            "unresolved cross-reference: '{}' (resolved to '{}')",
+                            req.path.display(),
+                            resolved.display()
+                        ),
+                    });
+                }
             }
         }
 

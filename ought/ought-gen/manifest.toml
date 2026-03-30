@@ -1,0 +1,2165 @@
+["ought::what_ought_does::must_accept_behavioral_specifications_written_in_standard_markdow"]
+clause_hash = "3a9eccee3758fbd9"
+source_hash = ""
+generated_at = "2026-03-30T22:26:24.002277Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::server_lifecycle::must_support_stdio_transport_default_for_local_ide_integration"]
+clause_hash = "d6608c009a18c4b8"
+source_hash = ""
+generated_at = "2026-03-30T21:58:00.486779Z"
+model = "claude-sonnet-4-6"
+
+["analysis::survey::must_use_the_llm_to_identify_public_behaviors_apis_and_logic_bran"]
+clause_hash = "e0c1275d72321d8d"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["analysis::survey::should_group_suggestions_by_the_spec_file_they_would_belong_to"]
+clause_hash = "efb4af0ae4e88b1b"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["cli::watch::should_clear_the_terminal_and_reprint_results_on_each_cycle"]
+clause_hash = "b488b504f7d63418"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["analysis::audit::should_suggest_resolutions_for_each_finding"]
+clause_hash = "68643db02b4892d6"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["cli::global_flags::must_support_junit_path_flag_that_writes_junit_xml_results_to_the"]
+clause_hash = "30f30f23d81789e9"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["parser::spec_file_structure::must_parse_frontmatter_style_metadata_at_the_top_of_the_file_cont"]
+clause_hash = "7bf1ff580fe032c0"
+source_hash = ""
+generated_at = "2026-03-30T20:15:15.595881Z"
+model = "claude-sonnet-4-6"
+
+["generator::context_assembly::should_auto_discover_relevant_source_files_when_no_explicit_source"]
+clause_hash = "5db1d8964f05bfdd"
+source_hash = ""
+generated_at = "2026-03-30T19:51:58.072193Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::error_handling::otherwise_the_client_may_assume_the_request_has_timed_out"]
+clause_hash = "970a352ae35fe54d"
+source_hash = ""
+generated_at = "2026-03-30T22:25:19.006980Z"
+model = "claude-sonnet-4-6"
+
+["parser::conditional_blocks_given::must_support_multiple_given_blocks_within_a_section"]
+clause_hash = "1814736d347a15a5"
+source_hash = ""
+generated_at = "2026-03-30T20:20:33.266976Z"
+model = "claude-sonnet-4-6"
+
+["parser::keywords::must_recognize_the_wont_keyword_as_an_ought_extension_not_in_rfc"]
+clause_hash = "b6141567841a8829"
+source_hash = ""
+generated_at = "2026-03-30T20:17:50.428930Z"
+model = "claude-sonnet-4-6"
+
+["generator::context_assembly::must_include_any_code_block_hints_attached_to_the_clause"]
+clause_hash = "7774130085981c9c"
+source_hash = ""
+generated_at = "2026-03-30T19:51:58.072045Z"
+model = "claude-sonnet-4-6"
+
+["parser::temporal_obligations::must_always_invariant::must_parse_must_always_as_a_single_compound_keyword"]
+clause_hash = "1d8ccb0a848d7e2a"
+source_hash = ""
+generated_at = "2026-03-30T20:26:38.048861Z"
+model = "claude-sonnet-4-6"
+
+["cli::global_flags::must_support_json_flag_that_outputs_structured_json_for_programma"]
+clause_hash = "e91f5ffb7893414b"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["reporter::terminal_output::should_use_box_drawing_characters_for_failure_detail_panels"]
+clause_hash = "595e97c67a1f6a61"
+source_hash = ""
+generated_at = "2026-03-30T20:53:26.511533Z"
+model = "claude-sonnet-4-6"
+
+["reporter::failure_narratives_llm_powered::should_include_the_git_diff_since_the_last_passing_run_in_the_diagn"]
+clause_hash = "3a6dc9f42e8ea377"
+source_hash = ""
+generated_at = "2026-03-30T21:16:43.457366Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::tools::must_return_structured_json_responses_from_all_tools_not_terminal"]
+clause_hash = "459453e1c03e599e"
+source_hash = ""
+generated_at = "2026-03-30T22:06:31.954500Z"
+model = "claude-sonnet-4-6"
+
+["parser::cross_file_references::must_parse_inline_markdown_links_to_other_ought_md_files_as_cross"]
+clause_hash = "cc928df6f968ed0f"
+source_hash = ""
+generated_at = "2026-03-30T20:38:24.961931Z"
+model = "claude-sonnet-4-6"
+
+["reporter::failure_narratives_llm_powered::must_send_the_failing_clause_generated_test_failure_output_and_re"]
+clause_hash = "f2aa7e34c75344fd"
+source_hash = ""
+generated_at = "2026-03-30T21:16:43.456928Z"
+model = "claude-sonnet-4-6"
+
+["reporter::temporal_result_display::must_display_must_always_results_with_the_number_of_iterations_in"]
+clause_hash = "0318b165692a2f39"
+source_hash = ""
+generated_at = "2026-03-30T21:10:38.812112Z"
+model = "claude-sonnet-4-6"
+
+["cli::init::must_not_overwrite_an_existing_ought_toml"]
+clause_hash = "7f021fa9b4746070"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["generator::test_generation::may_generate_helper_functions_or_fixtures_when_multiple_clauses"]
+clause_hash = "1e7c973d2b44d754"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["generator::test_generation::must_not_generate_tests_that_perform_real_io_network_calls_filesystem"]
+clause_hash = "0db81e9ed27cda04"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["generator::error_handling::must_report_llm_api_errors_clearly_auth_failure_rate_limit_timeou"]
+clause_hash = "69b5cab9ba19573b"
+source_hash = ""
+generated_at = "2026-03-30T20:10:25.951723Z"
+model = "claude-sonnet-4-6"
+
+["runner::error_handling::must_report_when_the_test_harness_command_is_not_found_or_fails_t"]
+clause_hash = "2d29d5d67f2f1aaa"
+source_hash = ""
+generated_at = "2026-03-30T21:51:28.158327Z"
+model = "claude-sonnet-4-6"
+
+["analysis::survey::must_suggest_concrete_clause_text_with_appropriate_keyword_for_ea"]
+clause_hash = "e9b7832bda55c0c6"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["parser::temporal_obligations::must_by_deadline::must_not_accept_must_by_without_a_duration_it_is_a_parse_error"]
+clause_hash = "d8e4ca03b1e7e9f6"
+source_hash = ""
+generated_at = "2026-03-30T20:27:32.263347Z"
+model = "claude-sonnet-4-6"
+
+["generator::manifest_and_hashing::must_compute_a_source_hash_from_the_contents_of_referenced_source"]
+clause_hash = "f61fcc96094defa6"
+source_hash = ""
+generated_at = "2026-03-30T20:05:22.025711Z"
+model = "claude-sonnet-4-6"
+
+["reporter::test_quality_grading::should_suggest_improvements_for_low_graded_tests"]
+clause_hash = "5c20b636a3e5068d"
+source_hash = ""
+generated_at = "2026-03-30T21:19:52.824622Z"
+model = "claude-sonnet-4-6"
+
+["ought::generated_test_management::must_track_generated_tests_with_content_hashes_so_they_are_only_r"]
+clause_hash = "57cdd4a5325cc1f2"
+source_hash = ""
+generated_at = "2026-03-30T22:38:51.728590Z"
+model = "claude-sonnet-4-6"
+
+["runner::error_handling::must_always_leave_the_test_environment_clean_after_execution_no_leaked_c"]
+clause_hash = "da0cc2b1a2d6c0f4"
+source_hash = ""
+generated_at = "2026-03-30T21:51:28.159017Z"
+model = "claude-sonnet-4-6"
+
+["ought::integration::should_be_installable_via_cargo_homebrew_and_as_a_standalone_binary"]
+clause_hash = "c6e4812eb9d031fb"
+source_hash = ""
+generated_at = "2026-03-30T22:55:10.444628Z"
+model = "claude-sonnet-4-6"
+
+["generator::error_handling::must_not_leave_the_manifest_in_an_inconsistent_state_if_generation_is"]
+clause_hash = "81495314c73688f5"
+source_hash = ""
+generated_at = "2026-03-30T20:10:25.952174Z"
+model = "claude-sonnet-4-6"
+
+["parser::spec_file_structure::must_parse_standard_markdown_commonmark_as_the_base_format"]
+clause_hash = "d4c1aa2f8137da60"
+source_hash = ""
+generated_at = "2026-03-30T20:15:15.595622Z"
+model = "claude-sonnet-4-6"
+
+["generator::test_generation::must_include_the_clause_identifier_in_the_test_function_name"]
+clause_hash = "a868a341eddce8f8"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["ought::reporting::must_distinguish_failure_severity_must_failures_are_errors_should"]
+clause_hash = "814630fb48a52d57"
+source_hash = ""
+generated_at = "2026-03-30T22:44:22.443Z"
+model = "claude-sonnet-4-6"
+
+["generator::otherwise_chain_generation::must_generate_a_test_for_the_primary_obligation_the_parent_clause"]
+clause_hash = "44c80d2f53f084f2"
+source_hash = ""
+generated_at = "2026-03-30T19:35:04.015613Z"
+model = "claude-sonnet-4-6"
+
+["parser::context_metadata::may_support_glob_patterns_in_source_and_schema_paths"]
+clause_hash = "d7ca7e22f0e72e26"
+source_hash = ""
+generated_at = "2026-03-30T20:41:22.197877Z"
+model = "claude-sonnet-4-6"
+
+["parser::keywords::must_not_treat_bare_non_bold_keyword_occurrences_as_clauses_e_g_you_m"]
+clause_hash = "96cf55ba11021064"
+source_hash = ""
+generated_at = "2026-03-30T20:17:50.429399Z"
+model = "claude-sonnet-4-6"
+
+["cli::generate::must_not_execute_tests_during_generation_that_is_run_s_job"]
+clause_hash = "c6e594a31e68a3fa"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["cli::global_flags::should_support_verbose_flag_for_debug_level_output"]
+clause_hash = "8313fcae613de895"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["reporter::test_quality_grading::must_display_the_grade_alongside_each_clause_in_the_output"]
+clause_hash = "1bd79a0667a16ac5"
+source_hash = ""
+generated_at = "2026-03-30T21:19:52.824397Z"
+model = "claude-sonnet-4-6"
+
+["generator::temporal_obligation_generation::must_always_invariant_tests::may_generate_a_loop_based_stress_test_when_no_pr"]
+clause_hash = "6f0c72f254bee999"
+source_hash = ""
+generated_at = "2026-03-30T19:40:11.127464Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::tools::must_expose_ought_run_run_specs_and_return_structured_results_acc"]
+clause_hash = "f786170e3e7a081a"
+source_hash = ""
+generated_at = "2026-03-30T22:06:31.953415Z"
+model = "claude-sonnet-4-6"
+
+["cli::run::must_not_trigger_test_generation_ought_run_only_executes_existing_gen"]
+clause_hash = "3f9003c6e674760b"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["analysis::blame::must_accept_a_clause_identifier_e_g_auth_login_must_return_401"]
+clause_hash = "8156a32781ef399e"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["parser::error_handling::must_continue_parsing_after_non_fatal_errors_collect_all_errors_d"]
+clause_hash = "52835a9a183a733e"
+source_hash = ""
+generated_at = "2026-03-30T20:48:16.611745Z"
+model = "claude-sonnet-4-6"
+
+["reporter::terminal_output::should_dim_passing_clauses_and_highlight_failures_for_visual_scanni"]
+clause_hash = "41b572531870da9f"
+source_hash = ""
+generated_at = "2026-03-30T20:53:26.511636Z"
+model = "claude-sonnet-4-6"
+
+["reporter::json_output::must_not_mix_json_output_with_human_readable_output_one_or_the_other"]
+clause_hash = "3675c68fcec40b78"
+source_hash = ""
+generated_at = "2026-03-30T21:25:08.348451Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::error_handling::must_return_mcp_compliant_error_responses_with_error_codes_and_me"]
+clause_hash = "714553f3be869fd4"
+source_hash = ""
+generated_at = "2026-03-30T22:25:19.005884Z"
+model = "claude-sonnet-4-6"
+
+["parser::keywords::must_recognize_the_otherwise_keyword_as_a_contrary_to_duty_fallba"]
+clause_hash = "b68a85a9f4390548"
+source_hash = ""
+generated_at = "2026-03-30T20:17:50.429097Z"
+model = "claude-sonnet-4-6"
+
+["analysis::bisect::should_support_range_from_to_to_limit_the_search_space"]
+clause_hash = "06ffe56e6ec639ba"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["parser::keywords::must_recognize_the_given_keyword_as_a_conditional_block_opener_fr"]
+clause_hash = "3bc0d3f153c50b45"
+source_hash = ""
+generated_at = "2026-03-30T20:17:50.429013Z"
+model = "claude-sonnet-4-6"
+
+["reporter::given_block_display::should_highlight_the_given_condition_line_when_any_nested_clause_fa"]
+clause_hash = "ec84c69204e99d1f"
+source_hash = ""
+generated_at = "2026-03-30T20:56:56.837470Z"
+model = "claude-sonnet-4-6"
+
+["reporter::json_output::must_include_diagnosis_and_grade_data_when_those_flags_are_also_a"]
+clause_hash = "d3fa22e512d1b74a"
+source_hash = ""
+generated_at = "2026-03-30T21:25:08.348342Z"
+model = "claude-sonnet-4-6"
+
+["cli::generate::must_regenerate_test_code_for_all_clauses_where_the_clause_hash_o"]
+clause_hash = "6e1c3bbd6e9081c2"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["ought::generated_test_management::must_only_regenerate_tests_when_the_user_explicitly_runs_ought_ge"]
+clause_hash = "dee80fe0e3dbc484"
+source_hash = ""
+generated_at = "2026-03-30T22:38:51.728729Z"
+model = "claude-sonnet-4-6"
+
+["analysis::audit::must_use_the_llm_to_identify_gaps_areas_where_related_clauses_exi"]
+clause_hash = "1cae7c086b39ad7a"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["cli::global_flags::must_support_config_path_to_specify_an_alternate_ought_toml_locat"]
+clause_hash = "875152814515a6ad"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["generator::test_generation::must_include_the_original_clause_text_as_a_doc_comment_in_the_gen"]
+clause_hash = "8117ad24248f086c"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["cli::generate::must_write_generated_tests_to_the_ought_ought_gen_directory"]
+clause_hash = "84e820d903d278dc"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["generator::provider_abstraction::must_define_a_generator_trait_that_all_llm_providers_implement"]
+clause_hash = "fc1d25acc08b38ff"
+source_hash = ""
+generated_at = "2026-03-30T19:55:24.976039Z"
+model = "claude-sonnet-4-6"
+
+["reporter::terminal_output::must_show_each_clause_with_its_keyword_text_and_pass_fail_status"]
+clause_hash = "db1c29c5768a3835"
+source_hash = ""
+generated_at = "2026-03-30T20:53:26.510284Z"
+model = "claude-sonnet-4-6"
+
+["reporter::failure_narratives_llm_powered::must_include_a_suggested_fix_file_line_what_to_change_when_the_ll"]
+clause_hash = "fd56b4d783e1d6ed"
+source_hash = ""
+generated_at = "2026-03-30T21:16:43.457104Z"
+model = "claude-sonnet-4-6"
+
+["reporter::terminal_output::should_show_section_level_pass_fail_rollup_alongside_each_section_h"]
+clause_hash = "b5c5340befbc3b60"
+source_hash = ""
+generated_at = "2026-03-30T20:53:26.511426Z"
+model = "claude-sonnet-4-6"
+
+["reporter::failure_details::should_show_the_original_clause_text_alongside_the_failure_for_easy"]
+clause_hash = "a4bc66a865c48dab"
+source_hash = ""
+generated_at = "2026-03-30T21:15:07.573438Z"
+model = "claude-sonnet-4-6"
+
+["generator::otherwise_chain_generation::must_instruct_the_llm_that_otherwise_tests_should_simulate_the_pa"]
+clause_hash = "ce4865bfb1724247"
+source_hash = ""
+generated_at = "2026-03-30T19:35:04.016062Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::resources::must_expose_ought_specs_name_parsed_clauses_for_a_specific_spec_f"]
+clause_hash = "77b587f8e26e79c5"
+source_hash = ""
+generated_at = "2026-03-30T22:10:39.816546Z"
+model = "claude-sonnet-4-6"
+
+["reporter::given_block_display::must_display_given_blocks_as_a_visual_group_with_the_condition_as"]
+clause_hash = "696e4ca96407d154"
+source_hash = ""
+generated_at = "2026-03-30T20:56:56.836962Z"
+model = "claude-sonnet-4-6"
+
+["ought::spec_format::must_support_the_wont_keyword_for_deliberately_absent_capabilitie"]
+clause_hash = "2d52e4926a45f764"
+source_hash = ""
+generated_at = "2026-03-30T22:29:02.819779Z"
+model = "claude-sonnet-4-6"
+
+["analysis::survey::must_output_a_list_of_uncovered_behaviors_with_file_and_line_refe"]
+clause_hash = "5da435947aefbad3"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["generator::otherwise_chain_generation::should_generate_a_single_integration_style_test_that_walks_the_full"]
+clause_hash = "1ec84d84717d5a3c"
+source_hash = ""
+generated_at = "2026-03-30T19:35:04.016450Z"
+model = "claude-sonnet-4-6"
+
+["reporter::terminal_output::must_use_status_indicators_passed_failed_errored_confirmed_absent"]
+clause_hash = "3a81c6044aa6b81f"
+source_hash = ""
+generated_at = "2026-03-30T20:53:26.510642Z"
+model = "claude-sonnet-4-6"
+
+["parser::spec_file_structure::must_preserve_all_non_clause_markdown_as_documentation_context_fo"]
+clause_hash = "a3fb41474070a644"
+source_hash = ""
+generated_at = "2026-03-30T20:15:15.596680Z"
+model = "claude-sonnet-4-6"
+
+["parser::temporal_obligations::must_by_deadline::must_parse_must_by_duration_as_a_compound_keyword_with_a_duration"]
+clause_hash = "18a608343988f42f"
+source_hash = ""
+generated_at = "2026-03-30T20:27:32.262802Z"
+model = "claude-sonnet-4-6"
+
+["parser::cross_file_references::should_validate_that_all_cross_references_resolve_to_existing_files"]
+clause_hash = "88b172d1d4dcca4f"
+source_hash = ""
+generated_at = "2026-03-30T20:38:24.962367Z"
+model = "claude-sonnet-4-6"
+
+["reporter::test_quality_grading::should_include_a_brief_explanation_for_grades_below_b"]
+clause_hash = "6908080302bd43a7"
+source_hash = ""
+generated_at = "2026-03-30T21:19:52.824511Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::server_lifecycle::must_advertise_all_available_tools_and_resources_on_initializatio"]
+clause_hash = "7459b3c711f944f1"
+source_hash = ""
+generated_at = "2026-03-30T21:58:00.486965Z"
+model = "claude-sonnet-4-6"
+
+["ought::llm_agnostic::must_support_at_least_anthropic_claude_and_openai_as_providers"]
+clause_hash = "9451ca3646119b0b"
+source_hash = ""
+generated_at = "2026-03-30T22:37:35.080938Z"
+model = "claude-sonnet-4-6"
+
+["ought::generated_test_management::must_detect_and_remove_orphaned_tests_when_a_clause_is_deleted_fr"]
+clause_hash = "98cfbd575125b07b"
+source_hash = ""
+generated_at = "2026-03-30T22:38:51.728839Z"
+model = "claude-sonnet-4-6"
+
+["generator::provider_abstraction::must_not_manage_api_keys_or_authentication_that_is_the_cli_tool_s_res"]
+clause_hash = "b1898c65bd7fc108"
+source_hash = ""
+generated_at = "2026-03-30T19:55:24.976711Z"
+model = "claude-sonnet-4-6"
+
+["ought::implementation::should_use_a_workspace_structure_so_components_can_be_used_independ"]
+clause_hash = "5eaf90bf922eab80"
+source_hash = ""
+generated_at = "2026-03-30T22:56:03.428900Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::tools::must_expose_ought_survey_analyze_source_for_uncovered_behaviors"]
+clause_hash = "ccf196fcd67b6ae1"
+source_hash = ""
+generated_at = "2026-03-30T22:06:31.954130Z"
+model = "claude-sonnet-4-6"
+
+["generator::otherwise_chain_generation::must_not_generate_otherwise_tests_that_depend_on_real_infrastructure"]
+clause_hash = "84f8965c8dcb4eb1"
+source_hash = ""
+generated_at = "2026-03-30T19:35:04.016663Z"
+model = "claude-sonnet-4-6"
+
+["runner::result_collection::must_capture_failure_messages_assertion_errors_and_stack_traces_p"]
+clause_hash = "7095deef27a762c2"
+source_hash = ""
+generated_at = "2026-03-30T21:43:53.686518Z"
+model = "claude-sonnet-4-6"
+
+["parser::keywords::must_assign_severity_levels_must_must_not_must_always_must_by_req"]
+clause_hash = "a6ea300faeeb26c7"
+source_hash = ""
+generated_at = "2026-03-30T20:17:50.429326Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::resources::should_support_resource_subscriptions_so_clients_get_notified_when"]
+clause_hash = "16daeac88406e356"
+source_hash = ""
+generated_at = "2026-03-30T22:10:39.817160Z"
+model = "claude-sonnet-4-6"
+
+["generator::provider_abstraction::must_ship_with_a_claude_provider_that_execs_the_claude_cli"]
+clause_hash = "7c0fc1bc1f604b79"
+source_hash = ""
+generated_at = "2026-03-30T19:55:24.976226Z"
+model = "claude-sonnet-4-6"
+
+["parser::conditional_blocks_given::must_not_treat_given_itself_as_a_testable_clause_it_is_a_grouping_con"]
+clause_hash = "ccbf0a280c6e1969"
+source_hash = ""
+generated_at = "2026-03-30T20:20:33.267217Z"
+model = "claude-sonnet-4-6"
+
+["reporter::given_block_display::should_dim_the_given_condition_line_when_all_nested_clauses_pass"]
+clause_hash = "fed1b9f75bf1e45d"
+source_hash = ""
+generated_at = "2026-03-30T20:56:56.837293Z"
+model = "claude-sonnet-4-6"
+
+["cli::run::must_parse_all_spec_files_execute_generated_tests_and_report_resu"]
+clause_hash = "0b8466fa2ba37ae6"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["generator::given_block_generation::must_include_the_given_condition_in_the_llm_prompt_so_it_understa"]
+clause_hash = "7a159a4187dca526"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["cli::generate::should_show_a_progress_indicator_during_llm_generation"]
+clause_hash = "fdc20dbe2c4555fa"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["parser::temporal_obligations::must_by_deadline::must_store_the_duration_value_and_unit_in_the_clause_ir"]
+clause_hash = "fdb38fc1aa09b1f2"
+source_hash = ""
+generated_at = "2026-03-30T20:27:32.263207Z"
+model = "claude-sonnet-4-6"
+
+["reporter::terminal_output::must_print_a_summary_line_at_the_end_total_passed_failed_errored"]
+clause_hash = "b31c3309814b7ddc"
+source_hash = ""
+generated_at = "2026-03-30T20:53:26.511161Z"
+model = "claude-sonnet-4-6"
+
+["cli::global_flags::must_support_quiet_flag_that_suppresses_all_output_except_errors"]
+clause_hash = "05ac47e3104b6a82"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["ought::llm_agnostic::must_allow_the_provider_and_model_to_be_configured_in_ought_toml"]
+clause_hash = "fc69a821f3178210"
+source_hash = ""
+generated_at = "2026-03-30T22:37:35.081056Z"
+model = "claude-sonnet-4-6"
+
+["ought::llm_agnostic::should_support_local_models_via_ollama"]
+clause_hash = "38b21fe08aa108ba"
+source_hash = ""
+generated_at = "2026-03-30T22:37:35.081Z"
+model = "claude-sonnet-4-6"
+
+["cli::check::must_validate_that_cross_file_references_links_to_other_ought_md"]
+clause_hash = "e8c2ed497fdc6d74"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::tools::must_expose_ought_blame_explain_why_a_clause_is_failing"]
+clause_hash = "e1da902e1aec64c4"
+source_hash = ""
+generated_at = "2026-03-30T22:06:31.954347Z"
+model = "claude-sonnet-4-6"
+
+["ought::what_ought_does::must_use_an_llm_to_generate_concrete_runnable_test_code_from_thos"]
+clause_hash = "1f9db0531983f820"
+source_hash = ""
+generated_at = "2026-03-30T22:26:24.002387Z"
+model = "claude-sonnet-4-6"
+
+["reporter::otherwise_chain_display::should_visually_distinguish_the_active_fallback_from_lower_ones_tha"]
+clause_hash = "e42064b987abf137"
+source_hash = ""
+generated_at = "2026-03-30T21:09:34.280214Z"
+model = "claude-sonnet-4-6"
+
+["ought::language_agnostic::must_not_require_any_language_specific_sdk_or_library_in_the_project"]
+clause_hash = "884fc6f28229ef68"
+source_hash = ""
+generated_at = "2026-03-30T22:34:19.019523Z"
+model = "claude-sonnet-4-6"
+
+["ought::reporting::should_support_llm_powered_test_quality_grading_that_evaluates_whet"]
+clause_hash = "78393f3bbb4ea775"
+source_hash = ""
+generated_at = "2026-03-30T22:44:22.443391Z"
+model = "claude-sonnet-4-6"
+
+["analysis::audit::must_read_all_spec_files_and_their_cross_references"]
+clause_hash = "9a6077ab03341fb8"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["cli::init::must_detect_the_project_language_from_existing_config_files_cargo"]
+clause_hash = "9319aea6b5e78eaf"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["analysis::audit::must_reference_the_specific_clauses_involved_in_each_finding_file"]
+clause_hash = "b204418c93ac94a2"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["reporter::failure_details::should_show_a_snippet_of_the_failing_generated_test_code_inline"]
+clause_hash = "c8d79ceb9183d3aa"
+source_hash = ""
+generated_at = "2026-03-30T21:15:07.573361Z"
+model = "claude-sonnet-4-6"
+
+["parser::cross_file_references::must_detect_circular_dependencies_and_report_them_as_errors"]
+clause_hash = "ab30e2bea1c735dc"
+source_hash = ""
+generated_at = "2026-03-30T20:38:24.962264Z"
+model = "claude-sonnet-4-6"
+
+["ought::what_ought_does::must_provide_a_cli_ought_as_the_primary_interface_for_all_operati"]
+clause_hash = "d1633dc93c8d41b4"
+source_hash = ""
+generated_at = "2026-03-30T22:26:24.002585Z"
+model = "claude-sonnet-4-6"
+
+["parser::conditional_blocks_given::must_attach_the_given_condition_text_to_all_clauses_nested_within"]
+clause_hash = "280de7f85c1f4ecf"
+source_hash = ""
+generated_at = "2026-03-30T20:20:33.266908Z"
+model = "claude-sonnet-4-6"
+
+["ought::implementation::must_publish_the_spec_parser_as_a_standalone_crate_ought_spec_wit"]
+clause_hash = "656f7773bd671e3f"
+source_hash = ""
+generated_at = "2026-03-30T22:56:03.428743Z"
+model = "claude-sonnet-4-6"
+
+["cli::diff::should_use_a_familiar_unified_diff_format"]
+clause_hash = "b3d9da0b82e2b556"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["analysis::audit::should_detect_must_obligations_that_lack_otherwise_fallbacks_where"]
+clause_hash = "67a8077bbe646cb2"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["parser::context_metadata::must_support_multiple_values_per_metadata_key_one_per_line_or_com"]
+clause_hash = "fbe77f1e7c9c0284"
+source_hash = ""
+generated_at = "2026-03-30T20:41:22.197755Z"
+model = "claude-sonnet-4-6"
+
+["cli::run::must_exit_with_code_0_if_only_should_or_may_clauses_fail"]
+clause_hash = "78ac5f0fc1792040"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["reporter::json_output::must_include_all_fields_clause_identifier_keyword_severity_status"]
+clause_hash = "6191799d8389a9e4"
+source_hash = ""
+generated_at = "2026-03-30T21:25:08.348237Z"
+model = "claude-sonnet-4-6"
+
+["analysis::blame::should_suggest_a_fix_when_the_cause_is_clear"]
+clause_hash = "9252981abc47079c"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["analysis::audit::should_detect_given_blocks_with_overlapping_conditions_that_impose"]
+clause_hash = "39ab3eaa58200ec2"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["parser::spec_file_structure::must_treat_h2_etc_as_nested_test_groups_sections"]
+clause_hash = "09c789a774d7c320"
+source_hash = ""
+generated_at = "2026-03-30T20:15:15.596280Z"
+model = "claude-sonnet-4-6"
+
+["analysis::blame::must_use_git_history_to_find_when_the_clause_last_passed_and_what"]
+clause_hash = "2efa003225853add"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["generator::provider_abstraction::must_pass_prompts_via_stdin_and_capture_generated_test_code_from"]
+clause_hash = "6c05f4277bc32516"
+source_hash = ""
+generated_at = "2026-03-30T19:55:24.976540Z"
+model = "claude-sonnet-4-6"
+
+["ought::reporting::must_map_test_results_back_to_the_original_spec_clauses_not_just"]
+clause_hash = "2bf5e4b82bf4c18e"
+source_hash = ""
+generated_at = "2026-03-30T22:44:22.442886Z"
+model = "claude-sonnet-4-6"
+
+["cli::generate::must_support_check_flag_that_exits_with_code_1_if_any_generated_t"]
+clause_hash = "0f67a98c36d3edbe"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["ought::reporting::should_support_llm_powered_failure_diagnosis_that_explains_why_a_te"]
+clause_hash = "d00a9308f02f185c"
+source_hash = ""
+generated_at = "2026-03-30T22:44:22.443284Z"
+model = "claude-sonnet-4-6"
+
+["analysis::survey::should_rank_uncovered_behaviors_by_risk_public_api_internal_helper"]
+clause_hash = "96e6460fd7e73a3a"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["analysis::blame::must_output_the_timeline_last_passing_run_first_failure_relevant"]
+clause_hash = "21cff70f5b1469b2"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["runner::execution::must_not_modify_generated_test_files_during_execution"]
+clause_hash = "539ea0aefc510ba9"
+source_hash = ""
+generated_at = "2026-03-30T21:41:23.827201Z"
+model = "claude-sonnet-4-6"
+
+["generator::temporal_obligation_generation::must_always_invariant_tests::should_use_the_target_language_s_property_testin"]
+clause_hash = "231e0a10ea8fcf37"
+source_hash = ""
+generated_at = "2026-03-30T19:40:11.127274Z"
+model = "claude-sonnet-4-6"
+
+["runner::language_runners::must_ship_with_a_rust_runner"]
+clause_hash = "680547f7aff0f4e7"
+source_hash = ""
+generated_at = "2026-03-30T21:46:24.860303Z"
+model = "claude-sonnet-4-6"
+
+["ought::integration::must_be_easy_to_integrate_into_ci_pipelines_run_without_llm_acces"]
+clause_hash = "57d93648f87aba0d"
+source_hash = ""
+generated_at = "2026-03-30T22:55:10.444422Z"
+model = "claude-sonnet-4-6"
+
+["cli::init::must_scaffold_an_ought_toml_an_ought_directory_and_an_example_spe"]
+clause_hash = "4c1a335aeb9c3cdf"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["cli::run::must_exit_with_code_1_if_any_must_must_not_must_always_or_must_by"]
+clause_hash = "63c11613939332c3"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["ought::implementation::must_be_written_in_rust"]
+clause_hash = "f5c63d4a3feb8880"
+source_hash = ""
+generated_at = "2026-03-30T22:56:03.428571Z"
+model = "claude-sonnet-4-6"
+
+["generator::provider_abstraction::should_ship_with_an_ollama_provider_that_execs_the_ollama_cli_for_l"]
+clause_hash = "ef51e9fcc978ac44"
+source_hash = ""
+generated_at = "2026-03-30T19:55:24.976868Z"
+model = "claude-sonnet-4-6"
+
+["parser::clause_ir::must_generate_stable_clause_identifiers_from_the_section_path_and"]
+clause_hash = "1d980bdfb5042fb7"
+source_hash = ""
+generated_at = "2026-03-30T20:31:33.444824Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::tools::must_expose_ought_inspect_return_generated_test_code_for_a_clause"]
+clause_hash = "996383623e4da48b"
+source_hash = ""
+generated_at = "2026-03-30T22:06:31.953875Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::tools::must_expose_ought_audit_cross_spec_conflict_and_gap_analysis"]
+clause_hash = "4d05c8b988e740ce"
+source_hash = ""
+generated_at = "2026-03-30T22:06:31.954240Z"
+model = "claude-sonnet-4-6"
+
+["analysis::audit::must_detect_must_always_invariant_conflicts_e_g_two_invariants_th"]
+clause_hash = "39417855924a1686"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["analysis::bisect::should_use_the_generated_test_from_the_current_manifest_not_regener"]
+clause_hash = "dd52d06f25f50c84"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["generator::context_assembly::must_send_the_clause_text_keyword_severity_and_section_context_to"]
+clause_hash = "2d350ff399c07fc1"
+source_hash = ""
+generated_at = "2026-03-30T19:51:58.071680Z"
+model = "claude-sonnet-4-6"
+
+["parser::context_metadata::must_parse_schema_as_a_list_of_file_paths_schemas_configs_migrati"]
+clause_hash = "daadcefdabe99fe7"
+source_hash = ""
+generated_at = "2026-03-30T20:41:22.197448Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::error_handling::must_always_return_valid_json_rpc_responses_even_for_internal_errors"]
+clause_hash = "4241078c0dd857a2"
+source_hash = ""
+generated_at = "2026-03-30T22:25:19.006258Z"
+model = "claude-sonnet-4-6"
+
+["cli::init::may_prompt_the_user_interactively_for_generator_provider_and_mod"]
+clause_hash = "63657c3803a3a8e7"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["runner::result_collection::must_stop_the_otherwise_chain_at_the_first_passing_fallback"]
+clause_hash = "82723d02ef75a932"
+source_hash = ""
+generated_at = "2026-03-30T21:43:53.687203Z"
+model = "claude-sonnet-4-6"
+
+["analysis::survey::must_read_all_existing_spec_files_to_know_what_is_already_covered"]
+clause_hash = "49457b2319b8f62e"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["parser::clause_ir::must_include_a_condition_field_populated_from_the_parent_given_bl"]
+clause_hash = "4aea0d31d9b82b8a"
+source_hash = ""
+generated_at = "2026-03-30T20:31:33.445117Z"
+model = "claude-sonnet-4-6"
+
+["parser::temporal_obligations::must_always_invariant::must_represent_invariants_distinctly_in_the_clause_ir_they_genera"]
+clause_hash = "f7c3c20e6f897cab"
+source_hash = ""
+generated_at = "2026-03-30T20:26:38.049085Z"
+model = "claude-sonnet-4-6"
+
+["ought::what_ought_does::must_not_require_users_to_write_any_test_code_by_hand"]
+clause_hash = "fb24c717b145e939"
+source_hash = ""
+generated_at = "2026-03-30T22:26:24.002704Z"
+model = "claude-sonnet-4-6"
+
+["ought::language_agnostic::must_be_agnostic_to_the_programming_language_of_the_project_under"]
+clause_hash = "7f3c039ce2eb18ec"
+source_hash = ""
+generated_at = "2026-03-30T22:34:19.018421Z"
+model = "claude-sonnet-4-6"
+
+["reporter::json_output::must_support_json_flag_that_outputs_structured_results_as_json_to"]
+clause_hash = "3b8b24702394216c"
+source_hash = ""
+generated_at = "2026-03-30T21:25:08.348097Z"
+model = "claude-sonnet-4-6"
+
+["parser::contrary_to_duty_chains_otherwise::must_not_allow_otherwise_at_the_top_level_it_must_have_a_parent_oblig"]
+clause_hash = "e21bc02a7c8c3b43"
+source_hash = ""
+generated_at = "2026-03-30T20:24:50.896860Z"
+model = "claude-sonnet-4-6"
+
+["generator::context_assembly::should_rank_discovered_files_by_relevance_to_the_clause_text"]
+clause_hash = "b3c04e4804870fbb"
+source_hash = ""
+generated_at = "2026-03-30T19:51:58.072270Z"
+model = "claude-sonnet-4-6"
+
+["parser::contrary_to_duty_chains_otherwise::must_parse_otherwise_as_a_clause_nested_under_a_parent_obligation"]
+clause_hash = "175705e94b1479cc"
+source_hash = ""
+generated_at = "2026-03-30T20:24:50.895997Z"
+model = "claude-sonnet-4-6"
+
+["parser::spec_file_structure::must_recognize_files_with_the_ought_md_extension"]
+clause_hash = "b607af290afb1300"
+source_hash = ""
+generated_at = "2026-03-30T20:15:15.595761Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::server_lifecycle::should_support_ought_mcp_install_to_auto_register_with_mcp_compatib"]
+clause_hash = "58f33be59d464e7c"
+source_hash = ""
+generated_at = "2026-03-30T21:58:00.487105Z"
+model = "claude-sonnet-4-6"
+
+["generator::wont_clause_handling::must_generate_two_kinds_of_tests_for_wont_clauses_based_on_the_cl"]
+clause_hash = "544df8975233e23d"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["analysis::blame::should_identify_the_specific_commit_and_file_change_most_likely_res"]
+clause_hash = "fae1c898dd04406e"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["runner::language_runners::should_ship_with_a_javascript_typescript_runner"]
+clause_hash = "8a4951a8072db059"
+source_hash = ""
+generated_at = "2026-03-30T21:46:24.860646Z"
+model = "claude-sonnet-4-6"
+
+["generator::test_generation::must_generate_one_test_function_per_clause"]
+clause_hash = "1434c809860719ed"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["reporter::failure_details::must_show_the_assertion_error_or_failure_message_for_each_failed"]
+clause_hash = "309e027f972b4078"
+source_hash = ""
+generated_at = "2026-03-30T21:15:07.573198Z"
+model = "claude-sonnet-4-6"
+
+["generator::temporal_obligation_generation::must_always_invariant_tests::must_instruct_the_llm_to_generate_property_based"]
+clause_hash = "de4dcb4132579b01"
+source_hash = ""
+generated_at = "2026-03-30T19:40:11.126968Z"
+model = "claude-sonnet-4-6"
+
+["generator::provider_abstraction::should_support_provider_specific_configuration_in_ought_toml_under"]
+clause_hash = "6035a07083e8edf7"
+source_hash = ""
+generated_at = "2026-03-30T19:55:24.977015Z"
+model = "claude-sonnet-4-6"
+
+["cli::generate::should_support_targeting_a_specific_spec_file_ought_generate_ought"]
+clause_hash = "88938610123ee8b6"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["parser::clause_ir::must_include_an_otherwise_field_containing_the_ordered_list_of_fa"]
+clause_hash = "d460d8ad157afc43"
+source_hash = ""
+generated_at = "2026-03-30T20:31:33.445266Z"
+model = "claude-sonnet-4-6"
+
+["parser::context_metadata::must_parse_source_as_a_list_of_file_paths_or_directories_source_c"]
+clause_hash = "b80e1d5d18f87e5f"
+source_hash = ""
+generated_at = "2026-03-30T20:41:22.197288Z"
+model = "claude-sonnet-4-6"
+
+["analysis::blame::should_name_the_author_of_the_likely_responsible_commit"]
+clause_hash = "d30aa3970cc41e64"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["cli::inspect::should_syntax_highlight_the_output_when_stdout_is_a_terminal"]
+clause_hash = "c44d04dade7d81c4"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["parser::keywords::must_parse_keywords_case_insensitively_but_require_them_to_appear"]
+clause_hash = "bfacc150cd78324a"
+source_hash = ""
+generated_at = "2026-03-30T20:17:50.429256Z"
+model = "claude-sonnet-4-6"
+
+["runner::result_collection::must_run_the_parent_test_first"]
+clause_hash = "32cc10806686792b"
+source_hash = ""
+generated_at = "2026-03-30T21:43:53.686947Z"
+model = "claude-sonnet-4-6"
+
+["runner::result_collection::must_run_otherwise_tests_only_if_the_parent_test_fails"]
+clause_hash = "a80cf2fc55b43aba"
+source_hash = ""
+generated_at = "2026-03-30T21:43:53.687073Z"
+model = "claude-sonnet-4-6"
+
+["analysis::survey::must_read_source_files_from_the_given_path_or_project_source_root"]
+clause_hash = "c3880ab3110ae170"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["parser::contrary_to_duty_chains_otherwise::must_preserve_the_ordering_of_otherwise_clauses_they_form_a_degra"]
+clause_hash = "1c546aad3ef5589b"
+source_hash = ""
+generated_at = "2026-03-30T20:24:50.896132Z"
+model = "claude-sonnet-4-6"
+
+["analysis::survey::should_offer_to_append_suggested_clauses_to_the_relevant_spec_file"]
+clause_hash = "94a4e9645e12f77e"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["analysis::audit::may_assign_a_confidence_score_to_each_finding"]
+clause_hash = "7c84e03c3eb423ad"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["reporter::progress_during_generation::may_show_estimated_time_remaining_based_on_per_clause_generation"]
+clause_hash = "ca1fe8b7e005fe37"
+source_hash = ""
+generated_at = "2026-03-30T21:31:13.398125Z"
+model = "claude-sonnet-4-6"
+
+["reporter::test_quality_grading::must_assign_a_letter_grade_a_f_to_each_generated_test_based_on_ho"]
+clause_hash = "ce0b51f379ae8e22"
+source_hash = ""
+generated_at = "2026-03-30T21:19:52.824280Z"
+model = "claude-sonnet-4-6"
+
+["runner::error_handling::should_detect_and_report_when_no_tests_were_generated_for_a_spec_no"]
+clause_hash = "bd605cb488f97c03"
+source_hash = ""
+generated_at = "2026-03-30T21:51:28.158750Z"
+model = "claude-sonnet-4-6"
+
+["parser::keywords::must_recognize_rfc_2119_keywords_must_must_not_should_should_not"]
+clause_hash = "ba5a2d50263629c8"
+source_hash = ""
+generated_at = "2026-03-30T20:17:50.428830Z"
+model = "claude-sonnet-4-6"
+
+["runner::result_collection::must_classify_each_clause_result_as_passed_failed_errored_test_it"]
+clause_hash = "b80daecb1aba65bc"
+source_hash = ""
+generated_at = "2026-03-30T21:43:53.686673Z"
+model = "claude-sonnet-4-6"
+
+["analysis::bisect::must_always_restore_the_working_tree_to_its_original_state_after_complet"]
+clause_hash = "d62eb183d47df6b8"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["analysis::blame::must_output_a_narrative_explanation_of_what_broke_and_why"]
+clause_hash = "291b3727b36ae653"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["parser::spec_file_structure::must_treat_h1_as_the_spec_name"]
+clause_hash = "6bb34d8a16b17995"
+source_hash = ""
+generated_at = "2026-03-30T20:15:15.595993Z"
+model = "claude-sonnet-4-6"
+
+["analysis::audit::must_categorize_findings_as_contradiction_gap_ambiguity_or_redund"]
+clause_hash = "b6fca9029a9cb7e4"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["generator::temporal_obligation_generation::must_by_deadline_tests::must_instruct_the_llm_to_measure_wall_clock_time_arou"]
+clause_hash = "ab43eb89244d4ac5"
+source_hash = ""
+generated_at = "2026-03-30T19:47:01.125118Z"
+model = "claude-sonnet-4-6"
+
+["cli::generate::must_update_the_manifest_toml_with_new_hashes_after_generation"]
+clause_hash = "a3893b28ca9eb72e"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["generator::context_assembly::must_include_the_free_text_context_block"]
+clause_hash = "e871a567e72280a3"
+source_hash = ""
+generated_at = "2026-03-30T19:51:58.071965Z"
+model = "claude-sonnet-4-6"
+
+["cli::inspect::must_accept_clause_identifiers_in_the_form_file_section_clause_e"]
+clause_hash = "bef6ab8eabb8d16a"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["generator::temporal_obligation_generation::must_always_invariant_tests::should_generate_tests_that_exercise_boundary_con"]
+clause_hash = "e9ff953d194f375c"
+source_hash = ""
+generated_at = "2026-03-30T19:40:11.127188Z"
+model = "claude-sonnet-4-6"
+
+["parser::contrary_to_duty_chains_otherwise::must_not_allow_otherwise_under_may_wont_or_given_only_under_obligatio"]
+clause_hash = "b808e985d7432492"
+source_hash = ""
+generated_at = "2026-03-30T20:24:50.896998Z"
+model = "claude-sonnet-4-6"
+
+["generator::given_block_generation::must_compose_the_conditions_the_inner_test_setup_includes_both_ou"]
+clause_hash = "db8eaedaf64846d9"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["reporter::test_quality_grading::must_not_run_grading_automatically_without_grade"]
+clause_hash = "be2453165943dbb3"
+source_hash = ""
+generated_at = "2026-03-30T21:19:52.824741Z"
+model = "claude-sonnet-4-6"
+
+["reporter::junit_xml_output::must_map_spec_files_to_testsuite_elements_and_clauses_to_testcase"]
+clause_hash = "3f130ed5c1227163"
+source_hash = ""
+generated_at = "2026-03-30T21:27:22.420241Z"
+model = "claude-sonnet-4-6"
+
+["runner::result_collection::must_capture_test_execution_duration_per_clause_required_for_must"]
+clause_hash = "3d8d0d4b7d731aff"
+source_hash = ""
+generated_at = "2026-03-30T21:43:53.686811Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::error_handling::must_always_remain_responsive_to_new_requests_while_processing_long_runn"]
+clause_hash = "bfe2be07763cd612"
+source_hash = ""
+generated_at = "2026-03-30T22:25:19.006444Z"
+model = "claude-sonnet-4-6"
+
+["runner::execution::must_support_running_tests_for_a_single_spec_file_filtering_gener"]
+clause_hash = "9f11a78068046ce4"
+source_hash = ""
+generated_at = "2026-03-30T21:41:23.827117Z"
+model = "claude-sonnet-4-6"
+
+["parser::contrary_to_duty_chains_otherwise::must_support_otherwise_under_any_obligation_keyword_must_should_m"]
+clause_hash = "6934ada78726854e"
+source_hash = ""
+generated_at = "2026-03-30T20:24:50.896512Z"
+model = "claude-sonnet-4-6"
+
+["reporter::temporal_result_display::should_show_a_timing_bar_or_ratio_for_must_by_clauses_47ms_200ms"]
+clause_hash = "2884a1179159d2a7"
+source_hash = ""
+generated_at = "2026-03-30T21:10:38.812575Z"
+model = "claude-sonnet-4-6"
+
+["reporter::progress_during_generation::should_stream_llm_token_output_when_in_verbose_mode"]
+clause_hash = "4d5e568e67c1159a"
+source_hash = ""
+generated_at = "2026-03-30T21:31:13.397979Z"
+model = "claude-sonnet-4-6"
+
+["ought::spec_format::must_use_standard_markdown_commonmark_so_specs_render_in_github_e"]
+clause_hash = "55689bdb1890c771"
+source_hash = ""
+generated_at = "2026-03-30T22:29:02.819469Z"
+model = "claude-sonnet-4-6"
+
+["runner::execution::must_invoke_the_configured_test_command_from_ought_toml_for_each"]
+clause_hash = "afb19523298e5671"
+source_hash = ""
+generated_at = "2026-03-30T21:41:23.826679Z"
+model = "claude-sonnet-4-6"
+
+["analysis::bisect::should_cache_test_results_per_commit_to_avoid_redundant_runs"]
+clause_hash = "5038fd88a1f75242"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["reporter::junit_xml_output::must_support_junit_path_flag_that_writes_results_in_junit_xml_for"]
+clause_hash = "0f4f9c33c53dfb8f"
+source_hash = ""
+generated_at = "2026-03-30T21:27:22.420077Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::server_lifecycle::must_start_the_mcp_server_via_ought_mcp_serve"]
+clause_hash = "2aceb4d4e7d49548"
+source_hash = ""
+generated_at = "2026-03-30T21:58:00.486695Z"
+model = "claude-sonnet-4-6"
+
+["parser::clause_ir::should_include_any_code_blocks_immediately_following_a_clause_as_hi"]
+clause_hash = "2ed6f5325f926640"
+source_hash = ""
+generated_at = "2026-03-30T20:31:33.445539Z"
+model = "claude-sonnet-4-6"
+
+["reporter::terminal_output::must_show_must_coverage_percentage_in_the_summary_passed_must_cla"]
+clause_hash = "bbcbed9ca82678e0"
+source_hash = ""
+generated_at = "2026-03-30T20:53:26.511299Z"
+model = "claude-sonnet-4-6"
+
+["ought::language_agnostic::should_support_custom_runners_via_configuration"]
+clause_hash = "fefcdac0053b505e"
+source_hash = ""
+generated_at = "2026-03-30T22:34:19.019144Z"
+model = "claude-sonnet-4-6"
+
+["runner::execution::must_capture_stdout_stderr_and_exit_code_from_the_test_harness"]
+clause_hash = "e14e5c6cafaf753d"
+source_hash = ""
+generated_at = "2026-03-30T21:41:23.826945Z"
+model = "claude-sonnet-4-6"
+
+["runner::execution::must_not_trigger_generation_the_runner_only_executes_existing_generat"]
+clause_hash = "e109cfde0ef7510c"
+source_hash = ""
+generated_at = "2026-03-30T21:41:23.827447Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::tools::must_expose_ought_check_validate_spec_syntax"]
+clause_hash = "e60387b82bcdffe3"
+source_hash = ""
+generated_at = "2026-03-30T22:06:31.953730Z"
+model = "claude-sonnet-4-6"
+
+["ought::what_ought_does::must_execute_generated_tests_and_report_pass_fail_results_mapped"]
+clause_hash = "241dbcdd7af06d9d"
+source_hash = ""
+generated_at = "2026-03-30T22:26:24.002489Z"
+model = "claude-sonnet-4-6"
+
+["cli::watch::should_debounce_rapid_file_changes_at_least_500ms"]
+clause_hash = "344c81fea9390ead"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["runner::result_collection::must_mark_remaining_lower_priority_otherwise_clauses_as_skipped_n"]
+clause_hash = "edef3b50cdb23dd4"
+source_hash = ""
+generated_at = "2026-03-30T21:43:53.687352Z"
+model = "claude-sonnet-4-6"
+
+["parser::temporal_obligations::must_always_invariant::must_assign_the_invariant_temporal_qualifier_to_the_clause"]
+clause_hash = "72cfc31c27af54ec"
+source_hash = ""
+generated_at = "2026-03-30T20:26:38.048983Z"
+model = "claude-sonnet-4-6"
+
+["runner::execution::must_map_individual_test_pass_fail_results_back_to_clause_identif"]
+clause_hash = "d8f524d6d80b4275"
+source_hash = ""
+generated_at = "2026-03-30T21:41:23.827034Z"
+model = "claude-sonnet-4-6"
+
+["parser::contrary_to_duty_chains_otherwise::must_link_each_otherwise_clause_to_its_parent_obligation_in_the_c"]
+clause_hash = "53cf1f4f6df17cd5"
+source_hash = ""
+generated_at = "2026-03-30T20:24:50.896249Z"
+model = "claude-sonnet-4-6"
+
+["parser::clause_ir::must_produce_a_clause_ir_struct_containing_keyword_severity_claus"]
+clause_hash = "a1002d1a3dfc362c"
+source_hash = ""
+generated_at = "2026-03-30T20:31:33.444641Z"
+model = "claude-sonnet-4-6"
+
+["parser::temporal_obligations::must_by_deadline::must_parse_duration_suffixes_ms_milliseconds_s_seconds_m_minutes"]
+clause_hash = "262857bbf500f8ed"
+source_hash = ""
+generated_at = "2026-03-30T20:27:32.263034Z"
+model = "claude-sonnet-4-6"
+
+["ought::spec_format::must_support_cross_file_references_via_standard_markdown_links_so"]
+clause_hash = "6bc1df455f299410"
+source_hash = ""
+generated_at = "2026-03-30T22:29:02.820356Z"
+model = "claude-sonnet-4-6"
+
+["cli::check::must_report_parse_errors_with_file_line_number_and_a_human_readab"]
+clause_hash = "3386e4a4c2558d8a"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["generator::test_generation::must_generate_tests_appropriate_for_the_target_language_specified"]
+clause_hash = "5fe8f045d4d51bd9"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["generator::given_block_generation::should_generate_a_shared_setup_function_or_fixture_for_clauses_unde"]
+clause_hash = "46985cc21f998caa"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["parser::clause_ir::must_generate_a_content_hash_for_each_clause_based_on_keyword_tex"]
+clause_hash = "e505659a81736c76"
+source_hash = ""
+generated_at = "2026-03-30T20:31:33.444971Z"
+model = "claude-sonnet-4-6"
+
+["reporter::terminal_output::wont_use_animated_spinners_or_progress_bars_in_non_tty_mode_pipe"]
+clause_hash = "a8232445d5601320"
+source_hash = ""
+generated_at = "2026-03-30T20:53:26.511741Z"
+model = "claude-sonnet-4-6"
+
+["reporter::failure_narratives_llm_powered::must_display_the_diagnosis_in_a_distinct_visual_panel_below_the_f"]
+clause_hash = "dbd90e05f3b12970"
+source_hash = ""
+generated_at = "2026-03-30T21:16:43.457027Z"
+model = "claude-sonnet-4-6"
+
+["runner::result_collection::must_collect_per_test_results_and_map_each_back_to_its_clause_ide"]
+clause_hash = "d41c6fbca33f8c1b"
+source_hash = ""
+generated_at = "2026-03-30T21:43:53.686251Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::error_handling::should_include_actionable_error_details_e_g_claude_cli_not_found_in"]
+clause_hash = "b910b27d5aaed402"
+source_hash = ""
+generated_at = "2026-03-30T22:25:19.006626Z"
+model = "claude-sonnet-4-6"
+
+["parser::context_metadata::must_parse_context_as_free_text_context_for_the_llm"]
+clause_hash = "ee8f9143a1d1341e"
+source_hash = ""
+generated_at = "2026-03-30T20:41:22.197584Z"
+model = "claude-sonnet-4-6"
+
+["reporter::junit_xml_output::must_include_failure_messages_and_clause_identifiers_in_failure_e"]
+clause_hash = "204fccc83712e0bb"
+source_hash = ""
+generated_at = "2026-03-30T21:27:22.420332Z"
+model = "claude-sonnet-4-6"
+
+["analysis::audit::must_use_the_llm_to_identify_contradictions_between_clauses_acros"]
+clause_hash = "19d67f720faa6942"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["analysis::blame::must_not_require_a_running_llm_if_the_clause_has_never_passed_just_re"]
+clause_hash = "1dad0778c4deefa8"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["generator::given_block_generation::must_generate_a_separate_test_function_for_each_clause_within_the"]
+clause_hash = "ba6170d68cf910c3"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["runner::error_handling::must_not_mask_harness_stderr_pass_it_through_for_debugging"]
+clause_hash = "0f543c27b911967a"
+source_hash = ""
+generated_at = "2026-03-30T21:51:28.158607Z"
+model = "claude-sonnet-4-6"
+
+["analysis::bisect::must_restore_the_working_tree_to_the_original_branch"]
+clause_hash = "6da42797802488bc"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["analysis::blame::must_retrieve_the_clause_its_generated_test_and_the_failure_outpu"]
+clause_hash = "b3cb024b019854e7"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["ought::spec_format::must_support_otherwise_chains_for_contrary_to_duty_fallbacks_grac"]
+clause_hash = "f3b79227f2cd2b04"
+source_hash = ""
+generated_at = "2026-03-30T22:29:02.820042Z"
+model = "claude-sonnet-4-6"
+
+["runner::result_collection::must_capture_the_measured_duration_for_reporting"]
+clause_hash = "d371fa0d127d7c23"
+source_hash = ""
+generated_at = "2026-03-30T21:43:53.687614Z"
+model = "claude-sonnet-4-6"
+
+["analysis::bisect::must_show_the_commit_message_author_date_and_diff_summary_for_the"]
+clause_hash = "cae8b8e9d106b0ee"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["reporter::failure_narratives_llm_powered::must_support_a_diagnose_flag_that_enables_llm_powered_failure_dia"]
+clause_hash = "7ecc3971c1a32158"
+source_hash = ""
+generated_at = "2026-03-30T21:16:43.456814Z"
+model = "claude-sonnet-4-6"
+
+["generator::provider_abstraction::should_detect_when_the_required_cli_tool_is_not_installed_and_repor"]
+clause_hash = "b023b8533f130607"
+source_hash = ""
+generated_at = "2026-03-30T19:55:24.977152Z"
+model = "claude-sonnet-4-6"
+
+["cli::run::should_support_fail_on_should_flag_to_also_fail_on_should_clause_fa"]
+clause_hash = "bed95b3cbf2fd391"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["parser::cross_file_references::must_parse_anchor_links_e_g_pricing_ought_md_discount_rules_as_re"]
+clause_hash = "b8e8cef49e03344d"
+source_hash = ""
+generated_at = "2026-03-30T20:38:24.962034Z"
+model = "claude-sonnet-4-6"
+
+["ought::llm_agnostic::must_be_agnostic_to_which_llm_provider_generates_the_test_code"]
+clause_hash = "40283574e2319039"
+source_hash = ""
+generated_at = "2026-03-30T22:37:35.080855Z"
+model = "claude-sonnet-4-6"
+
+["runner::language_runners::may_ship_with_a_go_runner"]
+clause_hash = "3f6dd684e6a93f55"
+source_hash = ""
+generated_at = "2026-03-30T21:46:24.860780Z"
+model = "claude-sonnet-4-6"
+
+["parser::temporal_obligations::must_by_deadline::should_warn_if_the_duration_seems_unreasonably_small_1ms_or_large_1"]
+clause_hash = "556f9ba8136dd52f"
+source_hash = ""
+generated_at = "2026-03-30T20:27:32.263505Z"
+model = "claude-sonnet-4-6"
+
+["generator::given_block_generation::must_use_the_given_condition_text_to_generate_test_setup_precondi"]
+clause_hash = "7162e3ecc4389930"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["parser::contrary_to_duty_chains_otherwise::must_support_multiple_otherwise_clauses_under_a_single_parent_ord"]
+clause_hash = "ceaf65f2d0fb2256"
+source_hash = ""
+generated_at = "2026-03-30T20:24:50.896366Z"
+model = "claude-sonnet-4-6"
+
+["cli::global_flags::must_support_color_auto_always_never_for_terminal_color_control"]
+clause_hash = "df51aee2f1e85f18"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["generator::test_generation::should_use_the_target_language_s_idiomatic_test_patterns_e_g_test_f"]
+clause_hash = "e2118e4083136274"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["generator::temporal_obligation_generation::must_by_deadline_tests::should_account_for_ci_environment_variability_by_supp"]
+clause_hash = "d1f324ec2e5b98ff"
+source_hash = ""
+generated_at = "2026-03-30T19:47:01.125342Z"
+model = "claude-sonnet-4-6"
+
+["generator::test_generation::must_generate_tests_that_are_self_contained_no_cross_test_depende"]
+clause_hash = "049d46d7f115028a"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["parser::cross_file_references::must_build_a_dependency_graph_from_cross_file_references"]
+clause_hash = "c35ebe86bf4e3b37"
+source_hash = ""
+generated_at = "2026-03-30T20:38:24.962146Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::tools::must_expose_ought_generate_regenerate_stale_or_specified_clauses"]
+clause_hash = "ac23fd082c435abd"
+source_hash = ""
+generated_at = "2026-03-30T22:06:31.953593Z"
+model = "claude-sonnet-4-6"
+
+["analysis::bisect::must_perform_a_git_bisect_style_binary_search_checkout_commit_gen"]
+clause_hash = "2d642406966270f4"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::resources::must_expose_ought_specs_list_of_all_spec_files_with_their_clause"]
+clause_hash = "5d328a96691eb11f"
+source_hash = ""
+generated_at = "2026-03-30T22:10:39.816386Z"
+model = "claude-sonnet-4-6"
+
+["parser::spec_file_structure::must_not_fail_on_standard_markdown_that_doesn_t_contain_ought_keyword"]
+clause_hash = "2429bbee87586a46"
+source_hash = ""
+generated_at = "2026-03-30T20:15:15.596860Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::resources::should_expose_ought_manifest_current_generation_manifest_hashes_tim"]
+clause_hash = "43abcc5741092d98"
+source_hash = ""
+generated_at = "2026-03-30T22:10:39.816999Z"
+model = "claude-sonnet-4-6"
+
+["generator::manifest_and_hashing::must_compute_a_clause_hash_from_the_keyword_clause_text_context_m"]
+clause_hash = "47e6b975ee233d33"
+source_hash = ""
+generated_at = "2026-03-30T20:05:22.025535Z"
+model = "claude-sonnet-4-6"
+
+["cli::run::must_accept_a_glob_pattern_to_run_a_subset_ought_run_ought_auth_o"]
+clause_hash = "601d813534017a03"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["reporter::junit_xml_output::should_include_the_clause_keyword_and_severity_as_properties_on_eac"]
+clause_hash = "4f4208ae5e9479a2"
+source_hash = ""
+generated_at = "2026-03-30T21:27:22.420412Z"
+model = "claude-sonnet-4-6"
+
+["cli::run::should_print_a_summary_at_the_end_showing_pass_fail_counts_by_sever"]
+clause_hash = "8863513ba7c59f1f"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["ought::language_agnostic::must_ship_with_runners_for_at_least_rust_and_one_other_mainstream"]
+clause_hash = "952f80a82ba103c2"
+source_hash = ""
+generated_at = "2026-03-30T22:34:19.018929Z"
+model = "claude-sonnet-4-6"
+
+["reporter::failure_narratives_llm_powered::must_not_run_diagnosis_automatically_without_diagnose_it_costs_api_ca"]
+clause_hash = "73a99a8d369305fb"
+source_hash = ""
+generated_at = "2026-03-30T21:16:43.457192Z"
+model = "claude-sonnet-4-6"
+
+["generator::context_assembly::must_read_and_include_schema_files_referenced_by_schema_metadata"]
+clause_hash = "a071a66efdb12f32"
+source_hash = ""
+generated_at = "2026-03-30T19:51:58.071872Z"
+model = "claude-sonnet-4-6"
+
+["analysis::audit::should_read_relevant_source_code_to_ground_the_analysis_in_implemen"]
+clause_hash = "61ae1dcd3593f395"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["parser::conditional_blocks_given::must_require_nested_clauses_to_be_indented_under_the_given_bullet"]
+clause_hash = "d50d243d47acab5c"
+source_hash = ""
+generated_at = "2026-03-30T20:20:33.266831Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::error_handling::must_not_crash_the_server_on_a_single_tool_invocation_failure"]
+clause_hash = "43decf33bc47e97e"
+source_hash = ""
+generated_at = "2026-03-30T22:25:19.006055Z"
+model = "claude-sonnet-4-6"
+
+["runner::execution::must_pass_the_generated_test_files_directory_to_the_test_harness"]
+clause_hash = "96f44a853308282d"
+source_hash = ""
+generated_at = "2026-03-30T21:41:23.826822Z"
+model = "claude-sonnet-4-6"
+
+["runner::execution::must_by_complete_a_full_test_suite_execution_configurable_via_ought"]
+clause_hash = "4ec11c5be85e15d2"
+source_hash = ""
+generated_at = "2026-03-30T21:41:23.827289Z"
+model = "claude-sonnet-4-6"
+
+["ought::spec_format::must_support_must_by_for_deadline_obligations_operations_that_mus"]
+clause_hash = "28019ecf8750f4be"
+source_hash = ""
+generated_at = "2026-03-30T22:29:02.820250Z"
+model = "claude-sonnet-4-6"
+
+["parser::cross_file_references::must_parse_requires_metadata_as_a_list_of_relative_paths_to_other"]
+clause_hash = "b80b943fa2baf7d4"
+source_hash = ""
+generated_at = "2026-03-30T20:38:24.961796Z"
+model = "claude-sonnet-4-6"
+
+["cli::global_flags::must_always_write_diagnostic_messages_to_stderr_never_stdout_stdout_is_r"]
+clause_hash = "d3a81a7f86931bf0"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::resources::must_expose_ought_results_latest_results_from_the_most_recent_run"]
+clause_hash = "af691f22064fc972"
+source_hash = ""
+generated_at = "2026-03-30T22:10:39.816681Z"
+model = "claude-sonnet-4-6"
+
+["runner::language_runners::should_ship_with_a_python_runner"]
+clause_hash = "5d69924c626401a6"
+source_hash = ""
+generated_at = "2026-03-30T21:46:24.860509Z"
+model = "claude-sonnet-4-6"
+
+["cli::watch::must_watch_ought_md_files_and_source_files_for_changes"]
+clause_hash = "41205166b812ca2a"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["runner::error_handling::must_report_when_a_generated_test_file_is_missing_referenced_in_m"]
+clause_hash = "33901478b47a3ed4"
+source_hash = ""
+generated_at = "2026-03-30T21:51:28.158468Z"
+model = "claude-sonnet-4-6"
+
+["reporter::test_quality_grading::must_support_a_grade_flag_that_enables_llm_powered_test_quality_a"]
+clause_hash = "e7b1e7613347c13b"
+source_hash = ""
+generated_at = "2026-03-30T21:19:52.824133Z"
+model = "claude-sonnet-4-6"
+
+["ought::reporting::must_produce_visually_attractive_terminal_output_that_makes_specs"]
+clause_hash = "6dd68d583f6d72c0"
+source_hash = ""
+generated_at = "2026-03-30T22:44:22.443172Z"
+model = "claude-sonnet-4-6"
+
+["reporter::failure_narratives_llm_powered::should_diagnose_all_failures_in_a_single_batch_llm_call_when_possib"]
+clause_hash = "2d07479f583a637c"
+source_hash = ""
+generated_at = "2026-03-30T21:16:43.457284Z"
+model = "claude-sonnet-4-6"
+
+["reporter::given_block_display::must_indent_clauses_under_their_given_condition_to_show_the_relat"]
+clause_hash = "dd66d13f746ff520"
+source_hash = ""
+generated_at = "2026-03-30T20:56:56.837147Z"
+model = "claude-sonnet-4-6"
+
+["generator::manifest_and_hashing::must_write_both_hashes_to_ought_ought_gen_manifest_toml_after_gen"]
+clause_hash = "e39cdc827637bf0d"
+source_hash = ""
+generated_at = "2026-03-30T20:05:22.025857Z"
+model = "claude-sonnet-4-6"
+
+["cli::diff::should_group_diffs_by_spec_file"]
+clause_hash = "26312f2adf6cc623"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["analysis::blame::must_use_the_llm_to_correlate_the_source_diff_with_the_failure_an"]
+clause_hash = "97f1a367cd0a8077"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["cli::run::must_exit_with_code_0_if_any_otherwise_clause_in_the_chain_passes"]
+clause_hash = "7ac5e9cd5c46b5da"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["cli::check::must_validate_the_syntax_of_all_spec_files_without_generating_or"]
+clause_hash = "67d146632a52c8f1"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["analysis::audit::must_detect_must_by_deadline_conflicts_e_g_an_operation_with_a_10"]
+clause_hash = "658e8adb4a53868b"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["cli::watch::must_re_run_affected_specs_when_a_change_is_detected"]
+clause_hash = "5af0f16b7bda576e"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["generator::otherwise_chain_generation::must_preserve_the_chain_order_each_otherwise_test_assumes_all_pre"]
+clause_hash = "80556ee3293e8f58"
+source_hash = ""
+generated_at = "2026-03-30T19:35:04.016256Z"
+model = "claude-sonnet-4-6"
+
+["generator::temporal_obligation_generation::must_by_deadline_tests::should_generate_tests_that_run_the_operation_multiple"]
+clause_hash = "0a4a20d68753b933"
+source_hash = ""
+generated_at = "2026-03-30T19:47:01.125235Z"
+model = "claude-sonnet-4-6"
+
+["parser::keywords::must_recognize_temporal_compound_keywords_must_always_must_by"]
+clause_hash = "88a3c67903633e40"
+source_hash = ""
+generated_at = "2026-03-30T20:17:50.429178Z"
+model = "claude-sonnet-4-6"
+
+["generator::provider_abstraction::may_support_custom_providers_by_specifying_an_arbitrary_executab"]
+clause_hash = "0a3f9e5340905fc6"
+source_hash = ""
+generated_at = "2026-03-30T19:55:24.977288Z"
+model = "claude-sonnet-4-6"
+
+["runner::language_runners::should_support_custom_runners_via_the_runner_name_config_in_ought_t"]
+clause_hash = "89d0f62e333df42a"
+source_hash = ""
+generated_at = "2026-03-30T21:46:24.860942Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::tools::should_expose_ought_bisect_find_the_breaking_commit_for_a_clause"]
+clause_hash = "69ea386feea58eb6"
+source_hash = ""
+generated_at = "2026-03-30T22:06:31.954616Z"
+model = "claude-sonnet-4-6"
+
+["analysis::bisect::must_report_the_first_commit_where_the_clause_fails"]
+clause_hash = "97e43692737172b4"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["reporter::failure_details::must_show_the_file_and_line_number_of_the_failure_in_the_generate"]
+clause_hash = "7699f1eff55c61fb"
+source_hash = ""
+generated_at = "2026-03-30T21:15:07.573289Z"
+model = "claude-sonnet-4-6"
+
+["parser::conditional_blocks_given::must_parse_given_as_a_block_level_keyword_that_contains_nested_cl"]
+clause_hash = "2ed2621917f9476c"
+source_hash = ""
+generated_at = "2026-03-30T20:20:33.266737Z"
+model = "claude-sonnet-4-6"
+
+["cli::inspect::must_print_the_generated_test_code_for_a_given_clause_identifier"]
+clause_hash = "9ade43c1e40262d3"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["generator::temporal_obligation_generation::must_by_deadline_tests::must_include_the_deadline_duration_from_the_clause_in"]
+clause_hash = "99d61ef1100732d8"
+source_hash = ""
+generated_at = "2026-03-30T19:47:01.124992Z"
+model = "claude-sonnet-4-6"
+
+["cli::generate::must_support_force_flag_to_regenerate_all_clauses_regardless_of_h"]
+clause_hash = "533c51d45a0841d1"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["parser::conditional_blocks_given::must_support_given_blocks_containing_any_keyword_must_should_may"]
+clause_hash = "67e46bcc2eb827e1"
+source_hash = ""
+generated_at = "2026-03-30T20:20:33.267051Z"
+model = "claude-sonnet-4-6"
+
+["parser::clause_ir::should_include_surrounding_prose_markdown_in_the_clause_s_context_f"]
+clause_hash = "4dc1f0e07072a47e"
+source_hash = ""
+generated_at = "2026-03-30T20:31:33.445677Z"
+model = "claude-sonnet-4-6"
+
+["parser::error_handling::should_warn_on_likely_typos_e_g_muts_close_to_a_known_keyword"]
+clause_hash = "c50cd7d7c254649e"
+source_hash = ""
+generated_at = "2026-03-30T20:48:16.612042Z"
+model = "claude-sonnet-4-6"
+
+["ought::spec_format::must_support_given_blocks_for_conditional_obligations_clauses_tha"]
+clause_hash = "b3ea579a98dde6ef"
+source_hash = ""
+generated_at = "2026-03-30T22:29:02.819916Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::error_handling::should_send_progress_notifications_to_the_client"]
+clause_hash = "6731e5891fafedd4"
+source_hash = ""
+generated_at = "2026-03-30T22:25:19.006804Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::server_lifecycle::must_support_sse_transport_via_transport_sse_port_port_for_remote"]
+clause_hash = "02754b673ecac6b6"
+source_hash = ""
+generated_at = "2026-03-30T21:58:00.486849Z"
+model = "claude-sonnet-4-6"
+
+["generator::manifest_and_hashing::must_skip_generation_for_clauses_whose_hashes_match_the_manifest"]
+clause_hash = "fdfb7f7034d4ea96"
+source_hash = ""
+generated_at = "2026-03-30T20:05:22.026469Z"
+model = "claude-sonnet-4-6"
+
+["parser::clause_ir::must_include_a_temporal_field_for_must_always_qualifier_invariant"]
+clause_hash = "399d3536627179c2"
+source_hash = ""
+generated_at = "2026-03-30T20:31:33.445398Z"
+model = "claude-sonnet-4-6"
+
+["parser::spec_file_structure::must_treat_bullet_points_keyword_as_individual_clauses"]
+clause_hash = "e868921e7fe1da1f"
+source_hash = ""
+generated_at = "2026-03-30T20:15:15.596517Z"
+model = "claude-sonnet-4-6"
+
+["generator::context_assembly::must_respect_the_max_files_limit_in_ought_toml_to_avoid_exceeding"]
+clause_hash = "25c519da05992ba7"
+source_hash = ""
+generated_at = "2026-03-30T19:51:58.072121Z"
+model = "claude-sonnet-4-6"
+
+["reporter::junit_xml_output::may_be_combined_with_other_output_modes_e_g_human_readable_to_te"]
+clause_hash = "c853c97c97b43250"
+source_hash = ""
+generated_at = "2026-03-30T21:27:22.420513Z"
+model = "claude-sonnet-4-6"
+
+["generator::temporal_obligation_generation::must_by_deadline_tests::must_generate_tests_that_assert_the_operation_complet"]
+clause_hash = "a616aed0f66a80a5"
+source_hash = ""
+generated_at = "2026-03-30T19:47:01.124866Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::server_lifecycle::must_shut_down_cleanly_on_sigterm_or_client_disconnect"]
+clause_hash = "7f81e7dd30fafdcd"
+source_hash = ""
+generated_at = "2026-03-30T21:58:00.487033Z"
+model = "claude-sonnet-4-6"
+
+["analysis::bisect::must_accept_a_clause_identifier"]
+clause_hash = "898930a5bab495d1"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["ought::spec_format::must_support_rfc_2119_keywords_must_must_not_should_should_not_ma"]
+clause_hash = "dfe3ff0592e03d1c"
+source_hash = ""
+generated_at = "2026-03-30T22:29:02.819652Z"
+model = "claude-sonnet-4-6"
+
+["ought::llm_powered_analysis::must_support_auditing_specs_for_contradictions_gaps_and_coherence"]
+clause_hash = "dc7b98cb8a6f6613"
+source_hash = ""
+generated_at = "2026-03-30T22:49:40.526702Z"
+model = "claude-sonnet-4-6"
+
+["reporter::otherwise_chain_display::must_show_the_full_chain_status_if_the_parent_passes_otherwise_cl"]
+clause_hash = "24f61f0808cc8510"
+source_hash = ""
+generated_at = "2026-03-30T21:09:34.279294Z"
+model = "claude-sonnet-4-6"
+
+["ought::llm_powered_analysis::must_support_surveying_source_code_to_discover_behaviors_not_cove"]
+clause_hash = "16c0fc7d37c1aa2f"
+source_hash = ""
+generated_at = "2026-03-30T22:49:40.526571Z"
+model = "claude-sonnet-4-6"
+
+["cli::diff::must_show_the_diff_between_current_generated_tests_and_what_would"]
+clause_hash = "e13f086a1cad8bce"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["cli::inspect::should_show_the_clause_text_alongside_the_generated_code_for_easy_c"]
+clause_hash = "a5c9d62d0b5ef26a"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["generator::wont_clause_handling::should_use_the_clause_text_to_determine_which_kind_of_wont_test_to"]
+clause_hash = "7ce06620854263aa"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["ought::llm_agnostic::must_not_depend_on_any_provider_specific_features_in_the_core_spec_fo"]
+clause_hash = "d2f0ce8482d1d081"
+source_hash = ""
+generated_at = "2026-03-30T22:37:35.081113Z"
+model = "claude-sonnet-4-6"
+
+["analysis::bisect::should_save_progress_so_ought_bisect_continue_can_resume"]
+clause_hash = "182102fa069d131a"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["cli::run::must_accept_a_path_argument_to_run_a_specific_spec_file_ought_run"]
+clause_hash = "cc1af18274d11c8b"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["reporter::progress_during_generation::should_show_a_progress_bar_or_spinner_during_llm_generation_with_cl"]
+clause_hash = "ebdae2b30cf4c6b5"
+source_hash = ""
+generated_at = "2026-03-30T21:31:13.397788Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::tools::should_include_execution_duration_and_timestamp_in_tool_responses"]
+clause_hash = "b9f2d7f6a6887e63"
+source_hash = ""
+generated_at = "2026-03-30T22:06:31.954764Z"
+model = "claude-sonnet-4-6"
+
+["ought::integration::should_provide_a_github_action_for_pr_level_reporting"]
+clause_hash = "fed130c459c21375"
+source_hash = ""
+generated_at = "2026-03-30T22:55:10.444525Z"
+model = "claude-sonnet-4-6"
+
+["runner::error_handling::must_distinguish_between_test_failures_assertion_failed_and_test"]
+clause_hash = "f1f3c3b9e32b62b4"
+source_hash = ""
+generated_at = "2026-03-30T21:51:28.158154Z"
+model = "claude-sonnet-4-6"
+
+["generator::test_generation::should_generate_descriptive_assertion_messages_that_reference_the_c"]
+clause_hash = "09e5080efb9d6782"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["reporter::otherwise_chain_display::must_display_otherwise_clauses_indented_under_their_parent_obliga"]
+clause_hash = "dba8d8f0005d8326"
+source_hash = ""
+generated_at = "2026-03-30T21:09:34.278894Z"
+model = "claude-sonnet-4-6"
+
+["cli::check::must_exit_with_code_0_if_all_specs_are_valid_1_if_any_are_invalid"]
+clause_hash = "65561ac5d76490fc"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["cli::run::must_exit_with_code_1_if_all_otherwise_clauses_also_fail_full_deg"]
+clause_hash = "3508771ea0e5957b"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["generator::error_handling::should_continue_generating_remaining_clauses_if_one_clause_fails"]
+clause_hash = "f996bee73838b64c"
+source_hash = ""
+generated_at = "2026-03-30T20:10:25.953009Z"
+model = "claude-sonnet-4-6"
+
+["reporter::terminal_output::must_color_code_by_severity_must_failures_in_red_should_failures"]
+clause_hash = "ac194bd57aa1fcfa"
+source_hash = ""
+generated_at = "2026-03-30T20:53:26.510935Z"
+model = "claude-sonnet-4-6"
+
+["generator::temporal_obligation_generation::must_always_invariant_tests::must_generate_tests_that_verify_the_invariant_ho"]
+clause_hash = "d2fbd19710f00a5a"
+source_hash = ""
+generated_at = "2026-03-30T19:40:11.127090Z"
+model = "claude-sonnet-4-6"
+
+["ought::spec_format::should_be_parseable_by_a_standalone_library_with_no_llm_dependency"]
+clause_hash = "c0a2ff11589d1d5b"
+source_hash = ""
+generated_at = "2026-03-30T22:29:02.820463Z"
+model = "claude-sonnet-4-6"
+
+["parser::error_handling::must_report_parse_errors_with_the_file_path_line_number_and_a_cle"]
+clause_hash = "89abc4b23fea49fb"
+source_hash = ""
+generated_at = "2026-03-30T20:48:16.611557Z"
+model = "claude-sonnet-4-6"
+
+["ought::language_agnostic::must_delegate_test_execution_to_the_project_s_existing_test_harne"]
+clause_hash = "d49b93c9c902f797"
+source_hash = ""
+generated_at = "2026-03-30T22:34:19.018718Z"
+model = "claude-sonnet-4-6"
+
+["reporter::terminal_output::must_display_results_grouped_by_spec_file_then_by_section_then_by"]
+clause_hash = "6895658aac2890e4"
+source_hash = ""
+generated_at = "2026-03-30T20:53:26.509892Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::tools::must_expose_ought_status_return_spec_coverage_summary_clause_coun"]
+clause_hash = "df108606d03ef168"
+source_hash = ""
+generated_at = "2026-03-30T22:06:31.954011Z"
+model = "claude-sonnet-4-6"
+
+["generator::context_assembly::must_read_and_include_source_files_referenced_by_source_metadata"]
+clause_hash = "322e33a41f508dfa"
+source_hash = ""
+generated_at = "2026-03-30T19:51:58.071776Z"
+model = "claude-sonnet-4-6"
+
+["generator::manifest_and_hashing::must_record_the_model_name_and_timestamp_in_the_manifest_entry"]
+clause_hash = "5a4b3f952cbc6551"
+source_hash = ""
+generated_at = "2026-03-30T20:05:22.026004Z"
+model = "claude-sonnet-4-6"
+
+["parser::conditional_blocks_given::should_support_nested_given_blocks_conditions_that_narrow_further"]
+clause_hash = "1e947925fe92cbd3"
+source_hash = ""
+generated_at = "2026-03-30T20:20:33.267128Z"
+model = "claude-sonnet-4-6"
+
+["ought::integration::must_provide_an_mcp_server_so_ai_assistants_and_ide_extensions_ca"]
+clause_hash = "4eabdd70d996bc8d"
+source_hash = ""
+generated_at = "2026-03-30T22:55:10.444318Z"
+model = "claude-sonnet-4-6"
+
+["analysis::survey::wont_auto_add_clauses_without_user_confirmation"]
+clause_hash = "52086054b37ca897"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["generator::otherwise_chain_generation::must_generate_a_separate_test_for_each_otherwise_clause_in_the_ch"]
+clause_hash = "9c1df100fcd1420a"
+source_hash = ""
+generated_at = "2026-03-30T19:35:04.015830Z"
+model = "claude-sonnet-4-6"
+
+["generator::manifest_and_hashing::must_detect_and_remove_orphaned_generated_tests_clause_was_delete"]
+clause_hash = "42bb31b23ab136de"
+source_hash = ""
+generated_at = "2026-03-30T20:05:22.026581Z"
+model = "claude-sonnet-4-6"
+
+["reporter::temporal_result_display::must_display_must_by_results_with_the_measured_duration_alongside"]
+clause_hash = "8b21f078aff9a3c0"
+source_hash = ""
+generated_at = "2026-03-30T21:10:38.812295Z"
+model = "claude-sonnet-4-6"
+
+["ought::llm_powered_analysis::must_support_blaming_a_failure_on_a_specific_source_change_with_a"]
+clause_hash = "b5ce8b6c9324c5ca"
+source_hash = ""
+generated_at = "2026-03-30T22:49:40.526794Z"
+model = "claude-sonnet-4-6"
+
+["generator::error_handling::should_retry_transient_api_errors_with_exponential_backoff_max_3_re"]
+clause_hash = "1aa3c6b4a4cb0e86"
+source_hash = ""
+generated_at = "2026-03-30T20:10:25.952663Z"
+model = "claude-sonnet-4-6"
+
+["reporter::otherwise_chain_display::must_use_a_distinct_indicator_for_otherwise_results_prefix_to_sho"]
+clause_hash = "f1ecb72af3fec57a"
+source_hash = ""
+generated_at = "2026-03-30T21:09:34.279088Z"
+model = "claude-sonnet-4-6"
+
+["runner::result_collection::must_capture_the_number_of_iterations_inputs_tested"]
+clause_hash = "89c3a082b4d82b9e"
+source_hash = ""
+generated_at = "2026-03-30T21:43:53.687487Z"
+model = "claude-sonnet-4-6"
+
+["cli::global_flags::must_always_return_a_valid_exit_code_0_1_or_2_never_crash_without_an_exi"]
+clause_hash = "2c2bd5ae28e342a1"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+["parser::error_handling::must_not_crash_on_malformed_markdown_degrade_gracefully"]
+clause_hash = "d58c21dd531a0e40"
+source_hash = ""
+generated_at = "2026-03-30T20:48:16.611901Z"
+model = "claude-sonnet-4-6"
+
+["ought::llm_powered_analysis::should_support_bisecting_git_history_to_find_the_exact_commit_that"]
+clause_hash = "4c26360135c6c0b5"
+source_hash = ""
+generated_at = "2026-03-30T22:49:40.526995Z"
+model = "claude-sonnet-4-6"
+
+["generator::provider_abstraction::must_ship_with_an_openai_provider_that_execs_the_openai_or_chatgp"]
+clause_hash = "5ef21ecbe02c461b"
+source_hash = ""
+generated_at = "2026-03-30T19:55:24.976389Z"
+model = "claude-sonnet-4-6"
+
+["reporter::otherwise_chain_display::must_show_which_otherwise_level_caught_the_failure"]
+clause_hash = "f6ec1bb04bc0aeb8"
+source_hash = ""
+generated_at = "2026-03-30T21:09:34.280003Z"
+model = "claude-sonnet-4-6"
+
+["mcp_server::resources::must_expose_ought_coverage_clause_coverage_map_which_clauses_have"]
+clause_hash = "359ff881fe0fd93e"
+source_hash = ""
+generated_at = "2026-03-30T22:10:39.816822Z"
+model = "claude-sonnet-4-6"
+
+["ought::spec_format::must_support_must_always_for_invariants_properties_that_must_hold"]
+clause_hash = "79ecad4f78c74bb0"
+source_hash = ""
+generated_at = "2026-03-30T22:29:02.820149Z"
+model = "claude-sonnet-4-6"
+
+["parser::contrary_to_duty_chains_otherwise::should_inherit_the_parent_s_severity_unless_the_otherwise_clause_sp"]
+clause_hash = "4ced1e0095f8cb52"
+source_hash = ""
+generated_at = "2026-03-30T20:24:50.896714Z"
+model = "claude-sonnet-4-6"
+
+["cli::run::wont_execute_tests_in_parallel_by_default_in_v0_1_sequential_is_f"]
+clause_hash = "0a37d524baeae75e"
+source_hash = ""
+generated_at = "2026-03-30T00:00:00Z"
+model = "claude-sonnet-4-6"

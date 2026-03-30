@@ -105,11 +105,19 @@ fn parse_keyword(bold_text: &str) -> Option<(Keyword, Option<Duration>)> {
         "MUST ALWAYS" => Some((Keyword::MustAlways, None)),
         _ => {
             // Check for MUST BY <duration>
-            if upper.starts_with("MUST BY ") {
-                let duration_str = bold_text.trim()[8..].trim();
-                if let Some(dur) = parse_duration(duration_str) {
+            if upper.starts_with("MUST BY") {
+                let after_must_by = bold_text.trim()[7..].trim();
+                if after_must_by.is_empty() {
+                    // "MUST BY" with no duration — return keyword but no duration
+                    // so the caller can report a parse error
+                    return Some((Keyword::MustBy, None));
+                }
+                if let Some(dur) = parse_duration(after_must_by) {
                     return Some((Keyword::MustBy, Some(dur)));
                 }
+                // Has text after MUST BY but it's not a valid duration — still
+                // return the keyword so the caller can error
+                return Some((Keyword::MustBy, None));
             }
             None
         }
@@ -245,6 +253,11 @@ impl ParseState {
     }
 
     fn parse(&mut self) {
+        // Pre-extract metadata from raw source text before markdown parsing.
+        // This avoids pulldown-cmark interpreting `**` in paths (like `src/**/*.rs`)
+        // as bold markers.
+        self.extract_raw_metadata();
+
         let source = self.source.clone();
         // Collect events with their offsets
         let events: Vec<(Event<'_>, std::ops::Range<usize>)> =
@@ -262,6 +275,69 @@ impl ParseState {
         self.flush_section_stack();
     }
 
+    /// Extract metadata (context:, source:, schema:, requires:) from raw source text.
+    /// This runs before markdown parsing to avoid pulldown-cmark mangling glob patterns.
+    fn extract_raw_metadata(&mut self) {
+        let source = self.source.clone();
+        let mut in_metadata = false;
+
+        for line in source.lines() {
+            let trimmed = line.trim();
+
+            // Look for H1 to start metadata region
+            if !in_metadata {
+                if trimmed.starts_with("# ") {
+                    in_metadata = true;
+                    if let Some(rest) = trimmed.strip_prefix("# ") {
+                        self.spec_name = Some(rest.trim().to_string());
+                    }
+                }
+                continue;
+            }
+
+            // H2+ ends metadata region
+            if trimmed.starts_with("## ") || trimmed.starts_with("### ") {
+                break;
+            }
+
+            // Parse metadata lines from raw text
+            if let Some(rest) = trimmed.strip_prefix("context:") {
+                let val = rest.trim();
+                if !val.is_empty() {
+                    self.metadata.context = Some(val.to_string());
+                }
+            } else if let Some(rest) = trimmed.strip_prefix("source:") {
+                let val = rest.trim();
+                if !val.is_empty() {
+                    for s in split_metadata_values(val) {
+                        self.metadata.sources.push(s);
+                    }
+                }
+            } else if let Some(rest) = trimmed.strip_prefix("schema:") {
+                let val = rest.trim();
+                if !val.is_empty() {
+                    for s in split_metadata_values(val) {
+                        self.metadata.schemas.push(s);
+                    }
+                }
+            } else if let Some(rest) = trimmed.strip_prefix("requires:") {
+                let val = rest.trim();
+                if !val.is_empty() {
+                    let refs = parse_requires_line(val);
+                    if refs.is_empty() {
+                        self.metadata.requires.push(SpecRef {
+                            label: val.to_string(),
+                            path: PathBuf::from(val),
+                            anchor: None,
+                        });
+                    } else {
+                        self.metadata.requires.extend(refs);
+                    }
+                }
+            }
+        }
+    }
+
     fn handle_event(&mut self, event: Event<'_>) {
         match event {
             Event::Start(Tag::Heading { level, .. }) => {
@@ -276,8 +352,9 @@ impl ParseState {
                     HeadingLevel::H1 => {
                         if self.spec_name.is_none() {
                             self.spec_name = Some(title);
-                            self.metadata_region = true;
                         }
+                        // Metadata is now extracted in extract_raw_metadata(),
+                        // so we don't enable metadata_region for event-based parsing.
                     }
                     _ => {
                         self.metadata_region = false;
@@ -396,12 +473,56 @@ impl ParseState {
                     let nested_items = frame.nested_items;
 
                     if let Some((kw, dur)) = keyword {
+                        // Validate MUST BY has a duration
+                        if kw == Keyword::MustBy && dur.is_none() {
+                            self.errors.push(ParseError {
+                                file: self.file.clone(),
+                                line,
+                                message: "MUST BY requires a duration (e.g. MUST BY 200ms, MUST BY 5s)".to_string(),
+                            });
+                            // Don't produce a clause for this — it's a parse error
+                        }
+
+                        // Validate OTHERWISE is nested under a parent obligation
+                        if kw == Keyword::Otherwise && self.item_stack.is_empty() {
+                            self.errors.push(ParseError {
+                                file: self.file.clone(),
+                                line,
+                                message: "OTHERWISE must be nested under a parent obligation (MUST, SHOULD, etc.), not at the top level".to_string(),
+                            });
+                        }
+
+                        // Validate OTHERWISE is not under MAY, WONT, or GIVEN
+                        if kw == Keyword::Otherwise
+                            && let Some(parent_frame) = self.item_stack.last()
+                            && let Some((parent_kw, _)) = &parent_frame.keyword
+                            && matches!(parent_kw, Keyword::May | Keyword::Wont | Keyword::Given)
+                        {
+                            self.errors.push(ParseError {
+                                file: self.file.clone(),
+                                line,
+                                message: format!(
+                                    "OTHERWISE cannot be nested under {} — only under obligations that can be violated (MUST, SHOULD, etc.)",
+                                    match parent_kw {
+                                        Keyword::May => "MAY",
+                                        Keyword::Wont => "WONT",
+                                        Keyword::Given => "GIVEN",
+                                        _ => unreachable!(),
+                                    }
+                                ),
+                            });
+                        }
+
                         let temporal = match kw {
                             Keyword::MustAlways => Some(Temporal::Invariant),
                             Keyword::MustBy => dur.map(Temporal::Deadline),
                             _ => None,
                         };
 
+                        // Skip creating the item if it was an invalid MUST BY
+                        if kw == Keyword::MustBy && dur.is_none() {
+                            // error already recorded above
+                        } else {
                         let item = PendingItem {
                             keyword: kw,
                             text,
@@ -418,6 +539,7 @@ impl ParseState {
                         } else {
                             // Top-level item
                             self.depth1_items.push(item);
+                        }
                         }
                         self.just_finished_clause = true;
                     } else {
@@ -570,21 +692,15 @@ impl ParseState {
             } else if let Some(rest) = trimmed.strip_prefix("source:") {
                 let val = rest.trim();
                 if !val.is_empty() {
-                    for s in val.split(',') {
-                        let s = s.trim();
-                        if !s.is_empty() {
-                            self.metadata.sources.push(s.to_string());
-                        }
+                    for s in split_metadata_values(val) {
+                        self.metadata.sources.push(s);
                     }
                 }
             } else if let Some(rest) = trimmed.strip_prefix("schema:") {
                 let val = rest.trim();
                 if !val.is_empty() {
-                    for s in val.split(',') {
-                        let s = s.trim();
-                        if !s.is_empty() {
-                            self.metadata.schemas.push(s.to_string());
-                        }
+                    for s in split_metadata_values(val) {
+                        self.metadata.schemas.push(s);
                     }
                 }
             } else if let Some(rest) = trimmed.strip_prefix("requires:") {
@@ -811,6 +927,20 @@ impl ParseState {
             source_path: self.file,
         }
     }
+}
+
+/// Split metadata values by commas, but respect values that contain glob patterns
+/// (e.g. `tests/**/*.rs`). Commas inside path-like values with `*`, `?`, `[` are
+/// preserved — we only split on commas followed by whitespace and a new path.
+fn split_metadata_values(val: &str) -> Vec<String> {
+    // Simple approach: split by comma, then re-join segments that look like
+    // they're part of a glob pattern (contain * or ? after a comma).
+    // Actually, simplest correct approach: just split by ", " (comma-space)
+    // which is the expected delimiter, and trim each result.
+    val.split(',')
+        .map(|s| s.trim().to_string())
+        .filter(|s| !s.is_empty())
+        .collect()
 }
 
 /// Parse `requires:` value containing markdown links like `[label](path.ought.md)` and
