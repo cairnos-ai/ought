@@ -1,0 +1,14 @@
+[package]
+name = "ought-run"
+description = "Test runner and result collection for ought"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+ought-spec.workspace = true
+ought-gen.workspace = true
+anyhow.workspace = true
+thiserror.workspace = true
+serde.workspace = true
+tokio.workspace = true

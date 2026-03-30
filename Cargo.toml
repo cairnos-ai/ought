@@ -1,0 +1,33 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/ought-spec",
+    "crates/ought-gen",
+    "crates/ought-run",
+    "crates/ought-report",
+    "crates/ought-analysis",
+    "crates/ought-mcp",
+    "crates/ought-cli",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+
+[workspace.dependencies]
+ought-spec = { path = "crates/ought-spec" }
+ought-gen = { path = "crates/ought-gen" }
+ought-run = { path = "crates/ought-run" }
+ought-report = { path = "crates/ought-report" }
+ought-analysis = { path = "crates/ought-analysis" }
+ought-mcp = { path = "crates/ought-mcp" }
+
+anyhow = "1"
+thiserror = "2"
+serde = { version = "1", features = ["derive"] }
+toml = "0.8"
+chrono = { version = "0.4", features = ["serde"] }
+tokio = { version = "1", features = ["full"] }
+clap = { version = "4", features = ["derive"] }
+pulldown-cmark = "0.13"

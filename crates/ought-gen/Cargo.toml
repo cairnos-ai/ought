@@ -1,0 +1,15 @@
+[package]
+name = "ought-gen"
+description = "LLM-powered test generation for ought specs"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+ought-spec.workspace = true
+anyhow.workspace = true
+thiserror.workspace = true
+serde.workspace = true
+toml.workspace = true
+chrono.workspace = true
+tokio.workspace = true

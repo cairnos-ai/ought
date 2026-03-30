@@ -1,0 +1,22 @@
+[package]
+name = "ought"
+description = "CLI for the ought behavioral test framework"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "ought"
+path = "src/main.rs"
+
+[dependencies]
+ought-spec.workspace = true
+ought-gen.workspace = true
+ought-run.workspace = true
+ought-report.workspace = true
+ought-analysis.workspace = true
+ought-mcp.workspace = true
+anyhow.workspace = true
+chrono.workspace = true
+clap.workspace = true
+tokio.workspace = true
