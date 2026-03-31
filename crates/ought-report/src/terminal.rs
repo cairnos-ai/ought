@@ -125,16 +125,26 @@ fn format_duration(d: Duration) -> String {
     }
 }
 
-/// Render results to the terminal with colors, status indicators,
+/// Render results to the terminal (stdout) with colors, status indicators,
 /// and clause-level detail.
 pub fn report(
     results: &RunResult,
     specs: &[Spec],
     options: &ReportOptions,
 ) -> anyhow::Result<()> {
+    let mut out = io::stdout().lock();
+    report_to_writer(&mut out, results, specs, options)
+}
+
+/// Render results to an arbitrary writer. Useful for testing or piping output.
+pub fn report_to_writer(
+    out: &mut impl Write,
+    results: &RunResult,
+    specs: &[Spec],
+    options: &ReportOptions,
+) -> anyhow::Result<()> {
     let color = use_color(options);
     let p = Painter::new(color);
-    let mut out = io::stdout().lock();
 
     // Build lookup from clause_id -> TestResult
     let result_map: HashMap<&str, &ought_run::TestResult> = results
@@ -175,7 +185,7 @@ pub fn report(
 
         for section in &spec.sections {
             render_section(
-                &mut out,
+                &mut *out,
                 &p,
                 section,
                 &result_map,
