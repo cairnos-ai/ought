@@ -50,10 +50,18 @@ pub struct GeneratorConfig {
     pub tolerance: ToleranceConfig,
 }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ToleranceConfig {
     #[serde(default = "default_multiplier")]
     pub must_by_multiplier: f64,
+}
+
+impl Default for ToleranceConfig {
+    fn default() -> Self {
+        Self {
+            must_by_multiplier: default_multiplier(),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

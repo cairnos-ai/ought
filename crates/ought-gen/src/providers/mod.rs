@@ -87,10 +87,23 @@ pub fn build_prompt(clause: &Clause, context: &GenerationContext) -> String {
     if let Some(ref temporal) = clause.temporal {
         match temporal {
             ought_spec::Temporal::Invariant => {
-                let _ = writeln!(
-                    prompt,
-                    "- Temporal: MUST ALWAYS (invariant). Generate property-based or fuzz-style tests."
-                );
+                let lang = context.target_language;
+                let _ = writeln!(prompt, "- Temporal: MUST ALWAYS (invariant). This must hold across all states and inputs.");
+                let _ = writeln!(prompt, "  Generate property-based or fuzz-style tests that exercise boundary conditions and edge cases.");
+                match lang {
+                    Language::Rust => {
+                        let _ = writeln!(prompt, "  Use the `proptest` crate for property-based testing if available.");
+                    }
+                    Language::Python => {
+                        let _ = writeln!(prompt, "  Use the `hypothesis` library for property-based testing if available.");
+                    }
+                    Language::TypeScript | Language::JavaScript => {
+                        let _ = writeln!(prompt, "  Use the `fast-check` library for property-based testing if available.");
+                    }
+                    Language::Go => {
+                        let _ = writeln!(prompt, "  If no property testing library is available, generate a loop-based stress test with multiple random inputs.");
+                    }
+                }
             }
             ought_spec::Temporal::Deadline(dur) => {
                 let _ = writeln!(
@@ -98,12 +111,21 @@ pub fn build_prompt(clause: &Clause, context: &GenerationContext) -> String {
                     "- Temporal: MUST BY {:?}. Generate a test asserting the operation completes within this duration.",
                     dur
                 );
+                let _ = writeln!(prompt, "  Measure wall-clock time using Instant::now() / elapsed() (Rust), time.time() (Python), Date.now() (JS), or time.Now() (Go).");
+                let _ = writeln!(prompt, "  Run the operation multiple times and assert the p99 latency is within the deadline.");
+                let _ = writeln!(prompt, "  Support a configurable tolerance multiplier for CI environment variability.");
             }
         }
     }
 
     if !clause.otherwise.is_empty() {
-        let _ = writeln!(prompt, "- This clause has OTHERWISE fallbacks.");
+        let _ = writeln!(prompt, "- This clause has OTHERWISE fallbacks (a degradation chain).");
+        let _ = writeln!(prompt, "  Simulate the parent obligation's failure condition in-process, then verify the fallback behavior activates.");
+        let _ = writeln!(prompt, "  Do not depend on real infrastructure failures — use mocks or stubs to simulate the failure condition.");
+        let _ = writeln!(prompt, "  Also generate a single integration-style test that walks the full degradation chain in sequence.");
+        for ow in &clause.otherwise {
+            let _ = writeln!(prompt, "  - OTHERWISE: {}", ow.text);
+        }
     }
 
     prompt.push('\n');
@@ -250,14 +272,15 @@ pub fn build_batch_prompt(group: &ClauseGroup<'_>, context: &GenerationContext) 
         if let Some(ref temporal) = clause.temporal {
             match temporal {
                 ought_spec::Temporal::Invariant => {
-                    let _ = writeln!(prompt, "  Temporal: MUST ALWAYS (invariant). Generate property-based or fuzz-style tests.");
+                    let _ = writeln!(prompt, "  Temporal: MUST ALWAYS (invariant). Generate property-based or fuzz-style tests that exercise boundary conditions and edge cases. Use proptest (Rust), hypothesis (Python), or fast-check (JS) if available; otherwise a loop-based stress test.");
                 }
                 ought_spec::Temporal::Deadline(dur) => {
-                    let _ = writeln!(prompt, "  Temporal: MUST BY {dur:?}. Assert operation completes within this duration.");
+                    let _ = writeln!(prompt, "  Temporal: MUST BY {dur:?}. Measure wall-clock time with Instant/elapsed. Run the operation multiple times and assert p99 latency is within the deadline. Support a configurable tolerance multiplier for CI variability.");
                 }
             }
         }
         if !clause.otherwise.is_empty() {
+            let _ = writeln!(prompt, "  This clause has an OTHERWISE degradation chain. Simulate the failure condition in-process (use mocks or stubs, not real infrastructure failures). Also generate an integration-style test walking the full chain.");
             for ow in &clause.otherwise {
                 let _ = writeln!(prompt, "  OTHERWISE: {} (ID: {})", ow.text, ow.id);
             }
