@@ -1282,6 +1282,274 @@ fn cmd_watch(cli: &Cli) -> anyhow::Result<()> {
     Ok(())
 }
 
+fn cmd_survey(cli: &Cli, args: &SurveyArgs) -> anyhow::Result<()> {
+    let (config_path, config) = load_config(&cli.config)?;
+    let specs = load_specs(&config, &config_path)?;
+
+    let generator = providers::from_config(
+        &config.generator.provider,
+        config.generator.model.as_deref(),
+    )?;
+
+    let paths: Vec<PathBuf> = if let Some(ref path) = args.path {
+        vec![path.clone()]
+    } else {
+        // Use source search paths from config.
+        let config_dir = config_path
+            .parent()
+            .unwrap_or(std::path::Path::new("."))
+            .to_path_buf();
+        config
+            .context
+            .search_paths
+            .iter()
+            .map(|p| config_dir.join(p))
+            .collect()
+    };
+
+    let result = ought_analysis::survey::survey(&specs, &paths, generator.as_ref())?;
+
+    if cli.json {
+        // Simple JSON output.
+        println!("{{");
+        println!("  \"uncovered\": [");
+        for (i, item) in result.uncovered.iter().enumerate() {
+            let comma = if i + 1 < result.uncovered.len() { "," } else { "" };
+            println!(
+                "    {{\"file\": {:?}, \"line\": {}, \"description\": {:?}, \"suggested_clause\": {:?}, \"suggested_spec\": {:?}}}{}",
+                item.file.display().to_string(),
+                item.line,
+                item.description,
+                item.suggested_clause,
+                item.suggested_spec.display().to_string(),
+                comma
+            );
+        }
+        println!("  ]");
+        println!("}}");
+    } else {
+        if result.uncovered.is_empty() {
+            eprintln!("No uncovered behaviors found.");
+        } else {
+            eprintln!("Found {} uncovered behaviors:\n", result.uncovered.len());
+            let mut current_spec: Option<&std::path::Path> = None;
+            for item in &result.uncovered {
+                if current_spec != Some(&item.suggested_spec) {
+                    eprintln!("  \x1b[1m{}\x1b[0m", item.suggested_spec.display());
+                    current_spec = Some(&item.suggested_spec);
+                }
+                eprintln!(
+                    "    {}:{} - {}",
+                    item.file.display(),
+                    item.line,
+                    item.description
+                );
+                eprintln!(
+                    "      Suggested: \x1b[33m{}\x1b[0m",
+                    item.suggested_clause
+                );
+            }
+        }
+    }
+
+    Ok(())
+}
+
+fn cmd_audit(cli: &Cli) -> anyhow::Result<()> {
+    let (config_path, config) = load_config(&cli.config)?;
+    let specs = load_specs(&config, &config_path)?;
+
+    let generator = providers::from_config(
+        &config.generator.provider,
+        config.generator.model.as_deref(),
+    )?;
+
+    let result = ought_analysis::audit::audit(&specs, generator.as_ref())?;
+
+    if cli.json {
+        println!("{{");
+        println!("  \"findings\": [");
+        for (i, finding) in result.findings.iter().enumerate() {
+            let comma = if i + 1 < result.findings.len() { "," } else { "" };
+            let kind = match finding.kind {
+                ought_analysis::AuditFindingKind::Contradiction => "contradiction",
+                ought_analysis::AuditFindingKind::Gap => "gap",
+                ought_analysis::AuditFindingKind::Ambiguity => "ambiguity",
+                ought_analysis::AuditFindingKind::Redundancy => "redundancy",
+            };
+            let clauses_json: Vec<String> = finding
+                .clauses
+                .iter()
+                .map(|c| format!("{:?}", c.0))
+                .collect();
+            println!(
+                "    {{\"kind\": {:?}, \"description\": {:?}, \"clauses\": [{}], \"suggestion\": {:?}, \"confidence\": {:?}}}{}",
+                kind,
+                finding.description,
+                clauses_json.join(", "),
+                finding.suggestion,
+                finding.confidence,
+                comma
+            );
+        }
+        println!("  ]");
+        println!("}}");
+    } else {
+        if result.findings.is_empty() {
+            eprintln!("No issues found. Specs are coherent.");
+        } else {
+            eprintln!("Found {} issues:\n", result.findings.len());
+            for finding in &result.findings {
+                let kind_str = match finding.kind {
+                    ought_analysis::AuditFindingKind::Contradiction => "\x1b[31mCONTRADICTION\x1b[0m",
+                    ought_analysis::AuditFindingKind::Gap => "\x1b[33mGAP\x1b[0m",
+                    ought_analysis::AuditFindingKind::Ambiguity => "\x1b[34mAMBIGUITY\x1b[0m",
+                    ought_analysis::AuditFindingKind::Redundancy => "\x1b[36mREDUNDANCY\x1b[0m",
+                };
+                eprintln!("  [{}] {}", kind_str, finding.description);
+                if !finding.clauses.is_empty() {
+                    eprintln!(
+                        "    Clauses: {}",
+                        finding
+                            .clauses
+                            .iter()
+                            .map(|c| c.0.as_str())
+                            .collect::<Vec<_>>()
+                            .join(", ")
+                    );
+                }
+                if let Some(ref suggestion) = finding.suggestion {
+                    eprintln!("    Suggestion: {}", suggestion);
+                }
+                if let Some(confidence) = finding.confidence {
+                    eprintln!("    Confidence: {:.0}%", confidence * 100.0);
+                }
+                eprintln!();
+            }
+        }
+    }
+
+    Ok(())
+}
+
+fn cmd_blame(cli: &Cli, args: &BlameArgs) -> anyhow::Result<()> {
+    let (config_path, config) = load_config(&cli.config)?;
+    let specs = load_specs(&config, &config_path)?;
+
+    let generator = providers::from_config(
+        &config.generator.provider,
+        config.generator.model.as_deref(),
+    )?;
+
+    // We need run results. Run the tests first.
+    let runner_name = config.runner.keys().next().cloned().unwrap_or("rust".into());
+    let runner = runners::from_name(&runner_name)?;
+
+    let config_dir = config_path.parent().unwrap_or(std::path::Path::new("."));
+    let test_dir = config
+        .runner
+        .get(&runner_name)
+        .map(|r| config_dir.join(&r.test_dir))
+        .unwrap_or_else(|| config_dir.join("ought/ought-gen"));
+
+    let generated_tests = collect_generated_tests(&test_dir, &runner_name)?;
+    let results = if !generated_tests.is_empty() && runner.is_available() {
+        runner.run(&generated_tests, &test_dir)?
+    } else {
+        ought_run::RunResult {
+            results: vec![],
+            total_duration: std::time::Duration::ZERO,
+        }
+    };
+
+    let clause_id = ought_spec::ClauseId(args.clause.clone());
+    let result = ought_analysis::blame::blame(&clause_id, &specs, &results, generator.as_ref())?;
+
+    if cli.json {
+        let commit_json = if let Some(ref c) = result.likely_commit {
+            format!(
+                "{{\"hash\": {:?}, \"message\": {:?}, \"author\": {:?}}}",
+                c.hash, c.message, c.author
+            )
+        } else {
+            "null".to_string()
+        };
+        println!(
+            "{{\"clause_id\": {:?}, \"narrative\": {:?}, \"likely_commit\": {}, \"suggested_fix\": {:?}}}",
+            result.clause_id.0,
+            result.narrative,
+            commit_json,
+            result.suggested_fix
+        );
+    } else {
+        eprintln!("\x1b[1mBlame: {}\x1b[0m\n", result.clause_id);
+        eprintln!("{}", result.narrative);
+        if let Some(ref commit) = result.likely_commit {
+            eprintln!(
+                "\nLikely commit: \x1b[33m{}\x1b[0m {} ({})",
+                &commit.hash[..7.min(commit.hash.len())],
+                commit.message,
+                commit.author
+            );
+        }
+        if let Some(ref fix) = result.suggested_fix {
+            eprintln!("\nSuggested fix: {}", fix);
+        }
+    }
+
+    Ok(())
+}
+
+fn cmd_bisect(cli: &Cli, args: &BisectArgs) -> anyhow::Result<()> {
+    let (config_path, config) = load_config(&cli.config)?;
+    let specs = load_specs(&config, &config_path)?;
+
+    let runner_name = config.runner.keys().next().cloned().unwrap_or("rust".into());
+    let runner = runners::from_name(&runner_name)?;
+
+    if !runner.is_available() {
+        anyhow::bail!(
+            "test runner '{}' is not available -- is the toolchain installed?",
+            runner.name()
+        );
+    }
+
+    let clause_id = ought_spec::ClauseId(args.clause.clone());
+    let options = ought_analysis::bisect::BisectOptions {
+        range: args.range.clone(),
+        regenerate: args.regenerate,
+    };
+
+    eprintln!("Bisecting clause {}...", clause_id);
+
+    let result = ought_analysis::bisect::bisect(&clause_id, &specs, runner.as_ref(), &options)?;
+
+    if cli.json {
+        println!(
+            "{{\"clause_id\": {:?}, \"breaking_commit\": {{\"hash\": {:?}, \"message\": {:?}, \"author\": {:?}}}, \"diff_summary\": {:?}}}",
+            result.clause_id.0,
+            result.breaking_commit.hash,
+            result.breaking_commit.message,
+            result.breaking_commit.author,
+            result.diff_summary
+        );
+    } else {
+        eprintln!("\x1b[1mBisect result for {}\x1b[0m\n", result.clause_id);
+        eprintln!(
+            "Breaking commit: \x1b[31m{}\x1b[0m",
+            &result.breaking_commit.hash[..7.min(result.breaking_commit.hash.len())]
+        );
+        eprintln!("  Message: {}", result.breaking_commit.message);
+        eprintln!("  Author:  {}", result.breaking_commit.author);
+        eprintln!("  Date:    {}", result.breaking_commit.date);
+        if !result.diff_summary.is_empty() {
+            eprintln!("\nDiff summary:\n{}", result.diff_summary);
+        }
+    }
+
+    Ok(())
+}
+
 fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
 
@@ -1292,22 +1560,10 @@ fn main() -> anyhow::Result<()> {
         Command::Check => cmd_check(&cli),
         Command::Inspect(args) => cmd_inspect(&cli, args),
         Command::Diff => cmd_diff(&cli),
-        Command::Survey(_args) => {
-            eprintln!("ought survey is not yet implemented");
-            Ok(())
-        }
-        Command::Audit => {
-            eprintln!("ought audit is not yet implemented");
-            Ok(())
-        }
-        Command::Blame(_args) => {
-            eprintln!("ought blame is not yet implemented");
-            Ok(())
-        }
-        Command::Bisect(_args) => {
-            eprintln!("ought bisect is not yet implemented");
-            Ok(())
-        }
+        Command::Survey(args) => cmd_survey(&cli, args),
+        Command::Audit => cmd_audit(&cli),
+        Command::Blame(args) => cmd_blame(&cli, args),
+        Command::Bisect(args) => cmd_bisect(&cli, args),
         Command::Watch => cmd_watch(&cli),
         Command::Mcp(args) => match &args.command {
             McpCommand::Serve {
