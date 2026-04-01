@@ -8,6 +8,8 @@ use ought_report::types::{ColorChoice as ReportColor, ReportOptions};
 use ought_run::runners;
 use ought_spec::{Config, SpecGraph};
 
+mod viewer;
+
 #[derive(Parser)]
 #[command(name = "ought", about = "Behavioral test framework powered by LLMs")]
 struct Cli {
@@ -73,6 +75,17 @@ enum Command {
 
     /// Watch for file changes and re-run affected specs.
     Watch,
+
+    /// Launch a visual spec viewer in the browser.
+    View {
+        /// Port to serve on.
+        #[arg(long, default_value = "3333")]
+        port: u16,
+
+        /// Don't auto-open the browser.
+        #[arg(long)]
+        no_open: bool,
+    },
 
     /// MCP server commands.
     Mcp(McpArgs),
@@ -1603,6 +1616,7 @@ fn main() -> anyhow::Result<()> {
         Command::Blame(args) => cmd_blame(&cli, args),
         Command::Bisect(args) => cmd_bisect(&cli, args),
         Command::Watch => cmd_watch(&cli),
+        Command::View { port, no_open } => viewer::cmd_view(&cli.config, *port, *no_open),
         Command::Mcp(args) => match &args.command {
             McpCommand::Serve {
                 transport: _,
