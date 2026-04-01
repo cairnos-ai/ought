@@ -45,6 +45,5 @@ requires: [cli](../cli/cli.ought.md), [parser](../engine/parser.ought.md), [runn
 - **MUST ALWAYS** return valid JSON-RPC responses, even for internal errors
 - **MUST ALWAYS** remain responsive to new requests while processing long-running tools (survey, audit, bisect)
 - **SHOULD** include actionable error details (e.g. "`claude` CLI not found — install it with `brew install claude`" not just "generation failed")
-- **GIVEN** a tool invocation exceeds 60 seconds:
-  - **SHOULD** send progress notifications to the client
+- **SHOULD** send progress notifications to the client when a tool invocation exceeds 60 seconds
   - **OTHERWISE** the client may assume the request has timed out
