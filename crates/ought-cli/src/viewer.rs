@@ -133,18 +133,21 @@ const VIEWER_HTML: &str = r##"<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ought viewer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
-/* ShadCN-inspired design tokens */
+/* Warm monochrome tokens — 1960s space / 2001 */
 [data-theme="light"]{
-  --background:0 0% 100%;--foreground:240 10% 3.9%;
-  --card:0 0% 100%;--card-foreground:240 10% 3.9%;
-  --muted:240 4.8% 95.9%;--muted-foreground:240 3.8% 46.1%;
-  --border:240 5.9% 90%;--input:240 5.9% 90%;
-  --ring:240 5.9% 10%;--radius:0.5rem;
-  --accent:240 4.8% 95.9%;--accent-foreground:240 5.9% 10%;
-  --popover:0 0% 100%;
+  --background:40 6% 98%;--foreground:30 8% 8%;
+  --card:40 6% 100%;--card-foreground:30 8% 8%;
+  --muted:35 5% 95%;--muted-foreground:30 4% 46%;
+  --border:35 6% 89%;--input:35 6% 89%;
+  --ring:30 6% 20%;--radius:0.5rem;
+  --accent:35 5% 95%;--accent-foreground:30 6% 10%;
+  --popover:40 6% 100%;
   --kw-must-bg:0 72% 94%;--kw-must-fg:0 84% 44%;
   --kw-should-bg:43 96% 93%;--kw-should-fg:43 96% 38%;
   --kw-may-bg:240 5% 95%;--kw-may-fg:240 4% 46%;
@@ -155,13 +158,13 @@ const VIEWER_HTML: &str = r##"<!DOCTYPE html>
 }
 
 [data-theme="dark"]{
-  --background:240 10% 3.9%;--foreground:0 0% 98%;
-  --card:240 10% 3.9%;--card-foreground:0 0% 98%;
-  --muted:240 3.7% 15.9%;--muted-foreground:240 5% 64.9%;
-  --border:240 3.7% 15.9%;--input:240 3.7% 15.9%;
-  --ring:240 4.9% 83.9%;--radius:0.5rem;
-  --accent:240 3.7% 15.9%;--accent-foreground:0 0% 98%;
-  --popover:240 10% 3.9%;
+  --background:30 6% 5%;--foreground:35 5% 93%;
+  --card:30 5% 7%;--card-foreground:35 5% 93%;
+  --muted:30 4% 14%;--muted-foreground:30 4% 58%;
+  --border:30 4% 14%;--input:30 4% 14%;
+  --ring:35 5% 80%;--radius:0.5rem;
+  --accent:30 4% 14%;--accent-foreground:35 5% 93%;
+  --popover:30 6% 5%;
   --kw-must-bg:0 72% 12%;--kw-must-fg:0 84% 68%;
   --kw-should-bg:43 80% 11%;--kw-should-fg:43 96% 65%;
   --kw-may-bg:240 4% 16%;--kw-may-fg:240 5% 65%;
@@ -171,10 +174,11 @@ const VIEWER_HTML: &str = r##"<!DOCTYPE html>
   --kw-temporal-bg:152 50% 12%;--kw-temporal-fg:152 60% 58%;
 }
 
-body{font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
-"Helvetica Neue",Arial,sans-serif;background:hsl(var(--background));color:hsl(var(--foreground));
+body{font-family:"Instrument Sans",ui-sans-serif,system-ui,-apple-system,sans-serif;
+background:hsl(var(--background));color:hsl(var(--foreground));
 line-height:1.6;display:flex;flex-direction:column;height:100vh;
--webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-size:14px}
+-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-size:14px;
+letter-spacing:-.01em}
 a{color:hsl(var(--foreground));text-decoration:underline;text-underline-offset:4px}
 a:hover{opacity:.8}
 ::selection{background:hsl(var(--foreground));color:hsl(var(--background))}
@@ -182,8 +186,9 @@ a:hover{opacity:.8}
 /* Header */
 .header{background:hsl(var(--card));border-bottom:1px solid hsl(var(--border));
 padding:0 20px;display:flex;align-items:center;gap:16px;flex-shrink:0;height:52px}
-.header h1{font-size:15px;font-weight:600;letter-spacing:-.3px;display:flex;align-items:center;gap:6px}
-.header h1 .logo{opacity:.5;font-size:13px;font-weight:400}
+.header h1{font-size:15px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+display:flex;align-items:center;gap:6px}
+.header h1 .logo{opacity:.4;font-weight:400;letter-spacing:.08em}
 .header .stats{font-size:12px;color:hsl(var(--muted-foreground));margin-left:auto;display:flex;gap:12px;align-items:center}
 .header .stats span{white-space:nowrap}
 .icon-btn{background:transparent;border:1px solid hsl(var(--border));color:hsl(var(--foreground));
@@ -232,10 +237,9 @@ stroke-linejoin:round;fill:none}
 font-variant-numeric:tabular-nums}
 
 /* Spec header */
-.spec-header h2{font-size:24px;font-weight:700;margin-bottom:2px;letter-spacing:-.5px;
-font-feature-settings:"ss01","ss02","cv01"}
+.spec-header h2{font-size:22px;font-weight:700;margin-bottom:2px;letter-spacing:.01em}
 .spec-path{font-size:12px;color:hsl(var(--muted-foreground));margin-bottom:20px;
-font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;font-size:11px}
+font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px}
 .meta-block{background:hsl(var(--muted));border:1px solid hsl(var(--border));
 border-radius:var(--radius);padding:12px 16px;margin-bottom:24px;font-size:13px;
 color:hsl(var(--muted-foreground))}
@@ -245,7 +249,7 @@ color:hsl(var(--muted-foreground))}
 .section-card{background:hsl(var(--card));border:1px solid hsl(var(--border));
 border-radius:var(--radius);margin-bottom:12px;overflow:hidden}
 .section-head{padding:12px 16px;cursor:pointer;display:flex;align-items:center;gap:8px;
-font-weight:600;font-size:14px;user-select:none;color:hsl(var(--foreground));letter-spacing:-.2px}
+font-weight:600;font-size:14px;user-select:none;color:hsl(var(--foreground));letter-spacing:.01em}
 .section-head:hover{background:hsl(var(--accent))}
 .section-head .arrow{transition:transform .15s;color:hsl(var(--muted-foreground));display:inline-flex}
 .section-head .arrow svg{width:14px;height:14px;stroke:currentColor;stroke-width:2;stroke-linecap:round;
@@ -258,7 +262,7 @@ font-variant-numeric:tabular-nums}
 .section-prose{font-size:13px;color:hsl(var(--muted-foreground));margin-bottom:10px;padding:8px 12px;
 background:hsl(var(--muted));border-radius:calc(var(--radius) - 2px);border-left:2px solid hsl(var(--border))}
 .subsection{margin-left:8px;border-left:1px solid hsl(var(--border));padding-left:16px;margin-top:14px}
-.subsection-title{font-weight:600;font-size:13px;margin-bottom:6px;color:hsl(var(--foreground));letter-spacing:-.1px}
+.subsection-title{font-weight:600;font-size:13px;margin-bottom:6px;color:hsl(var(--foreground));letter-spacing:.01em}
 
 /* Clause */
 .clause{display:flex;gap:10px;padding:8px 2px;border-bottom:1px solid hsl(var(--border) / .5);align-items:baseline}
@@ -277,8 +281,8 @@ white-space:pre-wrap;word-break:break-all;line-height:1.5;color:hsl(var(--foregr
 .otherwise-chain .clause{opacity:.8}
 
 /* Keyword badges — ShadCN outline badge style */
-.kw{display:inline-block;padding:1px 8px;border-radius:calc(var(--radius) - 2px);font-size:10px;
-font-weight:600;white-space:nowrap;flex-shrink:0;text-transform:uppercase;letter-spacing:.4px;
+.kw{display:inline-block;padding:2px 8px;border-radius:calc(var(--radius) - 2px);font-size:10px;
+font-weight:600;white-space:nowrap;flex-shrink:0;text-transform:uppercase;letter-spacing:.06em;
 min-width:48px;text-align:center;border:1px solid transparent}
 .kw-Must,.kw-MustNot,.kw-MustAlways,.kw-MustBy{
   background:hsl(var(--kw-must-bg));color:hsl(var(--kw-must-fg));border-color:hsl(var(--kw-must-fg) / .2)}
