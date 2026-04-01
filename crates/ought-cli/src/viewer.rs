@@ -249,8 +249,7 @@ color:hsl(var(--muted-foreground))}
 .section-card{background:hsl(var(--card));border:1px solid hsl(var(--border));
 border-radius:var(--radius);margin-bottom:12px;overflow:hidden}
 .section-head{padding:12px 16px;cursor:pointer;display:flex;align-items:center;gap:8px;
-font-family:"Exo 2",sans-serif;font-weight:600;font-size:14px;user-select:none;
-color:hsl(var(--foreground));letter-spacing:.02em}
+font-weight:600;font-size:14px;user-select:none;color:hsl(var(--foreground));letter-spacing:0}
 .section-head:hover{background:hsl(var(--accent))}
 .section-head .arrow{transition:transform .15s;color:hsl(var(--muted-foreground));display:inline-flex}
 .section-head .arrow svg{width:14px;height:14px;stroke:currentColor;stroke-width:2;stroke-linecap:round;
@@ -263,8 +262,7 @@ font-variant-numeric:tabular-nums}
 .section-prose{font-size:13px;color:hsl(var(--muted-foreground));margin-bottom:10px;padding:8px 12px;
 background:hsl(var(--muted));border-radius:calc(var(--radius) - 2px);border-left:2px solid hsl(var(--border))}
 .subsection{margin-left:8px;border-left:1px solid hsl(var(--border));padding-left:16px;margin-top:14px}
-.subsection-title{font-family:"Exo 2",sans-serif;font-weight:600;font-size:13px;margin-bottom:6px;
-color:hsl(var(--foreground));letter-spacing:.02em}
+.subsection-title{font-weight:600;font-size:13px;margin-bottom:6px;color:hsl(var(--foreground))}
 
 /* Clause */
 .clause{display:flex;gap:10px;padding:8px 2px;border-bottom:1px solid hsl(var(--border) / .5);align-items:baseline}
