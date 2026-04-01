@@ -1,2 +1,4 @@
 /target
 .lattice/
+crates/ought-server/ui/node_modules/
+crates/ought-server/dist/

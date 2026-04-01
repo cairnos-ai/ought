@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Instrument Sans", ui-sans-serif, system-ui, -apple-system,
+    sans-serif;
+  --font-serif: "Charis SIL", Charter, Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-display: "Exo 2", sans-serif;
+  --radius: 0.5rem;
+}
+
+/* ─── Light mode tokens ─── */
+:root {
+  --background: oklch(0.98 0.005 75);
+  --foreground: oklch(0.15 0.01 75);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.15 0.01 75);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.15 0.01 75);
+  --primary: oklch(0.25 0.01 75);
+  --primary-foreground: oklch(0.98 0.005 75);
+  --secondary: oklch(0.96 0.005 75);
+  --secondary-foreground: oklch(0.15 0.01 75);
+  --muted: oklch(0.96 0.005 75);
+  --muted-foreground: oklch(0.55 0.01 75);
+  --accent: oklch(0.96 0.005 75);
+  --accent-foreground: oklch(0.15 0.01 75);
+  --destructive: oklch(0.55 0.2 25);
+  --destructive-foreground: oklch(0.98 0.005 75);
+  --border: oklch(0.9 0.005 75);
+  --input: oklch(0.9 0.005 75);
+  --ring: oklch(0.25 0.01 75);
+}
+
+/* ─── Dark mode tokens ─── */
+.dark {
+  --background: oklch(0.12 0.01 75);
+  --foreground: oklch(0.93 0.005 75);
+  --card: oklch(0.15 0.008 75);
+  --card-foreground: oklch(0.93 0.005 75);
+  --popover: oklch(0.15 0.008 75);
+  --popover-foreground: oklch(0.93 0.005 75);
+  --primary: oklch(0.93 0.005 75);
+  --primary-foreground: oklch(0.12 0.01 75);
+  --secondary: oklch(0.22 0.008 75);
+  --secondary-foreground: oklch(0.93 0.005 75);
+  --muted: oklch(0.22 0.008 75);
+  --muted-foreground: oklch(0.6 0.01 75);
+  --accent: oklch(0.22 0.008 75);
+  --accent-foreground: oklch(0.93 0.005 75);
+  --destructive: oklch(0.55 0.2 25);
+  --destructive-foreground: oklch(0.93 0.005 75);
+  --border: oklch(0.25 0.008 75);
+  --input: oklch(0.25 0.008 75);
+  --ring: oklch(0.6 0.01 75);
+}
+
+/* ─── Base styles ─── */
+* {
+  border-color: var(--border);
+}
+
+body {
+  margin: 0;
+  background-color: var(--background);
+  color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}

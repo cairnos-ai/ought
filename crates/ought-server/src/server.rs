@@ -3,13 +3,48 @@ use std::path::{Path, PathBuf};
 
 use axum::{
     Router,
-    response::{Html, Json},
+    response::{IntoResponse, Json},
     routing::get,
 };
+use rust_embed::Embed;
+
 use ought_spec::{Config, SpecGraph};
 
 use crate::api::build_api_response;
-use crate::html::VIEWER_HTML;
+
+#[derive(Embed)]
+#[folder = "dist/"]
+struct Assets;
+
+async fn static_handler(uri: axum::http::Uri) -> impl IntoResponse {
+    let path = uri.path().trim_start_matches('/');
+    let path = if path.is_empty() { "index.html" } else { path };
+
+    match Assets::get(path) {
+        Some(content) => {
+            let mime = mime_guess::from_path(path).first_or_text_plain();
+            (
+                [(axum::http::header::CONTENT_TYPE, mime.as_ref().to_string())],
+                content.data.to_vec(),
+            )
+                .into_response()
+        }
+        None => {
+            // SPA fallback: serve index.html for client-side routing
+            match Assets::get("index.html") {
+                Some(content) => (
+                    [(
+                        axum::http::header::CONTENT_TYPE,
+                        "text/html".to_string(),
+                    )],
+                    content.data.to_vec(),
+                )
+                    .into_response(),
+                None => axum::http::StatusCode::NOT_FOUND.into_response(),
+            }
+        }
+    }
+}
 
 /// Serve the ought viewer on the given port.
 /// Parses specs from the config, starts an HTTP server, and optionally opens the browser.
@@ -43,14 +78,14 @@ pub async fn serve(config_path: Option<&Path>, port: u16, open_browser: bool) ->
 
     let json_data = api_json.clone();
     let app = Router::new()
-        .route("/", get(|| async { Html(VIEWER_HTML) }))
         .route(
             "/api/specs",
             get(move || {
                 let data = json_data.clone();
                 async move { Json(data) }
             }),
-        );
+        )
+        .fallback(static_handler);
 
     let addr = SocketAddr::from(([127, 0, 0, 1], port));
     let listener = tokio::net::TcpListener::bind(addr).await?;
