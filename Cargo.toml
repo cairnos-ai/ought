@@ -14,8 +14,8 @@ members = [
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/aishfenton/ought"
-homepage = "https://github.com/aishfenton/ought"
+repository = "https://github.com/cairnos-ai/ought"
+homepage = "https://github.com/cairnos-ai/ought"
 keywords = ["testing", "specs", "llm", "behavioral", "deontic"]
 categories = ["development-tools::testing"]
 
