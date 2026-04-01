@@ -269,7 +269,7 @@ background:hsl(var(--muted));border-radius:calc(var(--radius) - 2px);border-left
 .clause:last-child{border-bottom:none}
 .clause-condition{font-size:11px;color:hsl(var(--kw-given-fg));padding:6px 0 2px;font-weight:500;
 font-family:ui-monospace,SFMono-Regular,monospace;letter-spacing:-.2px}
-.clause-text{flex:1;font-family:"Charis SIL",Charter,Georgia,serif;font-size:14px;line-height:1.6;
+.clause-text{flex:1;font-family:"Charis SIL",Charter,Georgia,serif;font-size:16px;line-height:1.6;
 color:hsl(var(--foreground) / .9)}
 .clause-hints{margin-top:6px}
 .clause-hint{background:hsl(var(--muted));border:1px solid hsl(var(--border));
