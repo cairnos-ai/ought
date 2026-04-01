@@ -153,7 +153,7 @@ fn test_generator__context_assembly__must_include_the_free_text_context_block() 
         project: ProjectConfig { name: "test".to_string(), version: "0.1.0".to_string() },
         specs: SpecsConfig::default(),
         context: ContextConfig { search_paths: vec![], exclude: vec![], max_files: 50 },
-        generator: GeneratorConfig { provider: "claude".to_string(), model: None, tolerance: ToleranceConfig::default() },
+        generator: GeneratorConfig { provider: "claude".to_string(), model: None, tolerance: ToleranceConfig::default(), ..Default::default() },
         runner: HashMap::new(),
         mcp: McpConfig::default(),
     };
@@ -224,7 +224,7 @@ fn test_generator__context_assembly__must_read_and_include_source_files_referenc
         project: ProjectConfig { name: "test".to_string(), version: "0.1.0".to_string() },
         specs: SpecsConfig::default(),
         context: ContextConfig { search_paths: vec![], exclude: vec![], max_files: 50 },
-        generator: GeneratorConfig { provider: "claude".to_string(), model: None, tolerance: ToleranceConfig::default() },
+        generator: GeneratorConfig { provider: "claude".to_string(), model: None, tolerance: ToleranceConfig::default(), ..Default::default() },
         runner: HashMap::new(),
         mcp: McpConfig::default(),
     };
@@ -287,7 +287,7 @@ fn test_generator__context_assembly__must_read_and_include_schema_files_referenc
         project: ProjectConfig { name: "test".to_string(), version: "0.1.0".to_string() },
         specs: SpecsConfig::default(),
         context: ContextConfig { search_paths: vec![], exclude: vec![], max_files: 50 },
-        generator: GeneratorConfig { provider: "claude".to_string(), model: None, tolerance: ToleranceConfig::default() },
+        generator: GeneratorConfig { provider: "claude".to_string(), model: None, tolerance: ToleranceConfig::default(), ..Default::default() },
         runner: HashMap::new(),
         mcp: McpConfig::default(),
     };
@@ -364,7 +364,7 @@ fn test_generator__context_assembly__should_auto_discover_relevant_source_files_
             exclude: vec![],
             max_files: 50,
         },
-        generator: GeneratorConfig { provider: "claude".to_string(), model: None, tolerance: ToleranceConfig::default() },
+        generator: GeneratorConfig { provider: "claude".to_string(), model: None, tolerance: ToleranceConfig::default(), ..Default::default() },
         runner: HashMap::new(),
         mcp: McpConfig::default(),
     };
@@ -438,7 +438,7 @@ fn test_generator__context_assembly__should_rank_discovered_files_by_relevance_t
             exclude: vec![],
             max_files: 50,
         },
-        generator: GeneratorConfig { provider: "claude".to_string(), model: None, tolerance: ToleranceConfig::default() },
+        generator: GeneratorConfig { provider: "claude".to_string(), model: None, tolerance: ToleranceConfig::default(), ..Default::default() },
         runner: HashMap::new(),
         mcp: McpConfig::default(),
     };
@@ -502,7 +502,7 @@ fn test_generator__context_assembly__must_respect_the_max_files_limit_in_ought_t
             exclude: vec![],
             max_files,
         },
-        generator: GeneratorConfig { provider: "claude".to_string(), model: None, tolerance: ToleranceConfig::default() },
+        generator: GeneratorConfig { provider: "claude".to_string(), model: None, tolerance: ToleranceConfig::default(), ..Default::default() },
         runner: HashMap::new(),
         mcp: McpConfig::default(),
     };

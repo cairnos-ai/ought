@@ -7,6 +7,7 @@ use ought_gen::manifest::Manifest;
 use ought_gen::providers;
 use ought_report::types::{ColorChoice as ReportColor, ReportOptions};
 use ought_run::runners;
+use ought_spec::config::GenerationMode;
 use ought_spec::{Config, SpecGraph};
 
 #[derive(Parser)]
@@ -160,6 +161,14 @@ enum McpCommand {
         /// Port for SSE transport.
         #[arg(long)]
         port: Option<u16>,
+
+        /// Server mode: "standard" (default) or "generation" for agent-driven generation.
+        #[arg(long, default_value = "standard")]
+        mode: String,
+
+        /// Path to assignment JSON file (required for generation mode).
+        #[arg(long)]
+        assignment: Option<PathBuf>,
     },
 
     /// Register with MCP-compatible coding agents.
@@ -342,6 +351,119 @@ fn collect_clause_info_from_sections(
             }
         }
         collect_clause_info_from_sections(&section.subsections, map);
+    }
+}
+
+// ─── Agent assignment builder ──────────────────────────────────────────────
+
+/// Convert SectionGroups into AgentAssignments, partitioning across N agents round-robin.
+/// Only includes stale clauses (unless force is true).
+fn build_agent_assignments(
+    groups: &[SectionGroup<'_>],
+    manifest: &Manifest,
+    config: &Config,
+    config_path: &std::path::Path,
+    test_dir: &std::path::Path,
+    parallelism: usize,
+    force: bool,
+) -> Vec<ought_gen::AgentAssignment> {
+    let project_root = config_path
+        .parent()
+        .unwrap_or(std::path::Path::new("."))
+        .to_string_lossy()
+        .to_string();
+
+    // Determine target language string.
+    let target_language = config
+        .runner
+        .keys()
+        .next()
+        .cloned()
+        .unwrap_or_else(|| "rust".to_string());
+
+    // Collect stale groups with their assignment groups.
+    let mut assignment_groups: Vec<ought_gen::AssignmentGroup> = Vec::new();
+
+    for group in groups {
+        let stale_clauses: Vec<&ought_spec::Clause> = group
+            .testable_clauses
+            .iter()
+            .filter(|c| {
+                if force {
+                    true
+                } else {
+                    manifest.is_stale(&c.id, &c.content_hash, "")
+                }
+            })
+            .copied()
+            .collect();
+
+        if stale_clauses.is_empty() {
+            continue;
+        }
+
+        let clauses: Vec<ought_gen::AssignmentClause> = stale_clauses
+            .iter()
+            .map(|c| clause_to_assignment_clause(c))
+            .collect();
+
+        assignment_groups.push(ought_gen::AssignmentGroup {
+            section_path: group.section_path.clone(),
+            clauses,
+            conditions: group.conditions.clone(),
+        });
+    }
+
+    if assignment_groups.is_empty() {
+        return vec![];
+    }
+
+    // Partition groups round-robin across N agents.
+    let n = parallelism.min(assignment_groups.len()).max(1);
+    let mut buckets: Vec<Vec<ought_gen::AssignmentGroup>> = (0..n).map(|_| Vec::new()).collect();
+
+    for (i, group) in assignment_groups.into_iter().enumerate() {
+        buckets[i % n].push(group);
+    }
+
+    buckets
+        .into_iter()
+        .enumerate()
+        .filter(|(_, groups)| !groups.is_empty())
+        .map(|(i, groups)| ought_gen::AgentAssignment {
+            id: format!("agent_{}", i),
+            project_root: project_root.clone(),
+            config_path: config_path.to_string_lossy().to_string(),
+            test_dir: test_dir.to_string_lossy().to_string(),
+            target_language: target_language.clone(),
+            groups,
+        })
+        .collect()
+}
+
+/// Convert a spec Clause into an AssignmentClause (serializable).
+fn clause_to_assignment_clause(clause: &ought_spec::Clause) -> ought_gen::AssignmentClause {
+    let keyword = ought_gen::providers::keyword_str(clause.keyword).to_string();
+    let temporal = clause.temporal.as_ref().map(|t| match t {
+        ought_spec::Temporal::Invariant => "MUST ALWAYS".to_string(),
+        ought_spec::Temporal::Deadline(dur) => format!("MUST BY {:?}", dur),
+    });
+
+    let otherwise: Vec<ought_gen::AssignmentClause> = clause
+        .otherwise
+        .iter()
+        .map(clause_to_assignment_clause)
+        .collect();
+
+    ought_gen::AssignmentClause {
+        id: clause.id.0.clone(),
+        keyword,
+        text: clause.text.clone(),
+        condition: clause.condition.clone(),
+        temporal,
+        content_hash: clause.content_hash.clone(),
+        hints: clause.hints.clone(),
+        otherwise,
     }
 }
 
@@ -575,11 +697,6 @@ fn cmd_generate(cli: &Cli, args: &GenerateArgs) -> anyhow::Result<()> {
     let (config_path, config) = load_config(&cli.config)?;
     let specs = load_specs(&config, &config_path)?;
 
-    let generator = providers::from_config(
-        &config.generator.provider,
-        config.generator.model.as_deref(),
-    )?;
-
     let config_dir = config_path.parent().unwrap_or(std::path::Path::new("."));
     let test_dir = config
         .runner
@@ -593,7 +710,6 @@ fn cmd_generate(cli: &Cli, args: &GenerateArgs) -> anyhow::Result<()> {
     let manifest_path = test_dir.join("manifest.toml");
     let mut manifest = Manifest::load(&manifest_path).unwrap_or_default();
 
-    let assembler = ought_gen::ContextAssembler::new(&config);
     let groups = collect_section_groups(&specs);
 
     let mut generated_count = 0;
@@ -601,131 +717,181 @@ fn cmd_generate(cli: &Cli, args: &GenerateArgs) -> anyhow::Result<()> {
     let mut error_count = 0;
     let mut stale_count = 0;
 
-    for group in &groups {
-        // Filter to only stale clauses in this group
-        let stale_clauses: Vec<&ought_spec::Clause> = group
-            .testable_clauses
-            .iter()
-            .filter(|c| {
-                if args.force {
-                    true
-                } else {
-                    manifest.is_stale(&c.id, &c.content_hash, "")
-                }
-            })
-            .copied()
-            .collect();
+    match config.generator.mode {
+        GenerationMode::Agent => {
+            // Agent mode: spawn LLM agents with MCP server connections.
+            let assignments = build_agent_assignments(
+                &groups,
+                &manifest,
+                &config,
+                &config_path,
+                &test_dir,
+                config.generator.parallelism.max(1),
+                args.force,
+            );
 
-        let fresh_count = group.testable_clauses.len() - stale_clauses.len();
-        skipped_count += fresh_count;
-
-        if stale_clauses.is_empty() {
-            continue;
-        }
-
-        if args.check {
-            for clause in &stale_clauses {
-                eprintln!("  stale: {}", clause.id);
-            }
-            stale_count += stale_clauses.len();
-            continue;
-        }
-
-        // Build the batch group
-        let batch = ought_gen::ClauseGroup {
-            section_path: group.section_path.clone(),
-            clauses: stale_clauses.clone(),
-            conditions: group.conditions.clone(),
-        };
-
-        let clause_count = batch.clauses.len();
-
-        // Print section header
-        eprintln!();
-        eprintln!(
-            "  \x1b[1m{}\x1b[0m ({} clauses)",
-            group.section_path, clause_count
-        );
-
-        // In verbose mode, list the clauses being generated
-        if cli.verbose {
-            for clause in &stale_clauses {
+            if assignments.is_empty() {
+                eprintln!("All tests up to date, nothing to generate.");
+            } else {
+                let total_clauses: usize =
+                    assignments.iter().map(|a| a.groups.iter().map(|g| g.clauses.len()).sum::<usize>()).sum();
                 eprintln!(
-                    "    \x1b[2m{} {}\x1b[0m",
-                    ought_gen::providers::keyword_str(clause.keyword),
-                    clause.text,
+                    "Agent mode: {} assignments, {} clauses to generate",
+                    assignments.len(),
+                    total_clauses
                 );
-            }
-            if !group.conditions.is_empty() {
-                for cond in &group.conditions {
-                    eprintln!("    \x1b[2mGIVEN: {}\x1b[0m", cond);
-                }
-            }
-        }
 
-        // Assemble context from the first clause (they share a section/spec)
-        let mut context = assembler
-            .assemble(stale_clauses[0], group.spec)
-            .unwrap_or_else(|_| ought_gen::context::GenerationContext {
-                spec_context: group.spec.metadata.context.clone(),
-                source_files: vec![],
-                schema_files: vec![],
-                target_language: ought_gen::generator::Language::Rust,
-                verbose: false,
-            });
-        context.verbose = cli.verbose;
+                let orchestrator = ought_gen::Orchestrator::new(&config, cli.verbose);
+                let reports = orchestrator.run(assignments)?;
 
-        if cli.verbose && !context.source_files.is_empty() {
-            eprintln!("    \x1b[2mcontext: {} source files\x1b[0m", context.source_files.len());
-        }
-
-        match generator.generate_batch(&batch, &context) {
-            Ok(tests) => {
-                for test in &tests {
-                    let file_path = test_dir.join(&test.file_path);
-                    if let Some(parent) = file_path.parent() {
-                        std::fs::create_dir_all(parent)?;
+                for report in &reports {
+                    generated_count += report.generated;
+                    for err in &report.errors {
+                        eprintln!("  error: {}", err);
+                        error_count += 1;
                     }
-                    std::fs::write(&file_path, &test.code)?;
-
-                    manifest.entries.insert(
-                        test.clause_id.0.clone(),
-                        ought_gen::manifest::ManifestEntry {
-                            clause_hash: stale_clauses
-                                .iter()
-                                .find(|c| c.id == test.clause_id)
-                                .map(|c| c.content_hash.clone())
-                                .unwrap_or_default(),
-                            source_hash: String::new(),
-                            generated_at: chrono::Utc::now(),
-                            model: config
-                                .generator
-                                .model
-                                .clone()
-                                .unwrap_or_else(|| "default".into()),
-                        },
-                    );
                 }
+            }
+        }
+        GenerationMode::Prompt => {
+            // Existing prompt-based code path (unchanged).
+            let generator = providers::from_config(
+                &config.generator.provider,
+                config.generator.model.as_deref(),
+            )?;
+
+            let assembler = ought_gen::ContextAssembler::new(&config);
+
+            for group in &groups {
+                // Filter to only stale clauses in this group
+                let stale_clauses: Vec<&ought_spec::Clause> = group
+                    .testable_clauses
+                    .iter()
+                    .filter(|c| {
+                        if args.force {
+                            true
+                        } else {
+                            manifest.is_stale(&c.id, &c.content_hash, "")
+                        }
+                    })
+                    .copied()
+                    .collect();
+
+                let fresh_count = group.testable_clauses.len() - stale_clauses.len();
+                skipped_count += fresh_count;
+
+                if stale_clauses.is_empty() {
+                    continue;
+                }
+
+                if args.check {
+                    for clause in &stale_clauses {
+                        eprintln!("  stale: {}", clause.id);
+                    }
+                    stale_count += stale_clauses.len();
+                    continue;
+                }
+
+                // Build the batch group
+                let batch = ought_gen::ClauseGroup {
+                    section_path: group.section_path.clone(),
+                    clauses: stale_clauses.clone(),
+                    conditions: group.conditions.clone(),
+                };
+
+                let clause_count = batch.clauses.len();
+
+                // Print section header
+                eprintln!();
                 eprintln!(
-                    "  \x1b[32m\u{2713}\x1b[0m {} tests generated",
-                    tests.len()
+                    "  \x1b[1m{}\x1b[0m ({} clauses)",
+                    group.section_path, clause_count
                 );
+
+                // In verbose mode, list the clauses being generated
                 if cli.verbose {
-                    for test in &tests {
+                    for clause in &stale_clauses {
                         eprintln!(
-                            "    \x1b[2mwrote {}\x1b[0m",
-                            test.file_path.display()
+                            "    \x1b[2m{} {}\x1b[0m",
+                            ought_gen::providers::keyword_str(clause.keyword),
+                            clause.text,
                         );
                     }
+                    if !group.conditions.is_empty() {
+                        for cond in &group.conditions {
+                            eprintln!("    \x1b[2mGIVEN: {}\x1b[0m", cond);
+                        }
+                    }
                 }
-                generated_count += tests.len();
 
-                // Save manifest after each batch so ctrl+c doesn't lose progress
-                manifest.save(&manifest_path)?;
-            }
-            Err(e) => {
-                eprintln!("  \x1b[31m\u{2717}\x1b[0m error: {}", e);
-                error_count += clause_count;
+                // Assemble context from the first clause (they share a section/spec)
+                let mut context = assembler
+                    .assemble(stale_clauses[0], group.spec)
+                    .unwrap_or_else(|_| ought_gen::context::GenerationContext {
+                        spec_context: group.spec.metadata.context.clone(),
+                        source_files: vec![],
+                        schema_files: vec![],
+                        target_language: ought_gen::generator::Language::Rust,
+                        verbose: false,
+                    });
+                context.verbose = cli.verbose;
+
+                if cli.verbose && !context.source_files.is_empty() {
+                    eprintln!(
+                        "    \x1b[2mcontext: {} source files\x1b[0m",
+                        context.source_files.len()
+                    );
+                }
+
+                match generator.generate_batch(&batch, &context) {
+                    Ok(tests) => {
+                        for test in &tests {
+                            let file_path = test_dir.join(&test.file_path);
+                            if let Some(parent) = file_path.parent() {
+                                std::fs::create_dir_all(parent)?;
+                            }
+                            std::fs::write(&file_path, &test.code)?;
+
+                            manifest.entries.insert(
+                                test.clause_id.0.clone(),
+                                ought_gen::manifest::ManifestEntry {
+                                    clause_hash: stale_clauses
+                                        .iter()
+                                        .find(|c| c.id == test.clause_id)
+                                        .map(|c| c.content_hash.clone())
+                                        .unwrap_or_default(),
+                                    source_hash: String::new(),
+                                    generated_at: chrono::Utc::now(),
+                                    model: config
+                                        .generator
+                                        .model
+                                        .clone()
+                                        .unwrap_or_else(|| "default".into()),
+                                },
+                            );
+                        }
+                        eprintln!(
+                            "  \x1b[32m\u{2713}\x1b[0m {} tests generated",
+                            tests.len()
+                        );
+                        if cli.verbose {
+                            for test in &tests {
+                                eprintln!(
+                                    "    \x1b[2mwrote {}\x1b[0m",
+                                    test.file_path.display()
+                                );
+                            }
+                        }
+                        generated_count += tests.len();
+
+                        // Save manifest after each batch so ctrl+c doesn't lose progress
+                        manifest.save(&manifest_path)?;
+                    }
+                    Err(e) => {
+                        eprintln!("  \x1b[31m\u{2717}\x1b[0m error: {}", e);
+                        error_count += clause_count;
+                    }
+                }
             }
         }
     }
@@ -1569,12 +1735,27 @@ fn main() -> anyhow::Result<()> {
             McpCommand::Serve {
                 transport: _,
                 port: _,
+                mode,
+                assignment,
             } => {
-                eprintln!("ought mcp serve is not yet implemented");
-                Ok(())
+                if mode == "generation" {
+                    let assignment_path = assignment
+                        .as_ref()
+                        .ok_or_else(|| anyhow::anyhow!("--assignment is required for generation mode"))?;
+                    let server =
+                        ought_mcp::gen_server::GenMcpServer::from_assignment_path(assignment_path)?;
+                    tokio::runtime::Runtime::new()?.block_on(server.serve_stdio())
+                } else {
+                    let (config_path, _config) = load_config(&cli.config)?;
+                    let server = ought_mcp::server::McpServer::new(config_path);
+                    tokio::runtime::Runtime::new()?.block_on(
+                        server.serve(ought_mcp::server::Transport::Stdio),
+                    )
+                }
             }
             McpCommand::Install => {
-                eprintln!("ought mcp install is not yet implemented");
+                ought_mcp::server::McpServer::install()?;
+                eprintln!("Registered ought with MCP-compatible coding agents.");
                 Ok(())
             }
         },
