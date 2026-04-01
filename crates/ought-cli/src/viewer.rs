@@ -135,7 +135,7 @@ const VIEWER_HTML: &str = r##"<!DOCTYPE html>
 <title>ought viewer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@500;600;700;800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
@@ -186,9 +186,9 @@ a:hover{opacity:.8}
 /* Header */
 .header{background:hsl(var(--card));border-bottom:1px solid hsl(var(--border));
 padding:0 20px;display:flex;align-items:center;gap:16px;flex-shrink:0;height:52px}
-.header h1{font-size:15px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
-display:flex;align-items:center;gap:6px}
-.header h1 .logo{opacity:.4;font-weight:400;letter-spacing:.08em}
+.header h1{font-family:"Exo 2",sans-serif;font-size:15px;font-weight:700;letter-spacing:.08em;
+text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.header h1 .logo{opacity:.4;font-weight:500;letter-spacing:.1em}
 .header .stats{font-size:12px;color:hsl(var(--muted-foreground));margin-left:auto;display:flex;gap:12px;align-items:center}
 .header .stats span{white-space:nowrap}
 .icon-btn{background:transparent;border:1px solid hsl(var(--border));color:hsl(var(--foreground));
@@ -237,7 +237,7 @@ stroke-linejoin:round;fill:none}
 font-variant-numeric:tabular-nums}
 
 /* Spec header */
-.spec-header h2{font-size:22px;font-weight:700;margin-bottom:2px;letter-spacing:.01em}
+.spec-header h2{font-family:"Exo 2",sans-serif;font-size:22px;font-weight:700;margin-bottom:2px;letter-spacing:.02em}
 .spec-path{font-size:12px;color:hsl(var(--muted-foreground));margin-bottom:20px;
 font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px}
 .meta-block{background:hsl(var(--muted));border:1px solid hsl(var(--border));
@@ -249,7 +249,8 @@ color:hsl(var(--muted-foreground))}
 .section-card{background:hsl(var(--card));border:1px solid hsl(var(--border));
 border-radius:var(--radius);margin-bottom:12px;overflow:hidden}
 .section-head{padding:12px 16px;cursor:pointer;display:flex;align-items:center;gap:8px;
-font-weight:600;font-size:14px;user-select:none;color:hsl(var(--foreground));letter-spacing:.01em}
+font-family:"Exo 2",sans-serif;font-weight:600;font-size:14px;user-select:none;
+color:hsl(var(--foreground));letter-spacing:.02em}
 .section-head:hover{background:hsl(var(--accent))}
 .section-head .arrow{transition:transform .15s;color:hsl(var(--muted-foreground));display:inline-flex}
 .section-head .arrow svg{width:14px;height:14px;stroke:currentColor;stroke-width:2;stroke-linecap:round;
@@ -262,7 +263,8 @@ font-variant-numeric:tabular-nums}
 .section-prose{font-size:13px;color:hsl(var(--muted-foreground));margin-bottom:10px;padding:8px 12px;
 background:hsl(var(--muted));border-radius:calc(var(--radius) - 2px);border-left:2px solid hsl(var(--border))}
 .subsection{margin-left:8px;border-left:1px solid hsl(var(--border));padding-left:16px;margin-top:14px}
-.subsection-title{font-weight:600;font-size:13px;margin-bottom:6px;color:hsl(var(--foreground));letter-spacing:.01em}
+.subsection-title{font-family:"Exo 2",sans-serif;font-weight:600;font-size:13px;margin-bottom:6px;
+color:hsl(var(--foreground));letter-spacing:.02em}
 
 /* Clause */
 .clause{display:flex;gap:10px;padding:8px 2px;border-bottom:1px solid hsl(var(--border) / .5);align-items:baseline}
