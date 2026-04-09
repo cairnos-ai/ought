@@ -2638,12 +2638,14 @@ fn test_cli_watch_should_debounce_rapid_file_changes_at_least_500ms() {
         String::from_utf8_lossy(&output.stderr)
     );
 
-    // Count how many times a "running" / cycle-start marker appears.
-    // A debounced watcher fires at most once for the burst.
-    // We accept 1 or 2 cycles (initial + debounced); we must not see 5.
-    let run_count = combined.matches("passed").count()
-        + combined.matches("failed").count()
-        + combined.matches("running").count();
+    // Count cycle-start markers. `ought watch` emits "ought watch: checking N
+    // spec(s)..." exactly once per cycle (initial + each debounced burst), so
+    // it's a deterministic per-cycle marker — unlike words like "passed" or
+    // "running" which appear multiple times within a single cycle's output and
+    // cause the test to be flaky depending on output flush timing.
+    // A debounced watcher fires at most once for the burst, so we accept up to
+    // 2 cycles (initial + 1 debounced); we must not see 5.
+    let run_count = combined.matches("ought watch: checking").count();
 
     assert!(
         run_count <= 2,

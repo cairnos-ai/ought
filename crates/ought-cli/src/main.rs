@@ -1285,14 +1285,37 @@ fn cmd_watch(cli: &Cli) -> anyhow::Result<()> {
     run_cycle(cli, &config_path, &config);
 
     // Set up the file watcher.
+    //
+    // The callback filters events to only fire on changes to **spec files**
+    // (`*.ought.md`) or to files within configured **source paths**. This is
+    // important because `run_cycle` calls the language runner, which re-writes
+    // the generated test files into `test_dir` on every run. Since `test_dir`
+    // typically lives inside the watched spec roots, those writes would otherwise
+    // create a feedback loop where each cycle's own output triggers the next
+    // cycle.
     let (tx, rx) = mpsc::channel();
+    let source_paths_for_filter: Vec<PathBuf> = source_paths
+        .iter()
+        .map(|p| p.canonicalize().unwrap_or_else(|_| p.clone()))
+        .collect();
     let mut watcher = notify::recommended_watcher(move |res: Result<notify::Event, _>| {
         if let Ok(event) = res {
             let dominated = matches!(
                 event.kind,
                 notify::EventKind::Modify(_) | notify::EventKind::Create(_) | notify::EventKind::Remove(_)
             );
-            if dominated {
+            if !dominated {
+                return;
+            }
+            let is_relevant = event.paths.iter().any(|p| {
+                // Spec files
+                if p.to_str().is_some_and(|s| s.ends_with(".ought.md")) {
+                    return true;
+                }
+                // Files within any configured source path
+                source_paths_for_filter.iter().any(|src| p.starts_with(src))
+            });
+            if is_relevant {
                 let _ = tx.send(());
             }
         }
