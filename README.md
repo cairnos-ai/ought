@@ -30,11 +30,38 @@ Every arrow is LLM-powered. Traditional test tools only have the bottom triangle
 
 ### Install
 
+**Shell installer (Linux + macOS, recommended):**
+
+```
+curl -sS https://raw.githubusercontent.com/soseinai/ought/main/install.sh | sh
+```
+
+This downloads a prebuilt binary for your platform and installs it to `~/.local/bin/ought`.
+Pin a version with `OUGHT_VERSION=v0.1.0` or change the install location with
+`OUGHT_INSTALL_DIR=/usr/local/bin`. Inspect the script before running with
+`curl -sS https://raw.githubusercontent.com/soseinai/ought/main/install.sh | less`.
+
+**Homebrew:**
+
+```
+brew install soseinai/tap/ought
+```
+
+**Cargo:**
+
 ```
 cargo install ought
-brew install ought
-# or download a binary from GitHub releases
 ```
+
+**From source:**
+
+```
+git clone https://github.com/soseinai/ought
+cd ought
+just install
+```
+
+Or grab a prebuilt binary directly from [GitHub Releases](https://github.com/soseinai/ought/releases).
 
 ### Initialize
 
