@@ -10,7 +10,7 @@ use ought_spec::{Config, SpecGraph};
 
 
 #[derive(Parser)]
-#[command(name = "ought", about = "Behavioral test framework powered by LLMs")]
+#[command(name = "ought", version, about = "Behavioral test framework powered by LLMs")]
 struct Cli {
     #[command(subcommand)]
     command: Command,
