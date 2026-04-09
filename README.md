@@ -287,7 +287,8 @@ See [docs/design.md](docs/design.md) for the full design document.
 
 ## Contributing
 
-Ought is written in Rust and structured as a Cargo workspace:
+Ought is written in Rust and structured as a Cargo workspace, with a small
+Svelte UI for the proof viewer:
 
 ```
 crates/
@@ -297,10 +298,28 @@ crates/
   ought-report/      # reporter + TUI
   ought-analysis/    # survey, audit, blame, bisect
   ought-mcp/         # MCP server
+  ought-server/      # viewer web UI (Svelte + shadcn-svelte)
   ought-cli/         # CLI binary
 ```
 
 `ought-spec` has zero dependencies on LLM infrastructure and is published separately for ecosystem interop.
+
+### Building from source
+
+Prerequisites: Rust (stable), Node.js (20+), and [`just`](https://github.com/casey/just).
+
+```
+just build       # build everything (UI + Rust)
+just test        # run all tests
+just lint        # lint UI (svelte-check) + Rust (clippy)
+just ci          # full CI pipeline (test + lint)
+just install     # build a release binary and install ought to ~/.local/bin
+just --list      # list all recipes
+```
+
+The Svelte UI is bundled into the `ought` binary at compile time via
+`rust-embed`, so the UI must be built before any cargo command — `just` handles
+that ordering for you. See `CONTRIBUTING.md` for the contributor agreement.
 
 ## License
 

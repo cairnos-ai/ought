@@ -1,3 +1,4 @@
+#![allow(dead_code, clippy::all)]
 #[allow(unused_imports)]
 use ought_spec::parser::Parser;
 #[allow(unused_imports)]
@@ -14,7 +15,7 @@ use std::fs;
 // --- must_generate_a_content_hash_for_each_clause_based_on_keyword_tex_test.rs ---
 /// MUST generate a content hash for each clause based on keyword + text + relevant context
 #[test]
-fn test_parser__clause_ir__must_generate_a_content_hash_for_each_clause_based_on_keyword_tex() {
+fn test_parser_clause_ir_must_generate_a_content_hash_for_each_clause_based_on_keyword_tex() {
 
     let md = "# Svc\n\n## Rules\n\n- **MUST** do something specific\n";
 
@@ -66,7 +67,7 @@ fn test_parser__clause_ir__must_generate_a_content_hash_for_each_clause_based_on
 /// MUST generate stable clause identifiers from the section path and clause text
 /// (e.g. `auth::login::must_return_jwt`)
 #[test]
-fn test_parser__clause_ir__must_generate_stable_clause_identifiers_from_the_section_path_and() {
+fn test_parser_clause_ir_must_generate_stable_clause_identifiers_from_the_section_path_and() {
 
     let md = "# Auth\n\n## Login\n\n- **MUST** return a JWT token\n";
 
@@ -106,7 +107,7 @@ fn test_parser__clause_ir__must_generate_stable_clause_identifiers_from_the_sect
 // --- must_include_a_condition_field_populated_from_the_parent_given_bl_test.rs ---
 /// MUST include a `condition` field populated from the parent GIVEN block (null if unconditional)
 #[test]
-fn test_parser__clause_ir__must_include_a_condition_field_populated_from_the_parent_given_bl() {
+fn test_parser_clause_ir_must_include_a_condition_field_populated_from_the_parent_given_bl() {
 
     // Unconditional clause has None condition
     let md = "# Svc\n\n## Rules\n\n- **MUST** always do this\n";
@@ -140,7 +141,7 @@ fn test_parser__clause_ir__must_include_a_condition_field_populated_from_the_par
 /// MUST include a `temporal` field for MUST ALWAYS (qualifier: invariant) and
 /// MUST BY (qualifier: deadline, duration: value+unit)
 #[test]
-fn test_parser__clause_ir__must_include_a_temporal_field_for_must_always_qualifier_invariant() {
+fn test_parser_clause_ir_must_include_a_temporal_field_for_must_always_qualifier_invariant() {
 
     // Plain MUST has no temporal field
     let md = "# Svc\n\n## Rules\n\n- **MUST** validate input\n";
@@ -190,7 +191,7 @@ fn test_parser__clause_ir__must_include_a_temporal_field_for_must_always_qualifi
 // --- must_include_an_otherwise_field_containing_the_ordered_list_of_fa_test.rs ---
 /// MUST include an `otherwise` field containing the ordered list of fallback clauses (empty if none)
 #[test]
-fn test_parser__clause_ir__must_include_an_otherwise_field_containing_the_ordered_list_of_fa() {
+fn test_parser_clause_ir_must_include_an_otherwise_field_containing_the_ordered_list_of_fa() {
 
     // Clause without OTHERWISE has an empty otherwise vec
     let md = "# Svc\n\n## Perf\n\n- **MUST** respond within 200ms\n";
@@ -233,7 +234,7 @@ fn test_parser__clause_ir__must_include_an_otherwise_field_containing_the_ordere
 /// MUST produce a clause IR struct containing: keyword, severity, clause text,
 /// source location (file, line), parent section path, and a stable identifier
 #[test]
-fn test_parser__clause_ir__must_produce_a_clause_ir_struct_containing_keyword_severity_claus() {
+fn test_parser_clause_ir_must_produce_a_clause_ir_struct_containing_keyword_severity_claus() {
 
     let md = "# Auth\n\n## Login\n\n- **MUST** return a JWT token\n";
     let spec = Parser::parse_string(md, Path::new("auth.ought.md")).expect("parse failed");
@@ -263,7 +264,7 @@ fn test_parser__clause_ir__must_produce_a_clause_ir_struct_containing_keyword_se
 // --- should_include_any_code_blocks_immediately_following_a_clause_as_hi_test.rs ---
 /// SHOULD include any code blocks immediately following a clause as "hints" attached to that clause
 #[test]
-fn test_parser__clause_ir__should_include_any_code_blocks_immediately_following_a_clause_as_hi() {
+fn test_parser_clause_ir_should_include_any_code_blocks_immediately_following_a_clause_as_hi() {
 
     // Code block immediately after a clause becomes a hint on that clause
     let md = concat!(
@@ -307,7 +308,7 @@ fn test_parser__clause_ir__should_include_any_code_blocks_immediately_following_
 // --- should_include_surrounding_prose_markdown_in_the_clause_s_context_f_test.rs ---
 /// SHOULD include surrounding prose/markdown in the clause's context field for the LLM
 #[test]
-fn test_parser__clause_ir__should_include_surrounding_prose_markdown_in_the_clause_s_context_f() {
+fn test_parser_clause_ir_should_include_surrounding_prose_markdown_in_the_clause_s_context_f() {
 
     // Prose surrounding clauses is preserved in the section's prose field (LLM context)
     let md = concat!(
@@ -344,7 +345,7 @@ fn test_parser__clause_ir__should_include_surrounding_prose_markdown_in_the_clau
 // --- must_attach_the_given_condition_text_to_all_clauses_nested_within_test.rs ---
 /// MUST attach the GIVEN condition text to all clauses nested within it
 #[test]
-fn test_parser__conditional_blocks_given__must_attach_the_given_condition_text_to_all_clauses_nested_within() {
+fn test_parser_conditional_blocks_given_must_attach_the_given_condition_text_to_all_clauses_nested_within() {
 
     fn parse(md: &str) -> Spec {
         Parser::parse_string(md, Path::new("test.ought.md")).expect("parse failed")
@@ -374,7 +375,7 @@ fn test_parser__conditional_blocks_given__must_attach_the_given_condition_text_t
 // --- must_not_treat_given_itself_as_a_testable_clause_it_is_a_grouping_con_test.rs ---
 /// MUST NOT treat GIVEN itself as a testable clause — it is a grouping construct with a precondition
 #[test]
-fn test_parser__conditional_blocks_given__must_not_treat_given_itself_as_a_testable_clause_it_is_a_grouping_con() {
+fn test_parser_conditional_blocks_given_must_not_treat_given_itself_as_a_testable_clause_it_is_a_grouping_con() {
 
     fn parse(md: &str) -> Spec {
         Parser::parse_string(md, Path::new("test.ought.md")).expect("parse failed")
@@ -407,7 +408,7 @@ fn test_parser__conditional_blocks_given__must_not_treat_given_itself_as_a_testa
 // --- must_parse_given_as_a_block_level_keyword_that_contains_nested_cl_test.rs ---
 /// MUST parse `**GIVEN**` as a block-level keyword that contains nested clauses
 #[test]
-fn test_parser__conditional_blocks_given__must_parse_given_as_a_block_level_keyword_that_contains_nested_cl() {
+fn test_parser_conditional_blocks_given_must_parse_given_as_a_block_level_keyword_that_contains_nested_cl() {
 
     fn parse(md: &str) -> Spec {
         Parser::parse_string(md, Path::new("test.ought.md")).expect("parse failed")
@@ -433,7 +434,7 @@ fn test_parser__conditional_blocks_given__must_parse_given_as_a_block_level_keyw
 // --- must_require_nested_clauses_to_be_indented_under_the_given_bullet_test.rs ---
 /// MUST require nested clauses to be indented under the GIVEN bullet (standard markdown nesting)
 #[test]
-fn test_parser__conditional_blocks_given__must_require_nested_clauses_to_be_indented_under_the_given_bullet() {
+fn test_parser_conditional_blocks_given_must_require_nested_clauses_to_be_indented_under_the_given_bullet() {
 
     fn parse(md: &str) -> Spec {
         Parser::parse_string(md, Path::new("test.ought.md")).expect("parse failed")
@@ -461,7 +462,7 @@ fn test_parser__conditional_blocks_given__must_require_nested_clauses_to_be_inde
 // --- must_support_given_blocks_containing_any_keyword_must_should_may_test.rs ---
 /// MUST support GIVEN blocks containing any keyword (MUST, SHOULD, MAY, WONT, OTHERWISE, etc.)
 #[test]
-fn test_parser__conditional_blocks_given__must_support_given_blocks_containing_any_keyword_must_should_may() {
+fn test_parser_conditional_blocks_given_must_support_given_blocks_containing_any_keyword_must_should_may() {
 
     fn parse(md: &str) -> Spec {
         Parser::parse_string(md, Path::new("test.ought.md")).expect("parse failed")
@@ -503,7 +504,7 @@ fn test_parser__conditional_blocks_given__must_support_given_blocks_containing_a
 // --- must_support_multiple_given_blocks_within_a_section_test.rs ---
 /// MUST support multiple GIVEN blocks within a section
 #[test]
-fn test_parser__conditional_blocks_given__must_support_multiple_given_blocks_within_a_section() {
+fn test_parser_conditional_blocks_given_must_support_multiple_given_blocks_within_a_section() {
 
     fn parse(md: &str) -> Spec {
         Parser::parse_string(md, Path::new("test.ought.md")).expect("parse failed")
@@ -541,7 +542,7 @@ fn test_parser__conditional_blocks_given__must_support_multiple_given_blocks_wit
 // --- should_support_nested_given_blocks_conditions_that_narrow_further_test.rs ---
 /// SHOULD support nested GIVEN blocks (conditions that narrow further)
 #[test]
-fn test_parser__conditional_blocks_given__should_support_nested_given_blocks_conditions_that_narrow_further() {
+fn test_parser_conditional_blocks_given_should_support_nested_given_blocks_conditions_that_narrow_further() {
 
     fn parse(md: &str) -> Spec {
         Parser::parse_string(md, Path::new("test.ought.md")).expect("parse failed")
@@ -570,7 +571,7 @@ fn test_parser__conditional_blocks_given__should_support_nested_given_blocks_con
 // --- may_support_glob_patterns_in_source_and_schema_paths_test.rs ---
 /// MAY support glob patterns in `source:` and `schema:` paths
 #[test]
-fn test_parser__context_metadata__may_support_glob_patterns_in_source_and_schema_paths() {
+fn test_parser_context_metadata_may_support_glob_patterns_in_source_and_schema_paths() {
     fn parse(md: &str) -> Spec {
         Parser::parse_string(md, Path::new("test.ought.md")).expect("parse failed")
     }
@@ -606,7 +607,7 @@ schema: migrations/*.sql, config/*.json
 // --- must_parse_context_as_free_text_context_for_the_llm_test.rs ---
 /// MUST parse `context:` as free-text context for the LLM
 #[test]
-fn test_parser__context_metadata__must_parse_context_as_free_text_context_for_the_llm() {
+fn test_parser_context_metadata_must_parse_context_as_free_text_context_for_the_llm() {
     fn parse(md: &str) -> Spec {
         Parser::parse_string(md, Path::new("test.ought.md")).expect("parse failed")
     }
@@ -633,7 +634,7 @@ context: Handles user authentication and session management for the web API
 // --- must_parse_schema_as_a_list_of_file_paths_schemas_configs_migrati_test.rs ---
 /// MUST parse `schema:` as a list of file paths (schemas, configs, migrations)
 #[test]
-fn test_parser__context_metadata__must_parse_schema_as_a_list_of_file_paths_schemas_configs_migrati(
+fn test_parser_context_metadata_must_parse_schema_as_a_list_of_file_paths_schemas_configs_migrati(
 ) {
     fn parse(md: &str) -> Spec {
         Parser::parse_string(md, Path::new("test.ought.md")).expect("parse failed")
@@ -666,7 +667,7 @@ schema: schema/auth.graphql, config/settings.json, migrations/001_init.sql
 // --- must_parse_source_as_a_list_of_file_paths_or_directories_source_c_test.rs ---
 /// MUST parse `source:` as a list of file paths or directories (source code hints for the LLM)
 #[test]
-fn test_parser__context_metadata__must_parse_source_as_a_list_of_file_paths_or_directories_source_c(
+fn test_parser_context_metadata_must_parse_source_as_a_list_of_file_paths_or_directories_source_c(
 ) {
     fn parse(md: &str) -> Spec {
         Parser::parse_string(md, Path::new("test.ought.md")).expect("parse failed")
@@ -695,7 +696,7 @@ source: src/handlers/, src/models/user.rs
 // --- must_support_multiple_values_per_metadata_key_one_per_line_or_com_test.rs ---
 /// MUST support multiple values per metadata key (one per line or comma-separated)
 #[test]
-fn test_parser__context_metadata__must_support_multiple_values_per_metadata_key_one_per_line_or_com(
+fn test_parser_context_metadata_must_support_multiple_values_per_metadata_key_one_per_line_or_com(
 ) {
     fn parse(md: &str) -> Spec {
         Parser::parse_string(md, Path::new("test.ought.md")).expect("parse failed")
@@ -744,7 +745,7 @@ source: src/c/
 // --- must_link_each_otherwise_clause_to_its_parent_obligation_in_the_c_test.rs ---
 /// MUST link each OTHERWISE clause to its parent obligation in the clause IR
 #[test]
-fn test_parser__contrary_to_duty_chains_otherwise__must_link_each_otherwise_clause_to_its_parent_obligation_in_the_c() {
+fn test_parser_contrary_to_duty_chains_otherwise_must_link_each_otherwise_clause_to_its_parent_obligation_in_the_c() {
 
     let md = r#"# Svc
 
@@ -778,7 +779,7 @@ fn test_parser__contrary_to_duty_chains_otherwise__must_link_each_otherwise_clau
 // --- must_not_allow_otherwise_at_the_top_level_it_must_have_a_parent_oblig_test.rs ---
 /// MUST NOT allow OTHERWISE at the top level (it must have a parent obligation)
 #[test]
-fn test_parser__contrary_to_duty_chains_otherwise__must_not_allow_otherwise_at_the_top_level_it_must_have_a_parent_oblig() {
+fn test_parser_contrary_to_duty_chains_otherwise_must_not_allow_otherwise_at_the_top_level_it_must_have_a_parent_oblig() {
 
     let md = r#"# Svc
 
@@ -795,7 +796,7 @@ fn test_parser__contrary_to_duty_chains_otherwise__must_not_allow_otherwise_at_t
 // --- must_not_allow_otherwise_under_may_wont_or_given_only_under_obligatio_test.rs ---
 /// MUST NOT allow OTHERWISE under MAY, WONT, or GIVEN (only under obligations that can be violated)
 #[test]
-fn test_parser__contrary_to_duty_chains_otherwise__must_not_allow_otherwise_under_may_wont_or_given_only_under_obligatio() {
+fn test_parser_contrary_to_duty_chains_otherwise_must_not_allow_otherwise_under_may_wont_or_given_only_under_obligatio() {
 
     // OTHERWISE under MAY is invalid — MAY cannot be violated
     let md_may = r#"# Svc
@@ -839,7 +840,7 @@ fn test_parser__contrary_to_duty_chains_otherwise__must_not_allow_otherwise_unde
 // --- must_parse_otherwise_as_a_clause_nested_under_a_parent_obligation_test.rs ---
 /// MUST parse `**OTHERWISE**` as a clause nested under a parent obligation
 #[test]
-fn test_parser__contrary_to_duty_chains_otherwise__must_parse_otherwise_as_a_clause_nested_under_a_parent_obligation() {
+fn test_parser_contrary_to_duty_chains_otherwise_must_parse_otherwise_as_a_clause_nested_under_a_parent_obligation() {
 
     let md = r#"# Svc
 
@@ -863,7 +864,7 @@ fn test_parser__contrary_to_duty_chains_otherwise__must_parse_otherwise_as_a_cla
 // --- must_preserve_the_ordering_of_otherwise_clauses_they_form_a_degra_test.rs ---
 /// MUST preserve the ordering of OTHERWISE clauses (they form a degradation chain)
 #[test]
-fn test_parser__contrary_to_duty_chains_otherwise__must_preserve_the_ordering_of_otherwise_clauses_they_form_a_degra() {
+fn test_parser_contrary_to_duty_chains_otherwise_must_preserve_the_ordering_of_otherwise_clauses_they_form_a_degra() {
 
     let md = r#"# Svc
 
@@ -886,7 +887,7 @@ fn test_parser__contrary_to_duty_chains_otherwise__must_preserve_the_ordering_of
 // --- must_support_multiple_otherwise_clauses_under_a_single_parent_ord_test.rs ---
 /// MUST support multiple OTHERWISE clauses under a single parent (ordered fallback chain)
 #[test]
-fn test_parser__contrary_to_duty_chains_otherwise__must_support_multiple_otherwise_clauses_under_a_single_parent_ord() {
+fn test_parser_contrary_to_duty_chains_otherwise_must_support_multiple_otherwise_clauses_under_a_single_parent_ord() {
 
     let md = r#"# Svc
 
@@ -913,7 +914,7 @@ fn test_parser__contrary_to_duty_chains_otherwise__must_support_multiple_otherwi
 // --- must_support_otherwise_under_any_obligation_keyword_must_should_m_test.rs ---
 /// MUST support OTHERWISE under any obligation keyword (MUST, SHOULD, MUST ALWAYS, MUST BY)
 #[test]
-fn test_parser__contrary_to_duty_chains_otherwise__must_support_otherwise_under_any_obligation_keyword_must_should_m() {
+fn test_parser_contrary_to_duty_chains_otherwise_must_support_otherwise_under_any_obligation_keyword_must_should_m() {
 
     let md = r#"# Svc
 
@@ -950,7 +951,7 @@ fn test_parser__contrary_to_duty_chains_otherwise__must_support_otherwise_under_
 // --- should_inherit_the_parent_s_severity_unless_the_otherwise_clause_sp_test.rs ---
 /// SHOULD inherit the parent's severity unless the OTHERWISE clause specifies its own keyword
 #[test]
-fn test_parser__contrary_to_duty_chains_otherwise__should_inherit_the_parent_s_severity_unless_the_otherwise_clause_sp() {
+fn test_parser_contrary_to_duty_chains_otherwise_should_inherit_the_parent_s_severity_unless_the_otherwise_clause_sp() {
 
     let md = r#"# Svc
 
@@ -985,7 +986,7 @@ fn test_parser__contrary_to_duty_chains_otherwise__should_inherit_the_parent_s_s
 // --- must_build_a_dependency_graph_from_cross_file_references_test.rs ---
 /// MUST build a dependency graph from cross-file references
 #[test]
-fn test_parser__cross_file_references__must_build_a_dependency_graph_from_cross_file_references() {
+fn test_parser_cross_file_references_must_build_a_dependency_graph_from_cross_file_references() {
 
     let nanos = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -1044,7 +1045,7 @@ fn test_parser__cross_file_references__must_build_a_dependency_graph_from_cross_
 // --- must_detect_circular_dependencies_and_report_them_as_errors_test.rs ---
 /// MUST detect circular dependencies and report them as errors
 #[test]
-fn test_parser__cross_file_references__must_detect_circular_dependencies_and_report_them_as_errors() {
+fn test_parser_cross_file_references_must_detect_circular_dependencies_and_report_them_as_errors() {
 
     let nanos = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -1087,7 +1088,7 @@ fn test_parser__cross_file_references__must_detect_circular_dependencies_and_rep
 // --- must_parse_anchor_links_e_g_pricing_ought_md_discount_rules_as_re_test.rs ---
 /// MUST parse anchor links (e.g. `pricing.ought.md#discount-rules`) as references to specific sections
 #[test]
-fn test_parser__cross_file_references__must_parse_anchor_links_e_g_pricing_ought_md_discount_rules_as_re() {
+fn test_parser_cross_file_references_must_parse_anchor_links_e_g_pricing_ought_md_discount_rules_as_re() {
     let md = r#"# Checkout
 
 requires: [Pricing](pricing.ought.md#discount-rules), [Auth](auth.ought.md#session-tokens)
@@ -1136,7 +1137,7 @@ requires: [Pricing](pricing.ought.md#discount-rules), [Auth](auth.ought.md#sessi
 // --- must_parse_inline_markdown_links_to_other_ought_md_files_as_cross_test.rs ---
 /// MUST parse inline markdown links to other .ought.md files as cross-references
 #[test]
-fn test_parser__cross_file_references__must_parse_inline_markdown_links_to_other_ought_md_files_as_cross() {
+fn test_parser_cross_file_references_must_parse_inline_markdown_links_to_other_ought_md_files_as_cross() {
     let md = r#"# Checkout
 
 requires: [Pricing](pricing.ought.md), [Users](users.ought.md)
@@ -1184,7 +1185,7 @@ requires: [Pricing](pricing.ought.md), [Users](users.ought.md)
 // --- must_parse_requires_metadata_as_a_list_of_relative_paths_to_other_test.rs ---
 /// MUST parse `requires:` metadata as a list of relative paths to other .ought.md files
 #[test]
-fn test_parser__cross_file_references__must_parse_requires_metadata_as_a_list_of_relative_paths_to_other() {
+fn test_parser_cross_file_references_must_parse_requires_metadata_as_a_list_of_relative_paths_to_other() {
     let md = r#"# Billing
 
 requires: pricing.ought.md
@@ -1228,7 +1229,7 @@ requires: users.ought.md
 // --- should_validate_that_all_cross_references_resolve_to_existing_files_test.rs ---
 /// SHOULD validate that all cross-references resolve to existing files and sections
 #[test]
-fn test_parser__cross_file_references__should_validate_that_all_cross_references_resolve_to_existing_files() {
+fn test_parser_cross_file_references_should_validate_that_all_cross_references_resolve_to_existing_files() {
 
     let nanos = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -1268,7 +1269,7 @@ fn test_parser__cross_file_references__should_validate_that_all_cross_references
 // --- must_continue_parsing_after_non_fatal_errors_collect_all_errors_d_test.rs ---
 /// MUST continue parsing after non-fatal errors (collect all errors, don't stop at the first)
 #[test]
-fn test_parser__error_handling__must_continue_parsing_after_non_fatal_errors_collect_all_errors_d() {
+fn test_parser_error_handling_must_continue_parsing_after_non_fatal_errors_collect_all_errors_d() {
     // Several keyword typos are interspersed with valid clauses. The parser must
     // not abort at the first unrecognized item — every valid clause that appears
     // later in the document must still be returned.
@@ -1328,7 +1329,7 @@ fn test_parser__error_handling__must_continue_parsing_after_non_fatal_errors_col
 // --- must_not_crash_on_malformed_markdown_degrade_gracefully_test.rs ---
 /// MUST NOT crash on malformed markdown — degrade gracefully
 #[test]
-fn test_parser__error_handling__must_not_crash_on_malformed_markdown_degrade_gracefully() {
+fn test_parser_error_handling_must_not_crash_on_malformed_markdown_degrade_gracefully() {
     // Empty document — must return a default Spec, not panic or error.
     let result = Parser::parse_string("", Path::new("empty.ought.md"));
     assert!(result.is_ok(), "empty input must parse without error");
@@ -1407,7 +1408,7 @@ fn test_parser__error_handling__must_not_crash_on_malformed_markdown_degrade_gra
 // --- must_report_parse_errors_with_the_file_path_line_number_and_a_cle_test.rs ---
 /// MUST report parse errors with the file path, line number, and a clear message
 #[test]
-fn test_parser__error_handling__must_report_parse_errors_with_the_file_path_line_number_and_a_cle() {
+fn test_parser_error_handling_must_report_parse_errors_with_the_file_path_line_number_and_a_cle() {
     // Directly construct a ParseError and verify all three required fields are present
     // and surfaced by the Display implementation.
     let path = PathBuf::from("spec/auth.ought.md");
@@ -1455,7 +1456,7 @@ fn test_parser__error_handling__must_report_parse_errors_with_the_file_path_line
 // --- should_warn_on_likely_typos_e_g_muts_close_to_a_known_keyword_test.rs ---
 /// SHOULD warn on likely typos (e.g. `**MUTS**` close to a known keyword)
 #[test]
-fn test_parser__error_handling__should_warn_on_likely_typos_e_g_muts_close_to_a_known_keyword() {
+fn test_parser_error_handling_should_warn_on_likely_typos_e_g_muts_close_to_a_known_keyword() {
     // **MUTS** is an edit-distance-1 typo for **MUST**; **SHOLD** for **SHOULD**.
     // The parser must not silently accept them as valid keywords, and SHOULD
     // surface a diagnostic pointing to the likely correction.
@@ -1512,7 +1513,7 @@ fn test_parser__error_handling__should_warn_on_likely_typos_e_g_muts_close_to_a_
 /// MUST assign severity levels: MUST/MUST NOT/MUST ALWAYS/MUST BY = required,
 /// SHOULD/SHOULD NOT = recommended, MAY = optional, WONT = negative-confirmation
 #[test]
-fn test_parser__keywords__must_assign_severity_levels_must_must_not_must_always_must_by_req() {
+fn test_parser_keywords_must_assign_severity_levels_must_must_not_must_always_must_by_req() {
 
     let md = r#"# Svc
 
@@ -1550,7 +1551,7 @@ fn test_parser__keywords__must_assign_severity_levels_must_must_not_must_always_
 // --- must_not_treat_bare_non_bold_keyword_occurrences_as_clauses_e_g_you_m_test.rs ---
 /// MUST NOT treat bare (non-bold) keyword occurrences as clauses (e.g. "you must restart" in prose)
 #[test]
-fn test_parser__keywords__must_not_treat_bare_non_bold_keyword_occurrences_as_clauses_e_g_you_m() {
+fn test_parser_keywords_must_not_treat_bare_non_bold_keyword_occurrences_as_clauses_e_g_you_m() {
 
     let md = r#"# Svc
 
@@ -1588,7 +1589,7 @@ This service must handle all requests as described above.
 // --- must_parse_keywords_case_insensitively_but_require_them_to_appear_test.rs ---
 /// MUST parse keywords case-insensitively but require them to appear in bold (`**MUST**`, `**GIVEN**`, etc.)
 #[test]
-fn test_parser__keywords__must_parse_keywords_case_insensitively_but_require_them_to_appear() {
+fn test_parser_keywords_must_parse_keywords_case_insensitively_but_require_them_to_appear() {
 
     // All casing variants in bold — all must be recognised
     let md_bold = r#"# Svc
@@ -1631,7 +1632,7 @@ The system should validate inputs.
 // --- must_recognize_rfc_2119_keywords_must_must_not_should_should_not_test.rs ---
 /// MUST recognize RFC 2119 keywords: MUST, MUST NOT, SHOULD, SHOULD NOT, MAY
 #[test]
-fn test_parser__keywords__must_recognize_rfc_2119_keywords_must_must_not_should_should_not() {
+fn test_parser_keywords_must_recognize_rfc_2119_keywords_must_must_not_should_should_not() {
 
     let md = r#"# Svc
 
@@ -1660,7 +1661,7 @@ fn test_parser__keywords__must_recognize_rfc_2119_keywords_must_must_not_should_
 // --- must_recognize_temporal_compound_keywords_must_always_must_by_test.rs ---
 /// MUST recognize temporal compound keywords: MUST ALWAYS, MUST BY
 #[test]
-fn test_parser__keywords__must_recognize_temporal_compound_keywords_must_always_must_by() {
+fn test_parser_keywords_must_recognize_temporal_compound_keywords_must_always_must_by() {
 
     let md = r#"# Svc
 
@@ -1702,7 +1703,7 @@ fn test_parser__keywords__must_recognize_temporal_compound_keywords_must_always_
 // --- must_recognize_the_given_keyword_as_a_conditional_block_opener_fr_test.rs ---
 /// MUST recognize the GIVEN keyword as a conditional block opener (from deontic logic)
 #[test]
-fn test_parser__keywords__must_recognize_the_given_keyword_as_a_conditional_block_opener_fr() {
+fn test_parser_keywords_must_recognize_the_given_keyword_as_a_conditional_block_opener_fr() {
 
     let md = r#"# Svc
 
@@ -1726,7 +1727,7 @@ fn test_parser__keywords__must_recognize_the_given_keyword_as_a_conditional_bloc
 // --- must_recognize_the_otherwise_keyword_as_a_contrary_to_duty_fallba_test.rs ---
 /// MUST recognize the OTHERWISE keyword as a contrary-to-duty fallback (from deontic logic)
 #[test]
-fn test_parser__keywords__must_recognize_the_otherwise_keyword_as_a_contrary_to_duty_fallba() {
+fn test_parser_keywords_must_recognize_the_otherwise_keyword_as_a_contrary_to_duty_fallba() {
 
     let md = r#"# Svc
 
@@ -1750,7 +1751,7 @@ fn test_parser__keywords__must_recognize_the_otherwise_keyword_as_a_contrary_to_
 // --- must_recognize_the_wont_keyword_as_an_ought_extension_not_in_rfc_test.rs ---
 /// MUST recognize the WONT keyword as an ought extension (not in RFC 2119)
 #[test]
-fn test_parser__keywords__must_recognize_the_wont_keyword_as_an_ought_extension_not_in_rfc() {
+fn test_parser_keywords_must_recognize_the_wont_keyword_as_an_ought_extension_not_in_rfc() {
 
     let md = r#"# Svc
 
@@ -1770,7 +1771,7 @@ fn test_parser__keywords__must_recognize_the_wont_keyword_as_an_ought_extension_
 // --- must_not_fail_on_standard_markdown_that_doesn_t_contain_ought_keyword_test.rs ---
 /// MUST NOT fail on standard markdown that doesn't contain ought keywords (just produce zero clauses)
 #[test]
-fn test_parser__spec_file_structure__must_not_fail_on_standard_markdown_that_doesn_t_contain_ought_keyword() {
+fn test_parser_spec_file_structure_must_not_fail_on_standard_markdown_that_doesn_t_contain_ought_keyword() {
     let md = r#"# Plain Spec
 
 ## Overview
@@ -1812,7 +1813,7 @@ def example():
 // --- must_parse_frontmatter_style_metadata_at_the_top_of_the_file_cont_test.rs ---
 /// MUST parse frontmatter-style metadata at the top of the file: `context:`, `source:`, `schema:`, `requires:`
 #[test]
-fn test_parser__spec_file_structure__must_parse_frontmatter_style_metadata_at_the_top_of_the_file_cont() {
+fn test_parser_spec_file_structure_must_parse_frontmatter_style_metadata_at_the_top_of_the_file_cont() {
     let md = r#"# Payments
 
 context: Handles payment processing and invoicing
@@ -1870,7 +1871,7 @@ requires: [Auth](auth.ought.md), [Users](users.ought.md#accounts)
 // --- must_parse_standard_markdown_commonmark_as_the_base_format_test.rs ---
 /// MUST parse standard Markdown (CommonMark) as the base format
 #[test]
-fn test_parser__spec_file_structure__must_parse_standard_markdown_commonmark_as_the_base_format() {
+fn test_parser_spec_file_structure_must_parse_standard_markdown_commonmark_as_the_base_format() {
     // Exercises headings, paragraphs, emphasis, inline code, fenced code blocks,
     // blockquotes, plain lists, and inline links — core CommonMark elements.
     let md = r#"# My Spec
@@ -1909,7 +1910,7 @@ See also [the reference docs](http://example.com) for more detail.
 // --- must_preserve_all_non_clause_markdown_as_documentation_context_fo_test.rs ---
 /// MUST preserve all non-clause markdown as documentation (context for the LLM, readable for humans)
 #[test]
-fn test_parser__spec_file_structure__must_preserve_all_non_clause_markdown_as_documentation_context_fo() {
+fn test_parser_spec_file_structure_must_preserve_all_non_clause_markdown_as_documentation_context_fo() {
     let md = r#"# Svc
 
 ## Security
@@ -1942,7 +1943,7 @@ Access control is enforced at the API boundary.
 // --- must_recognize_files_with_the_ought_md_extension_test.rs ---
 /// MUST recognize files with the `.ought.md` extension
 #[test]
-fn test_parser__spec_file_structure__must_recognize_files_with_the_ought_md_extension() {
+fn test_parser_spec_file_structure_must_recognize_files_with_the_ought_md_extension() {
 
     let content = "# Ext Test\n\n## Section\n\n- **MUST** work\n";
     let path = std::env::temp_dir().join("ought_recognize_ext_test.ought.md");
@@ -1972,7 +1973,7 @@ fn test_parser__spec_file_structure__must_recognize_files_with_the_ought_md_exte
 // --- must_treat_bullet_points_keyword_as_individual_clauses_test.rs ---
 /// MUST treat bullet points (`- **KEYWORD**`) as individual clauses
 #[test]
-fn test_parser__spec_file_structure__must_treat_bullet_points_keyword_as_individual_clauses() {
+fn test_parser_spec_file_structure_must_treat_bullet_points_keyword_as_individual_clauses() {
     let md = r#"# Svc
 
 ## API
@@ -2006,7 +2007,7 @@ fn test_parser__spec_file_structure__must_treat_bullet_points_keyword_as_individ
 // --- must_treat_h1_as_the_spec_name_test.rs ---
 /// MUST treat H1 (`#`) as the spec name
 #[test]
-fn test_parser__spec_file_structure__must_treat_h1_as_the_spec_name() {
+fn test_parser_spec_file_structure_must_treat_h1_as_the_spec_name() {
     let md = "# Payment Gateway\n\n## Rules\n\n- **MUST** work\n";
     let spec = Parser::parse_string(md, Path::new("test.ought.md")).expect("parse failed");
 
@@ -2023,7 +2024,7 @@ fn test_parser__spec_file_structure__must_treat_h1_as_the_spec_name() {
 // --- must_treat_h2_etc_as_nested_test_groups_sections_test.rs ---
 /// MUST treat H2+ (`##`, `###`, etc.) as nested test groups/sections
 #[test]
-fn test_parser__spec_file_structure__must_treat_h2_etc_as_nested_test_groups_sections() {
+fn test_parser_spec_file_structure_must_treat_h2_etc_as_nested_test_groups_sections() {
     let md = r#"# Svc
 
 ## Auth
@@ -2072,7 +2073,7 @@ fn test_parser__spec_file_structure__must_treat_h2_etc_as_nested_test_groups_sec
 /// Verifies that the `temporal` field of a `**MUST ALWAYS**` clause is
 /// `Some(Temporal::Invariant)` and not `None` or a `Deadline` variant.
 #[test]
-fn test_parser__temporal_obligations__must_always_invariant__must_assign_the_invariant_temporal_qualifier_to_the_clause() {
+fn test_parser_temporal_obligations_must_always_invariant_must_assign_the_invariant_temporal_qualifier_to_the_clause() {
 
     fn parse(md: &str) -> Spec {
         Parser::parse_string(md, Path::new("test.ought.md")).expect("parse failed")
@@ -2107,7 +2108,7 @@ fn test_parser__temporal_obligations__must_always_invariant__must_assign_the_inv
 /// Verifies that `**MUST ALWAYS**` is recognized as the single compound keyword
 /// `Keyword::MustAlways`, not treated as bare `MUST` or split into two tokens.
 #[test]
-fn test_parser__temporal_obligations__must_always_invariant__must_parse_must_always_as_a_single_compound_keyword() {
+fn test_parser_temporal_obligations_must_always_invariant_must_parse_must_always_as_a_single_compound_keyword() {
 
     fn parse(md: &str) -> Spec {
         Parser::parse_string(md, Path::new("test.ought.md")).expect("parse failed")
@@ -2140,7 +2141,7 @@ fn test_parser__temporal_obligations__must_always_invariant__must_parse_must_alw
 /// `**MUST**` clauses in the IR: different `keyword`, different `temporal` field,
 /// and different stable `id`, ensuring downstream generators can tell them apart.
 #[test]
-fn test_parser__temporal_obligations__must_always_invariant__must_represent_invariants_distinctly_in_the_clause_ir_they_genera() {
+fn test_parser_temporal_obligations_must_always_invariant_must_represent_invariants_distinctly_in_the_clause_ir_they_genera() {
 
     fn parse(md: &str) -> Spec {
         Parser::parse_string(md, Path::new("test.ought.md")).expect("parse failed")
@@ -2192,7 +2193,7 @@ fn test_parser__temporal_obligations__must_always_invariant__must_represent_inva
 /// by the parser and surfaced as an error, not silently swallowed or turned into
 /// a bare `MUST` clause.
 #[test]
-fn test_parser__temporal_obligations__must_by_deadline__must_not_accept_must_by_without_a_duration_it_is_a_parse_error() {
+fn test_parser_temporal_obligations_must_by_deadline_must_not_accept_must_by_without_a_duration_it_is_a_parse_error() {
 
     // No duration: "MUST BY" ends the bold span immediately
     let md_no_duration = r#"# Svc
@@ -2227,7 +2228,7 @@ fn test_parser__temporal_obligations__must_by_deadline__must_not_accept_must_by_
 /// accepted and round-trip correctly through the IR as their respective `DurationUnit`
 /// variants.
 #[test]
-fn test_parser__temporal_obligations__must_by_deadline__must_parse_duration_suffixes_ms_milliseconds_s_seconds_m_minutes() {
+fn test_parser_temporal_obligations_must_by_deadline_must_parse_duration_suffixes_ms_milliseconds_s_seconds_m_minutes() {
 
     fn parse(md: &str) -> Spec {
         Parser::parse_string(md, Path::new("test.ought.md")).expect("parse failed")
@@ -2287,7 +2288,7 @@ fn test_parser__temporal_obligations__must_by_deadline__must_parse_duration_suff
 /// Verifies that `**MUST BY 30s**` is recognized as the compound keyword
 /// `Keyword::MustBy`, not split into bare `MUST` or an unknown token.
 #[test]
-fn test_parser__temporal_obligations__must_by_deadline__must_parse_must_by_duration_as_a_compound_keyword_with_a_duration() {
+fn test_parser_temporal_obligations_must_by_deadline_must_parse_must_by_duration_as_a_compound_keyword_with_a_duration() {
 
     fn parse(md: &str) -> Spec {
         Parser::parse_string(md, Path::new("test.ought.md")).expect("parse failed")
@@ -2320,7 +2321,7 @@ fn test_parser__temporal_obligations__must_by_deadline__must_parse_must_by_durat
 /// faithfully preserved in `clause.temporal` as `Temporal::Deadline` with the
 /// correct `value` and `unit` fields, and that the clause is otherwise well-formed.
 #[test]
-fn test_parser__temporal_obligations__must_by_deadline__must_store_the_duration_value_and_unit_in_the_clause_ir() {
+fn test_parser_temporal_obligations_must_by_deadline_must_store_the_duration_value_and_unit_in_the_clause_ir() {
 
     fn parse(md: &str) -> Spec {
         Parser::parse_string(md, Path::new("test.ought.md")).expect("parse failed")

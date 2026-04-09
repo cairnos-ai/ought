@@ -24,15 +24,18 @@ fn command_exists(cmd: &str) -> bool {
 }
 
 /// Convert a `ClauseId` like `auth::login::must_return_jwt` into the pytest
-/// test function name: `test_auth__login__must_return_jwt`.
+/// test function name: `test_auth_login_must_return_jwt`. The mapping is lossy
+/// (section boundaries are erased), so the runtime mapping back to a `ClauseId`
+/// relies on the `name_to_clause` HashMap built from the manifest;
+/// `test_name_to_clause_id` is only a best-effort fallback when that lookup misses.
 fn clause_id_to_test_name(clause_id: &ClauseId) -> String {
-    format!("test_{}", clause_id.0.replace("::", "__"))
+    format!("test_{}", clause_id.0.replace("::", "_"))
 }
 
-/// Reverse: strip the `test_` prefix and convert `__` back to `::`.
+/// Best-effort fallback: wrap the test name as a `ClauseId` directly. This is only
+/// used when the HashMap lookup fails; the mangling above is not reversible.
 fn test_name_to_clause_id(test_name: &str) -> ClauseId {
-    let stripped = test_name.strip_prefix("test_").unwrap_or(test_name);
-    ClauseId(stripped.replace("__", "::"))
+    ClauseId(test_name.to_string())
 }
 
 /// Parse pytest -v output.
@@ -191,23 +194,23 @@ mod tests {
 ============================= test session starts ==============================
 collected 3 items
 
-test_auth.py::test_auth__login__must_return_jwt PASSED
-test_auth.py::test_auth__login__must_validate_token FAILED
-test_auth.py::test_auth__login__may_cache SKIPPED
+test_auth.py::test_auth_login_must_return_jwt PASSED
+test_auth.py::test_auth_login_must_validate_token FAILED
+test_auth.py::test_auth_login_may_cache SKIPPED
 
 ============================== 1 failed, 1 passed, 1 skipped ==================
 ";
         let mut map = HashMap::new();
         map.insert(
-            "test_auth__login__must_return_jwt".to_string(),
+            "test_auth_login_must_return_jwt".to_string(),
             ClauseId("auth::login::must_return_jwt".to_string()),
         );
         map.insert(
-            "test_auth__login__must_validate_token".to_string(),
+            "test_auth_login_must_validate_token".to_string(),
             ClauseId("auth::login::must_validate_token".to_string()),
         );
         map.insert(
-            "test_auth__login__may_cache".to_string(),
+            "test_auth_login_may_cache".to_string(),
             ClauseId("auth::login::may_cache".to_string()),
         );
 

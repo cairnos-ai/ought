@@ -10,10 +10,23 @@ Behavioral test framework: specs in `.ought.md`, LLM-generated tests.
 
 ## Build & test
 
+The workspace contains both Rust (cargo) and TypeScript (the Svelte UI in
+`crates/ought-server/ui/`). The `justfile` at the repo root orchestrates both;
+prefer it over raw `cargo` / `npm`, since the rust-embed macro in `ought-server`
+needs the Vite `dist/` directory to exist before the workspace will compile.
+
 ```
-cargo build
-cargo test
+just build       # build everything (UI + Rust); pass `release` for an optimized build
+just test        # run all tests
+just lint        # lint UI (svelte-check) + Rust (clippy)
+just ci          # full CI pipeline (test + lint)
+just install     # build a release binary and install ought to ~/.local/bin
+just --list      # list all recipes (grouped: all / rust / typescript)
 ```
+
+Lint enforcement is workspace-wide via `[workspace.lints.rust] warnings = "deny"`
+and `[workspace.lints.clippy] all = { level = "deny", priority = -1 }` in the
+root `Cargo.toml`, so `cargo build` / `cargo test` will also fail on warnings.
 
 ## Workspace layout
 

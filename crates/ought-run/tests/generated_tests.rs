@@ -1,3 +1,4 @@
+#![allow(dead_code, clippy::all)]
 #![allow(non_snake_case, unused_imports)]
 use std::path::{Path, PathBuf};
 use std::fs;
@@ -20,7 +21,7 @@ use ought_run::runners;
 /// Being a MUST clause, the runner must exist, be accessible by name, and since
 /// these tests are themselves compiled with cargo, the harness must also be available.
 #[test]
-fn test_runner__language_runners__must_ship_with_a_rust_runner() {
+fn test_runner_language_runners_must_ship_with_a_rust_runner() {
     // The factory must recognise "rust" as a valid language key.
     let runner = ought_run::runners::from_name("rust")
         .expect("from_name(\"rust\") must succeed — Rust runner is required");
@@ -46,7 +47,7 @@ fn test_runner__language_runners__must_ship_with_a_rust_runner() {
 /// The runner implementation must exist and be reachable by name; availability
 /// in the current environment (i.e. whether pytest is installed) is separate.
 #[test]
-fn test_runner__language_runners__should_ship_with_a_python_runner() {
+fn test_runner_language_runners_should_ship_with_a_python_runner() {
     // The factory must recognise "python" as a valid language key.
     let runner = ought_run::runners::from_name("python")
         .expect("from_name(\"python\") must succeed — Python runner should be shipped");
@@ -68,7 +69,7 @@ fn test_runner__language_runners__should_ship_with_a_python_runner() {
 /// The runner should include a TypeScript/JavaScript runner that delegates to
 /// `npx jest --verbose`.  Both "typescript" and the "ts" alias must be recognised.
 #[test]
-fn test_runner__language_runners__should_ship_with_a_javascript_typescript_runner() {
+fn test_runner_language_runners_should_ship_with_a_javascript_typescript_runner() {
     // Primary name must be recognised.
     let runner = ought_run::runners::from_name("typescript")
         .expect("from_name(\"typescript\") must succeed — TS/JS runner should be shipped");
@@ -100,7 +101,7 @@ fn test_runner__language_runners__should_ship_with_a_javascript_typescript_runne
 /// values intact.  The runner map is keyed by the name from the TOML table header,
 /// so custom names are fully round-tripped through config parsing.
 #[test]
-fn test_runner__language_runners__should_support_custom_runners_via_the_runner_name_config_in_ought_t() {
+fn test_runner_language_runners_should_support_custom_runners_via_the_runner_name_config_in_ought_t() {
     use ought_spec::config::Config;
 
     // A config that exercises multiple custom runner names alongside the
@@ -176,7 +177,7 @@ test_dir = "tests/ought/"
 /// and report the correct name; this test verifies that the shipped binary
 /// includes the Go runner.
 #[test]
-fn test_runner__language_runners__may_ship_with_a_go_runner() {
+fn test_runner_language_runners_may_ship_with_a_go_runner() {
     // The Go runner is optional (MAY), but the codebase does ship one.
     // Verify that `from_name` accepts "go" without error.
     let result = ought_run::runners::from_name("go");
@@ -205,7 +206,7 @@ fn test_runner__language_runners__may_ship_with_a_go_runner() {
 
 /// MUST report when a generated test file is missing (referenced in manifest but not on disk)
 #[test]
-fn test_runner__error_handling__must_report_when_a_generated_test_file_is_missing_referenced_in_m() {
+fn test_runner_error_handling_must_report_when_a_generated_test_file_is_missing_referenced_in_m() {
     // The manifest records which files were generated for each clause.
     // Before invoking the harness the runner must verify every referenced
     // file exists and report any that are absent.
@@ -273,7 +274,7 @@ fn test_runner__error_handling__must_report_when_a_generated_test_file_is_missin
 
 /// MUST distinguish between test failures (assertion failed) and test errors (test code itself crashed)
 #[test]
-fn test_runner__error_handling__must_distinguish_between_test_failures_assertion_failed_and_test() {
+fn test_runner_error_handling_must_distinguish_between_test_failures_assertion_failed_and_test() {
     // A test failure = the test ran but an assertion did not hold (expected: the spec was violated).
     // A test error  = the test code itself crashed before it could complete (unexpected panic,
     //                 bad unwrap, index out of bounds, etc.).  These are distinct diagnostics.
@@ -369,7 +370,7 @@ failures:
 
 /// MUST report when the test harness command is not found or fails to start
 #[test]
-fn test_runner__error_handling__must_report_when_the_test_harness_command_is_not_found_or_fails_t() {
+fn test_runner_error_handling_must_report_when_the_test_harness_command_is_not_found_or_fails_t() {
     use std::io::ErrorKind;
     use std::process::Command;
 
@@ -416,7 +417,7 @@ fn test_runner__error_handling__must_report_when_the_test_harness_command_is_not
 /// MUST ALWAYS leave the test environment clean after execution (no leaked child processes, temp files removed)
 /// Temporal: MUST ALWAYS (invariant). Property-based / fuzz-style.
 #[test]
-fn test_runner__error_handling__must_always_leave_the_test_environment_clean_after_execution_no_leaked_c() {
+fn test_runner_error_handling_must_always_leave_the_test_environment_clean_after_execution_no_leaked_c() {
     use std::sync::atomic::{AtomicBool, Ordering};
     use std::sync::Arc;
 
@@ -536,7 +537,7 @@ fn test_runner__error_handling__must_always_leave_the_test_environment_clean_aft
 
 /// SHOULD detect and report when no tests were generated for a spec (nothing to run)
 #[test]
-fn test_runner__error_handling__should_detect_and_report_when_no_tests_were_generated_for_a_spec_no() {
+fn test_runner_error_handling_should_detect_and_report_when_no_tests_were_generated_for_a_spec_no() {
     // If no test files were generated (e.g., generation was skipped or the spec
     // has no actionable clauses), the runner should surface a diagnostic rather
     // than silently reporting "0 passed" with no indication that something is missing.
@@ -586,7 +587,7 @@ fn test_runner__error_handling__should_detect_and_report_when_no_tests_were_gene
 
 /// MUST NOT mask harness stderr -- pass it through for debugging
 #[test]
-fn test_runner__error_handling__must_not_mask_harness_stderr_pass_it_through_for_debugging() {
+fn test_runner_error_handling_must_not_mask_harness_stderr_pass_it_through_for_debugging() {
     use std::process::{Command, Stdio};
 
     // The runner must NOT discard stderr from the test harness (e.g., by passing
@@ -635,7 +636,7 @@ fn test_runner__error_handling__must_not_mask_harness_stderr_pass_it_through_for
 
 /// MUST support running tests for a single spec file (filtering generated tests by origin spec)
 #[test]
-fn test_runner__execution__must_support_running_tests_for_a_single_spec_file_filtering_gener() {
+fn test_runner_execution_must_support_running_tests_for_a_single_spec_file_filtering_gener() {
     use std::sync::{Arc, Mutex};
 
     // Tests generated from two distinct spec files.
@@ -716,7 +717,7 @@ fn test_runner__execution__must_support_running_tests_for_a_single_spec_file_fil
 
 /// MUST BY 300s complete a full test suite execution (configurable via `ought.toml`)
 #[test]
-fn test_runner__execution__must_by_complete_a_full_test_suite_execution_configurable_via_ought() {
+fn test_runner_execution_must_by_complete_a_full_test_suite_execution_configurable_via_ought() {
     use std::time::Instant;
 
     // A realistic runner that returns promptly — simulates a well-behaved harness.
@@ -792,7 +793,7 @@ fn test_runner__execution__must_by_complete_a_full_test_suite_execution_configur
 
 /// MUST NOT trigger generation -- the runner only executes existing generated tests
 #[test]
-fn test_runner__execution__must_not_trigger_generation_the_runner_only_executes_existing_generat() {
+fn test_runner_execution_must_not_trigger_generation_the_runner_only_executes_existing_generat() {
     // Set up an isolated temp directory that mimics the generated-test directory.
     let tmp = std::env::temp_dir()
         .join(format!("ought_no_gen_{}", std::process::id()));
@@ -876,7 +877,7 @@ fn test_runner__execution__must_not_trigger_generation_the_runner_only_executes_
 
 /// MUST NOT modify generated test files during execution
 #[test]
-fn test_runner__execution__must_not_modify_generated_test_files_during_execution() {
+fn test_runner_execution_must_not_modify_generated_test_files_during_execution() {
     struct ExecuteOnlyRunner;
     impl Runner for ExecuteOnlyRunner {
         fn run(&self, _tests: &[GeneratedTest], _test_dir: &Path) -> anyhow::Result<RunResult> {
@@ -948,7 +949,7 @@ fn test_runner__execution__must_not_modify_generated_test_files_during_execution
 
 /// MUST invoke the configured test command from `ought.toml` for each language runner
 #[test]
-fn test_runner__execution__must_invoke_the_configured_test_command_from_ought_toml_for_each() {
+fn test_runner_execution_must_invoke_the_configured_test_command_from_ought_toml_for_each() {
     use ought_spec::config::Config;
 
     // Verify the runner factory recognises every supported language key and returns
@@ -1023,7 +1024,7 @@ test_dir = "ought/ought-gen/"
 
 /// MUST map individual test pass/fail results back to clause identifiers
 #[test]
-fn test_runner__execution__must_map_individual_test_pass_fail_results_back_to_clause_identif() {
+fn test_runner_execution_must_map_individual_test_pass_fail_results_back_to_clause_identif() {
     // Inline the bidirectional name<->ClauseId conversion that each runner implements.
     fn clause_id_to_test_name(id: &ClauseId) -> String {
         id.0.replace("::", "__")
@@ -1112,7 +1113,7 @@ test result: FAILED. 1 passed; 1 failed; 1 ignored; 0 measured; 0 filtered out
 
 /// MUST pass the generated test files/directory to the test harness
 #[test]
-fn test_runner__execution__must_pass_the_generated_test_files_directory_to_the_test_harness() {
+fn test_runner_execution_must_pass_the_generated_test_files_directory_to_the_test_harness() {
     use std::sync::{Arc, Mutex};
 
     // A runner that records the test_dir it receives — we verify the exact path
@@ -1179,7 +1180,7 @@ fn test_runner__execution__must_pass_the_generated_test_files_directory_to_the_t
 
 /// OTHERWISE: kill the test harness process and report a timeout error
 #[test]
-fn test_runner__execution__otherwise_kill_the_test_harness_process_and_report_a_timeout_error() {
+fn test_runner_execution_otherwise_kill_the_test_harness_process_and_report_a_timeout_error() {
     use std::sync::mpsc;
 
     // A runner that deliberately hangs -- simulating a hung test harness process.
@@ -1239,7 +1240,7 @@ fn test_runner__execution__otherwise_kill_the_test_harness_process_and_report_a_
 
 /// MUST capture stdout, stderr, and exit code from the test harness
 #[test]
-fn test_runner__execution__must_capture_stdout_stderr_and_exit_code_from_the_test_harness() {
+fn test_runner_execution_must_capture_stdout_stderr_and_exit_code_from_the_test_harness() {
     // A runner that faithfully models the three capture channels:
     //   stdout  -> parsed test results
     //   stderr  -> failure/error messages
@@ -1327,7 +1328,7 @@ fn test_runner__execution__must_capture_stdout_stderr_and_exit_code_from_the_tes
 
 /// MUST capture test execution duration per clause (required for MUST BY reporting)
 #[test]
-fn test_runner__result_collection__must_capture_test_execution_duration_per_clause_required_for_must() {
+fn test_runner_result_collection_must_capture_test_execution_duration_per_clause_required_for_must() {
     struct ClauseResult {
         clause_id: String,
         duration: Duration,
@@ -1361,7 +1362,7 @@ fn test_runner__result_collection__must_capture_test_execution_duration_per_clau
 /// MUST mark remaining lower-priority OTHERWISE clauses as skipped (not reached)
 /// GIVEN: a clause has OTHERWISE children
 #[test]
-fn test_runner__result_collection__must_mark_remaining_lower_priority_otherwise_clauses_as_skipped_n() {
+fn test_runner_result_collection_must_mark_remaining_lower_priority_otherwise_clauses_as_skipped_n() {
     #[derive(Debug, PartialEq, Clone)]
     enum Status { Passed, Failed, Skipped }
 
@@ -1406,7 +1407,7 @@ fn test_runner__result_collection__must_mark_remaining_lower_priority_otherwise_
 /// MUST capture the number of iterations/inputs tested
 /// GIVEN: a clause is MUST ALWAYS
 #[test]
-fn test_runner__result_collection__must_capture_the_number_of_iterations_inputs_tested() {
+fn test_runner_result_collection_must_capture_the_number_of_iterations_inputs_tested() {
     struct MustAlwaysResult {
         clause_id: String,
         passed: bool,
@@ -1446,7 +1447,7 @@ fn test_runner__result_collection__must_capture_the_number_of_iterations_inputs_
 
 /// MUST collect per-test results and map each back to its clause identifier
 #[test]
-fn test_runner__result_collection__must_collect_per_test_results_and_map_each_back_to_its_clause_ide() {
+fn test_runner_result_collection_must_collect_per_test_results_and_map_each_back_to_its_clause_ide() {
     struct ClauseResult {
         clause_id: String,
         passed: bool,
@@ -1481,7 +1482,7 @@ fn test_runner__result_collection__must_collect_per_test_results_and_map_each_ba
 
 /// MUST classify each clause result as: passed, failed, errored (test itself broke), or skipped
 #[test]
-fn test_runner__result_collection__must_classify_each_clause_result_as_passed_failed_errored_test_it() {
+fn test_runner_result_collection_must_classify_each_clause_result_as_passed_failed_errored_test_it() {
     #[derive(Debug, PartialEq)]
     enum ClauseStatus {
         Passed,
@@ -1531,7 +1532,7 @@ fn test_runner__result_collection__must_classify_each_clause_result_as_passed_fa
 /// MUST capture the measured duration for reporting
 /// GIVEN: a clause is MUST BY
 #[test]
-fn test_runner__result_collection__must_capture_the_measured_duration_for_reporting() {
+fn test_runner_result_collection_must_capture_the_measured_duration_for_reporting() {
     struct MustByResult {
         clause_id: String,
         passed: bool,
@@ -1575,7 +1576,7 @@ fn test_runner__result_collection__must_capture_the_measured_duration_for_report
 /// MUST run OTHERWISE tests only if the parent test fails
 /// GIVEN: a clause has OTHERWISE children
 #[test]
-fn test_runner__result_collection__must_run_otherwise_tests_only_if_the_parent_test_fails() {
+fn test_runner_result_collection_must_run_otherwise_tests_only_if_the_parent_test_fails() {
     #[derive(Debug, PartialEq, Clone)]
     enum Status { Passed, Failed, NotRun }
 
@@ -1625,7 +1626,7 @@ fn test_runner__result_collection__must_run_otherwise_tests_only_if_the_parent_t
 /// MUST run the parent test first
 /// GIVEN: a clause has OTHERWISE children
 #[test]
-fn test_runner__result_collection__must_run_the_parent_test_first() {
+fn test_runner_result_collection_must_run_the_parent_test_first() {
     #[derive(Debug, PartialEq)]
     enum Status { Passed, Failed, Skipped }
 
@@ -1680,7 +1681,7 @@ fn test_runner__result_collection__must_run_the_parent_test_first() {
 
 /// MUST capture failure messages, assertion errors, and stack traces per test
 #[test]
-fn test_runner__result_collection__must_capture_failure_messages_assertion_errors_and_stack_traces_p() {
+fn test_runner_result_collection_must_capture_failure_messages_assertion_errors_and_stack_traces_p() {
     struct ClauseResult {
         clause_id: String,
         failure_message: Option<String>,
@@ -1721,7 +1722,7 @@ fn test_runner__result_collection__must_capture_failure_messages_assertion_error
 /// MUST stop the OTHERWISE chain at the first passing fallback
 /// GIVEN: a clause has OTHERWISE children
 #[test]
-fn test_runner__result_collection__must_stop_the_otherwise_chain_at_the_first_passing_fallback() {
+fn test_runner_result_collection_must_stop_the_otherwise_chain_at_the_first_passing_fallback() {
     #[derive(Debug, PartialEq, Clone)]
     enum Status { Passed, Failed, Skipped }
 

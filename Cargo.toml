@@ -41,3 +41,9 @@ axum = "0.8"
 serde_json = "1"
 rust-embed = "8"
 mime_guess = "2"
+
+[workspace.lints.rust]
+warnings = "deny"
+
+[workspace.lints.clippy]
+all = { level = "deny", priority = -1 }

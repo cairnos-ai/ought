@@ -1,3 +1,4 @@
+#![allow(dead_code, clippy::all)]
 #![allow(non_snake_case)]
 
 //! Generated tests for ought-report, rewritten to use the real API.
@@ -139,7 +140,7 @@ const RESET: &str = "\x1b[0m";
 
 /// MUST show each clause with its keyword, text, and pass/fail status
 #[test]
-fn test_terminal_output__must_show_each_clause_with_keyword_text_and_status() {
+fn test_terminal_output_must_show_each_clause_with_keyword_text_and_status() {
     let specs = vec![make_spec(
         "Auth Spec",
         vec![make_section(
@@ -177,7 +178,7 @@ fn test_terminal_output__must_show_each_clause_with_keyword_text_and_status() {
 
 /// MUST use status indicators: checkmark passed, X failed, ! errored, circle-slash confirmed absent (WONT), ~ skipped
 #[test]
-fn test_terminal_output__must_use_status_indicators() {
+fn test_terminal_output_must_use_status_indicators() {
     let specs = vec![make_spec(
         "Status Spec",
         vec![make_section(
@@ -224,7 +225,7 @@ fn test_terminal_output__must_use_status_indicators() {
 
 /// MUST display results grouped by spec file, then by section, then by clause
 #[test]
-fn test_terminal_output__must_display_grouped_by_spec_section_clause() {
+fn test_terminal_output_must_display_grouped_by_spec_section_clause() {
     let specs = vec![
         make_spec(
             "Auth Spec",
@@ -265,7 +266,7 @@ fn test_terminal_output__must_display_grouped_by_spec_section_clause() {
 
 /// MUST print a summary line at the end with total passed, failed, errored
 #[test]
-fn test_terminal_output__must_print_summary_line() {
+fn test_terminal_output_must_print_summary_line() {
     let specs = vec![make_spec(
         "Summary Spec",
         vec![make_section(
@@ -301,7 +302,7 @@ fn test_terminal_output__must_print_summary_line() {
 
 /// MUST show MUST coverage percentage in the summary
 #[test]
-fn test_terminal_output__must_show_must_coverage_percentage() {
+fn test_terminal_output_must_show_must_coverage_percentage() {
     // 2 of 3 MUST clauses pass -> 67%
     let specs = vec![make_spec(
         "Coverage Spec",
@@ -339,7 +340,7 @@ fn test_terminal_output__must_show_must_coverage_percentage() {
 
 /// MUST color-code by severity: MUST failures in red, SHOULD failures in yellow
 #[test]
-fn test_terminal_output__must_color_code_by_severity() {
+fn test_terminal_output_must_color_code_by_severity() {
     let specs = vec![make_spec(
         "Severity Spec",
         vec![make_section(
@@ -381,7 +382,7 @@ fn test_terminal_output__must_color_code_by_severity() {
 
 /// SHOULD dim passing clauses and highlight failures for visual scanning
 #[test]
-fn test_terminal_output__should_dim_passing_and_highlight_failures() {
+fn test_terminal_output_should_dim_passing_and_highlight_failures() {
     let specs = vec![make_spec(
         "Dim Spec",
         vec![make_section(
@@ -424,7 +425,7 @@ fn test_terminal_output__should_dim_passing_and_highlight_failures() {
 
 /// WONT use animated spinners or progress bars in non-TTY mode (pipe-friendly)
 #[test]
-fn test_terminal_output__wont_use_spinners_in_non_tty_mode() {
+fn test_terminal_output_wont_use_spinners_in_non_tty_mode() {
     let specs = vec![make_spec(
         "Pipe Spec",
         vec![make_section(
@@ -466,7 +467,7 @@ fn test_terminal_output__wont_use_spinners_in_non_tty_mode() {
 
 /// Terminal report should not panic with empty specs
 #[test]
-fn test_terminal_output__no_panic_with_empty_specs() {
+fn test_terminal_output_no_panic_with_empty_specs() {
     let specs: Vec<Spec> = vec![];
     let run = RunResult {
         results: vec![],
@@ -479,7 +480,7 @@ fn test_terminal_output__no_panic_with_empty_specs() {
 
 /// Terminal report should not panic with no results for clauses
 #[test]
-fn test_terminal_output__no_panic_with_missing_results() {
+fn test_terminal_output_no_panic_with_missing_results() {
     let specs = vec![make_spec(
         "Missing Spec",
         vec![make_section(
@@ -502,7 +503,7 @@ fn test_terminal_output__no_panic_with_missing_results() {
 
 /// MUST show the assertion error or failure message for each failed clause
 #[test]
-fn test_failure_details__must_show_assertion_error_for_failed_clause() {
+fn test_failure_details_must_show_assertion_error_for_failed_clause() {
     let failure_msg = "assertion `left == right` failed\n  left: 200\n right: 401";
     let specs = vec![make_spec(
         "Auth Spec",
@@ -540,7 +541,7 @@ fn test_failure_details__must_show_assertion_error_for_failed_clause() {
 
 /// MUST show failure message fallback: message field used when details.failure_message is absent
 #[test]
-fn test_failure_details__must_show_message_fallback_when_no_failure_detail() {
+fn test_failure_details_must_show_message_fallback_when_no_failure_detail() {
     let specs = vec![make_spec(
         "Auth Spec",
         vec![make_section(
@@ -569,7 +570,7 @@ fn test_failure_details__must_show_message_fallback_when_no_failure_detail() {
 
 /// SHOULD show the original clause text alongside the failure for easy comparison
 #[test]
-fn test_failure_details__should_show_clause_text_alongside_failure() {
+fn test_failure_details_should_show_clause_text_alongside_failure() {
     let clause_text = "charge the correct amount in the user's currency";
     let failure_msg = "assertion failed: invoice.amount_cents == 999\n  left: 1099\n right: 999";
 
@@ -609,7 +610,7 @@ fn test_failure_details__should_show_clause_text_alongside_failure() {
 
 /// MUST show the file and line from the failure message if present in details
 #[test]
-fn test_failure_details__must_show_file_and_line_from_failure_message() {
+fn test_failure_details_must_show_file_and_line_from_failure_message() {
     let failure_msg = "thread 'test' panicked at tests/generated/api_response.rs:57:5:\nassertion failed";
 
     let specs = vec![make_spec(
@@ -649,7 +650,7 @@ fn test_failure_details__must_show_file_and_line_from_failure_message() {
 
 /// MUST display GIVEN blocks as a visual group with the condition as a header line
 #[test]
-fn test_given_block_display__must_display_given_as_visual_group() {
+fn test_given_block_display_must_display_given_as_visual_group() {
     let mut given_clause = make_clause(Keyword::Given, "the user is authenticated", "given::auth");
     // GIVEN clauses contain their children in `otherwise` in the current data model.
     given_clause.otherwise = vec![
@@ -685,7 +686,7 @@ fn test_given_block_display__must_display_given_as_visual_group() {
 
 /// MUST indent clauses under their GIVEN condition to show the relationship
 #[test]
-fn test_given_block_display__must_indent_clauses_under_given() {
+fn test_given_block_display_must_indent_clauses_under_given() {
     let mut given_clause = make_clause(Keyword::Given, "the token is expired", "given::token");
     given_clause.otherwise = vec![
         make_clause(Keyword::Must, "return 401", "given::token::must_401"),
@@ -725,7 +726,7 @@ fn test_given_block_display__must_indent_clauses_under_given() {
 
 /// SHOULD dim the GIVEN condition line when all nested clauses pass
 #[test]
-fn test_given_block_display__should_dim_when_all_nested_pass() {
+fn test_given_block_display_should_dim_when_all_nested_pass() {
     let mut given_clause = make_clause(Keyword::Given, "the token is expired", "given::dim");
     given_clause.otherwise = vec![
         make_clause(Keyword::Must, "return 401", "given::dim::must_401"),
@@ -762,7 +763,7 @@ fn test_given_block_display__should_dim_when_all_nested_pass() {
 
 /// SHOULD highlight the GIVEN condition line when any nested clause fails
 #[test]
-fn test_given_block_display__should_highlight_when_nested_fails() {
+fn test_given_block_display_should_highlight_when_nested_fails() {
     let mut given_clause = make_clause(Keyword::Given, "the user is authenticated", "given::hl");
     given_clause.otherwise = vec![
         make_clause(Keyword::Must, "return profile", "given::hl::must_profile"),
@@ -798,7 +799,7 @@ fn test_given_block_display__should_highlight_when_nested_fails() {
 
 /// MUST support --json flag that outputs structured results as JSON
 #[test]
-fn test_json_output__must_support_json_flag() {
+fn test_json_output_must_support_json_flag() {
     let specs = vec![make_spec(
         "API Spec",
         vec![make_section(
@@ -834,7 +835,7 @@ fn test_json_output__must_support_json_flag() {
 
 /// MUST include all fields: clause identifier, keyword, severity, status, failure message, duration
 #[test]
-fn test_json_output__must_include_all_fields() {
+fn test_json_output_must_include_all_fields() {
     let clause_id_str = "auth::login::must_return_401";
     let failure_msg = "expected status 401, got 200";
 
@@ -885,7 +886,7 @@ fn test_json_output__must_include_all_fields() {
 
 /// MUST NOT mix JSON output with human-readable output
 #[test]
-fn test_json_output__must_not_mix_with_human_readable() {
+fn test_json_output_must_not_mix_with_human_readable() {
     let specs = vec![make_spec(
         "DB Spec",
         vec![make_section(
@@ -920,7 +921,7 @@ fn test_json_output__must_not_mix_with_human_readable() {
 
 /// MUST support --junit <path> flag that writes results in JUnit XML format
 #[test]
-fn test_junit_xml__must_support_junit_path_flag() {
+fn test_junit_xml_must_support_junit_path_flag() {
     let specs = vec![make_spec(
         "Auth Spec",
         vec![make_section(
@@ -948,7 +949,7 @@ fn test_junit_xml__must_support_junit_path_flag() {
 
 /// MUST map spec files to <testsuite> elements and clauses to <testcase> elements
 #[test]
-fn test_junit_xml__must_map_specs_to_testsuites_and_clauses_to_testcases() {
+fn test_junit_xml_must_map_specs_to_testsuites_and_clauses_to_testcases() {
     let specs = vec![
         make_spec(
             "Spec Alpha",
@@ -994,7 +995,7 @@ fn test_junit_xml__must_map_specs_to_testsuites_and_clauses_to_testcases() {
 
 /// MUST include failure messages and clause identifiers in <failure> elements
 #[test]
-fn test_junit_xml__must_include_failure_messages_and_clause_ids() {
+fn test_junit_xml_must_include_failure_messages_and_clause_ids() {
     let failure_msg = "expected charge 42.00 but got 0.00";
 
     let specs = vec![make_spec(
@@ -1033,7 +1034,7 @@ fn test_junit_xml__must_include_failure_messages_and_clause_ids() {
 
 /// SHOULD include the clause keyword and severity as properties on each <testcase>
 #[test]
-fn test_junit_xml__should_include_keyword_and_severity_as_properties() {
+fn test_junit_xml_should_include_keyword_and_severity_as_properties() {
     let specs = vec![make_spec(
         "Properties Spec",
         vec![make_section(
@@ -1079,7 +1080,7 @@ fn test_junit_xml__should_include_keyword_and_severity_as_properties() {
 
 /// MAY be combined with other output modes (JUnit + terminal)
 #[test]
-fn test_junit_xml__may_be_combined_with_terminal() {
+fn test_junit_xml_may_be_combined_with_terminal() {
     let specs = vec![make_spec(
         "Combined Spec",
         vec![make_section(
@@ -1117,7 +1118,7 @@ fn test_junit_xml__may_be_combined_with_terminal() {
 
 /// MUST display OTHERWISE clauses indented under their parent obligation
 #[test]
-fn test_otherwise_chain__must_display_indented_under_parent() {
+fn test_otherwise_chain_must_display_indented_under_parent() {
     let mut parent = make_clause(Keyword::Must, "respond within 200ms", "ow::parent");
     parent.otherwise = vec![
         make_clause(Keyword::Otherwise, "return a cached response", "ow::cached"),
@@ -1158,7 +1159,7 @@ fn test_otherwise_chain__must_display_indented_under_parent() {
 
 /// MUST use a distinct indicator for OTHERWISE results: arrow prefix
 #[test]
-fn test_otherwise_chain__must_use_arrow_indicator() {
+fn test_otherwise_chain_must_use_arrow_indicator() {
     let mut parent = make_clause(Keyword::Must, "respond within 200ms", "ow2::parent");
     parent.otherwise = vec![
         make_clause(Keyword::Otherwise, "return a cached response", "ow2::cached"),
@@ -1200,7 +1201,7 @@ fn test_otherwise_chain__must_use_arrow_indicator() {
 
 /// MUST show the full chain status: if parent passes, OTHERWISE shows as ~ (not needed)
 #[test]
-fn test_otherwise_chain__must_show_skipped_when_parent_passes() {
+fn test_otherwise_chain_must_show_skipped_when_parent_passes() {
     let mut parent = make_clause(Keyword::Must, "respond within 200ms", "ow3::parent");
     parent.otherwise = vec![
         make_clause(Keyword::Otherwise, "return a cached response", "ow3::cached"),
@@ -1233,7 +1234,7 @@ fn test_otherwise_chain__must_show_skipped_when_parent_passes() {
 
 /// MUST show which OTHERWISE level caught the failure
 #[test]
-fn test_otherwise_chain__must_show_which_level_caught_failure() {
+fn test_otherwise_chain_must_show_which_level_caught_failure() {
     // Scenario: first OTHERWISE catches the failure
     let mut parent = make_clause(Keyword::Must, "respond within 200ms", "ow4::parent");
     parent.otherwise = vec![
@@ -1269,7 +1270,7 @@ fn test_otherwise_chain__must_show_which_level_caught_failure() {
 
 /// SHOULD visually distinguish the active fallback from lower ones
 #[test]
-fn test_otherwise_chain__should_distinguish_active_from_unreached() {
+fn test_otherwise_chain_should_distinguish_active_from_unreached() {
     let mut parent = make_clause(Keyword::Must, "respond within 200ms", "ow5::parent");
     parent.otherwise = vec![
         make_clause(Keyword::Otherwise, "return a cached response", "ow5::cached"),
@@ -1311,7 +1312,7 @@ fn test_otherwise_chain__should_distinguish_active_from_unreached() {
 
 /// MUST display MUST ALWAYS results with the number of iterations/inputs tested
 #[test]
-fn test_temporal__must_display_must_always_with_iterations() {
+fn test_temporal_must_display_must_always_with_iterations() {
     let mut clause = make_clause(Keyword::MustAlways, "return valid JSON", "inv::must_always_json");
     clause.temporal = Some(Temporal::Invariant);
 
@@ -1350,7 +1351,7 @@ fn test_temporal__must_display_must_always_with_iterations() {
 
 /// MUST display MUST BY results with the measured duration alongside the deadline
 #[test]
-fn test_temporal__must_display_must_by_with_duration_and_deadline() {
+fn test_temporal_must_display_must_by_with_duration_and_deadline() {
     let deadline = Duration::from_millis(200);
     let measured = Duration::from_millis(47);
 
@@ -1392,7 +1393,7 @@ fn test_temporal__must_display_must_by_with_duration_and_deadline() {
 
 /// SHOULD show a timing ratio for MUST BY clauses: [47ms / 200ms]
 #[test]
-fn test_temporal__should_show_timing_ratio_for_must_by() {
+fn test_temporal_should_show_timing_ratio_for_must_by() {
     let passing_clause = {
         let mut c = make_clause(Keyword::MustBy, "return a response", "perf::pass");
         c.temporal = Some(Temporal::Deadline(Duration::from_millis(200)));

@@ -197,8 +197,6 @@ fn extract_rust_proofs(source: &str) -> Vec<Proof> {
                 if let Some(rest) = prev.strip_prefix("///") {
                     doc_lines.push(rest.trim().to_string());
                     d -= 1;
-                } else if prev.is_empty() {
-                    break;
                 } else {
                     break;
                 }

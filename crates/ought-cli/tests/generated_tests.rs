@@ -1,3 +1,4 @@
+#![allow(dead_code, clippy::all)]
 #![allow(non_snake_case)]
 #[allow(unused_imports)]
 use std::path::{Path, PathBuf};
@@ -98,15 +99,19 @@ fn write_test(dir: &Path, clause_id: &str, pass: bool) {
     if let Some(parent) = file_path.parent() {
         fs::create_dir_all(parent).unwrap();
     }
+    // The runner's `clause_id_to_test_name` produces snake_case names by replacing
+    // `::` with `_`. The clause_id passed here uses `__` as a hierarchy separator,
+    // so we collapse it to `_` to match what the runner expects in its HashMap.
+    let function_name = clause_id.replace("__", "_");
     let body = if pass {
         format!(
             "#[test]\nfn {}() {{\n    assert!(true);\n}}\n",
-            clause_id
+            function_name
         )
     } else {
         format!(
             "#[test]\nfn {}() {{\n    assert!(false, \"deliberately failing\");\n}}\n",
-            clause_id
+            function_name
         )
     };
     fs::write(&file_path, body).unwrap();
@@ -131,7 +136,7 @@ fn write_test(dir: &Path, clause_id: &str, pass: bool) {
 // --- must_exit_with_code_0_if_all_specs_are_valid_1_if_any_are_invalid_test.rs ---
 /// MUST exit with code 0 if all specs are valid, 1 if any are invalid
 #[test]
-fn test_cli__check__must_exit_with_code_0_if_all_specs_are_valid_1_if_any_are_invalid() {
+fn test_cli_check_must_exit_with_code_0_if_all_specs_are_valid_1_if_any_are_invalid() {
     let base = std::env::temp_dir()
         .join(format!("ought_check_exit_{}", std::process::id()));
     let valid_dir = base.join("valid");
@@ -193,7 +198,7 @@ fn test_cli__check__must_exit_with_code_0_if_all_specs_are_valid_1_if_any_are_in
 // --- must_report_parse_errors_with_file_line_number_and_a_human_readab_test.rs ---
 /// MUST report parse errors with file, line number, and a human-readable message
 #[test]
-fn test_cli__check__must_report_parse_errors_with_file_line_number_and_a_human_readab() {
+fn test_cli_check_must_report_parse_errors_with_file_line_number_and_a_human_readab() {
     let base = std::env::temp_dir()
         .join(format!("ought_check_errmsg_{}", std::process::id()));
     std::fs::create_dir_all(&base).unwrap();
@@ -240,7 +245,7 @@ fn test_cli__check__must_report_parse_errors_with_file_line_number_and_a_human_r
 // --- must_validate_that_cross_file_references_links_to_other_ought_md_test.rs ---
 /// MUST validate that cross-file references (links to other .ought.md files) resolve
 #[test]
-fn test_cli__check__must_validate_that_cross_file_references_links_to_other_ought_md() {
+fn test_cli_check_must_validate_that_cross_file_references_links_to_other_ought_md() {
     let base = std::env::temp_dir()
         .join(format!("ought_check_xref_{}", std::process::id()));
     let valid_dir = base.join("valid");
@@ -306,7 +311,7 @@ fn test_cli__check__must_validate_that_cross_file_references_links_to_other_ough
 // --- must_validate_the_syntax_of_all_spec_files_without_generating_or_test.rs ---
 /// MUST validate the syntax of all spec files without generating or running anything
 #[test]
-fn test_cli__check__must_validate_the_syntax_of_all_spec_files_without_generating_or() {
+fn test_cli_check_must_validate_the_syntax_of_all_spec_files_without_generating_or() {
     let base = std::env::temp_dir()
         .join(format!("ought_check_syntax_{}", std::process::id()));
     let spec_dir = base.join("specs");
@@ -362,7 +367,7 @@ fn test_cli__check__must_validate_the_syntax_of_all_spec_files_without_generatin
 // --- must_show_the_diff_between_current_generated_tests_and_what_would_test.rs ---
 /// MUST show the diff between current generated tests and what would be generated now
 #[test]
-fn test_cli__diff__must_show_the_diff_between_current_generated_tests_and_what_would() {
+fn test_cli_diff_must_show_the_diff_between_current_generated_tests_and_what_would() {
     let dir = std::env::temp_dir()
         .join(format!("ought_diff_show_{}", std::process::id()));
     std::fs::create_dir_all(dir.join("ought")).unwrap();
@@ -451,7 +456,7 @@ fn test_cli__diff__must_show_the_diff_between_current_generated_tests_and_what_w
 // --- should_group_diffs_by_spec_file_test.rs ---
 /// SHOULD group diffs by spec file
 #[test]
-fn test_cli__diff__should_group_diffs_by_spec_file() {
+fn test_cli_diff_should_group_diffs_by_spec_file() {
     let dir = std::env::temp_dir()
         .join(format!("ought_diff_group_{}", std::process::id()));
     std::fs::create_dir_all(dir.join("ought")).unwrap();
@@ -550,7 +555,7 @@ fn test_cli__diff__should_group_diffs_by_spec_file() {
 // --- should_use_a_familiar_unified_diff_format_test.rs ---
 /// SHOULD use a familiar unified diff format
 #[test]
-fn test_cli__diff__should_use_a_familiar_unified_diff_format() {
+fn test_cli_diff_should_use_a_familiar_unified_diff_format() {
     let dir = std::env::temp_dir()
         .join(format!("ought_diff_format_{}", std::process::id()));
     std::fs::create_dir_all(dir.join("ought")).unwrap();
@@ -621,7 +626,7 @@ fn test_cli__diff__should_use_a_familiar_unified_diff_format() {
 // --- must_not_execute_tests_during_generation_that_is_run_s_job_test.rs ---
 /// MUST NOT execute tests during generation (that is `run`'s job)
 #[test]
-fn test_cli__generate__must_not_execute_tests_during_generation_that_is_run_s_job() {
+fn test_cli_generate_must_not_execute_tests_during_generation_that_is_run_s_job() {
     let dir = std::env::temp_dir()
         .join(format!("ought_gen_norun_{}", std::process::id()));
     std::fs::create_dir_all(dir.join("ought")).unwrap();
@@ -675,7 +680,7 @@ fn test_cli__generate__must_not_execute_tests_during_generation_that_is_run_s_jo
 // --- must_regenerate_test_code_for_all_clauses_where_the_clause_hash_o_test.rs ---
 /// MUST regenerate test code for all clauses where the clause hash or source hash has changed
 #[test]
-fn test_cli__generate__must_regenerate_test_code_for_all_clauses_where_the_clause_hash_o() {
+fn test_cli_generate_must_regenerate_test_code_for_all_clauses_where_the_clause_hash_o() {
     let dir = std::env::temp_dir()
         .join(format!("ought_gen_rehash_{}", std::process::id()));
     std::fs::create_dir_all(dir.join("ought")).unwrap();
@@ -739,7 +744,7 @@ fn test_cli__generate__must_regenerate_test_code_for_all_clauses_where_the_claus
 // --- must_support_check_flag_that_exits_with_code_1_if_any_generated_t_test.rs ---
 /// MUST support `--check` flag that exits with code 1 if any generated tests are stale (for CI)
 #[test]
-fn test_cli__generate__must_support_check_flag_that_exits_with_code_1_if_any_generated_t() {
+fn test_cli_generate_must_support_check_flag_that_exits_with_code_1_if_any_generated_t() {
     let dir = std::env::temp_dir()
         .join(format!("ought_gen_check_{}", std::process::id()));
     std::fs::create_dir_all(dir.join("ought")).unwrap();
@@ -793,7 +798,7 @@ fn test_cli__generate__must_support_check_flag_that_exits_with_code_1_if_any_gen
 // --- must_support_force_flag_to_regenerate_all_clauses_regardless_of_h_test.rs ---
 /// MUST support `--force` flag to regenerate all clauses regardless of hash
 #[test]
-fn test_cli__generate__must_support_force_flag_to_regenerate_all_clauses_regardless_of_h() {
+fn test_cli_generate_must_support_force_flag_to_regenerate_all_clauses_regardless_of_h() {
     let dir = std::env::temp_dir()
         .join(format!("ought_gen_force_{}", std::process::id()));
     std::fs::create_dir_all(dir.join("ought")).unwrap();
@@ -849,7 +854,7 @@ fn test_cli__generate__must_support_force_flag_to_regenerate_all_clauses_regardl
 // --- must_update_the_manifest_toml_with_new_hashes_after_generation_test.rs ---
 /// MUST update the manifest.toml with new hashes after generation
 #[test]
-fn test_cli__generate__must_update_the_manifest_toml_with_new_hashes_after_generation() {
+fn test_cli_generate_must_update_the_manifest_toml_with_new_hashes_after_generation() {
     let dir = std::env::temp_dir()
         .join(format!("ought_gen_manifest_{}", std::process::id()));
     std::fs::create_dir_all(dir.join("ought")).unwrap();
@@ -900,7 +905,7 @@ fn test_cli__generate__must_update_the_manifest_toml_with_new_hashes_after_gener
 // --- must_write_generated_tests_to_the_ought_ought_gen_directory_test.rs ---
 /// MUST write generated tests to the `ought/ought-gen/` directory
 #[test]
-fn test_cli__generate__must_write_generated_tests_to_the_ought_ought_gen_directory() {
+fn test_cli_generate_must_write_generated_tests_to_the_ought_ought_gen_directory() {
     let dir = std::env::temp_dir()
         .join(format!("ought_gen_outdir_{}", std::process::id()));
     std::fs::create_dir_all(dir.join("ought")).unwrap();
@@ -950,7 +955,7 @@ fn test_cli__generate__must_write_generated_tests_to_the_ought_ought_gen_directo
 // --- should_show_a_progress_indicator_during_llm_generation_test.rs ---
 /// SHOULD show a progress indicator during LLM generation
 #[test]
-fn test_cli__generate__should_show_a_progress_indicator_during_llm_generation() {
+fn test_cli_generate_should_show_a_progress_indicator_during_llm_generation() {
     let dir = std::env::temp_dir()
         .join(format!("ought_gen_progress_{}", std::process::id()));
     std::fs::create_dir_all(dir.join("ought")).unwrap();
@@ -996,7 +1001,7 @@ fn test_cli__generate__should_show_a_progress_indicator_during_llm_generation() 
 // --- should_support_targeting_a_specific_spec_file_ought_generate_ought_test.rs ---
 /// SHOULD support targeting a specific spec file: `ought generate ought/auth.ought.md`
 #[test]
-fn test_cli__generate__should_support_targeting_a_specific_spec_file_ought_generate_ought() {
+fn test_cli_generate_should_support_targeting_a_specific_spec_file_ought_generate_ought() {
     let dir = std::env::temp_dir()
         .join(format!("ought_gen_target_{}", std::process::id()));
     std::fs::create_dir_all(dir.join("ought")).unwrap();
@@ -1049,7 +1054,7 @@ fn test_cli__generate__should_support_targeting_a_specific_spec_file_ought_gener
 /// MUST ALWAYS return a valid exit code (0, 1, or 2) — never crash without an exit code.
 /// Invariant — verified across a wide fuzz-style range of invocations.
 #[test]
-fn test_cli__global_flags__must_always_return_a_valid_exit_code_0_1_or_2_never_crash_without_an_exi(
+fn test_cli_global_flags_must_always_return_a_valid_exit_code_0_1_or_2_never_crash_without_an_exi(
 ) {
     let bin = option_env!("CARGO_BIN_EXE_ought")
         .map(std::path::PathBuf::from)
@@ -1124,7 +1129,7 @@ fn test_cli__global_flags__must_always_return_a_valid_exit_code_0_1_or_2_never_c
 /// MUST ALWAYS write diagnostic messages to stderr, never stdout (stdout is reserved for
 /// structured output and results). Invariant — verified across a range of invocations.
 #[test]
-fn test_cli__global_flags__must_always_write_diagnostic_messages_to_stderr_never_stdout_stdout_is_r(
+fn test_cli_global_flags_must_always_write_diagnostic_messages_to_stderr_never_stdout_stdout_is_r(
 ) {
     let bin = option_env!("CARGO_BIN_EXE_ought")
         .map(std::path::PathBuf::from)
@@ -1221,7 +1226,7 @@ fn test_cli__global_flags__must_always_write_diagnostic_messages_to_stderr_never
 // --- must_support_color_auto_always_never_for_terminal_color_control_test.rs ---
 /// MUST support `--color <auto|always|never>` for terminal color control
 #[test]
-fn test_cli__global_flags__must_support_color_auto_always_never_for_terminal_color_control() {
+fn test_cli_global_flags_must_support_color_auto_always_never_for_terminal_color_control() {
     let bin = option_env!("CARGO_BIN_EXE_ought")
         .map(std::path::PathBuf::from)
         .unwrap_or_else(|| std::path::PathBuf::from("ought"));
@@ -1279,7 +1284,7 @@ fn test_cli__global_flags__must_support_color_auto_always_never_for_terminal_col
 // --- must_support_config_path_to_specify_an_alternate_ought_toml_locat_test.rs ---
 /// MUST support `--config <path>` to specify an alternate ought.toml location
 #[test]
-fn test_cli__global_flags__must_support_config_path_to_specify_an_alternate_ought_toml_locat() {
+fn test_cli_global_flags_must_support_config_path_to_specify_an_alternate_ought_toml_locat() {
     let base = std::env::temp_dir()
         .join(format!("ought_cfg_flag_{}", std::process::id()));
     let specs_dir = base.join("specs");
@@ -1346,7 +1351,7 @@ fn test_cli__global_flags__must_support_config_path_to_specify_an_alternate_ough
 // --- must_support_json_flag_that_outputs_structured_json_for_programma_test.rs ---
 /// MUST support `--json` flag that outputs structured JSON for programmatic consumption
 #[test]
-fn test_cli__global_flags__must_support_json_flag_that_outputs_structured_json_for_programma() {
+fn test_cli_global_flags_must_support_json_flag_that_outputs_structured_json_for_programma() {
     let dir = std::env::temp_dir()
         .join(format!("ought_json_flag_{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
@@ -1416,7 +1421,7 @@ fn test_cli__global_flags__must_support_json_flag_that_outputs_structured_json_f
 // --- must_support_junit_path_flag_that_writes_junit_xml_results_to_the_test.rs ---
 /// MUST support `--junit <path>` flag that writes JUnit XML results to the given file
 #[test]
-fn test_cli__global_flags__must_support_junit_path_flag_that_writes_junit_xml_results_to_the() {
+fn test_cli_global_flags_must_support_junit_path_flag_that_writes_junit_xml_results_to_the() {
     let dir = std::env::temp_dir()
         .join(format!("ought_junit_flag_{}", std::process::id()));
     let junit_path = dir.join("results.xml");
@@ -1476,7 +1481,7 @@ fn test_cli__global_flags__must_support_junit_path_flag_that_writes_junit_xml_re
 // --- must_support_quiet_flag_that_suppresses_all_output_except_errors_test.rs ---
 /// MUST support `--quiet` flag that suppresses all output except errors and the final summary
 #[test]
-fn test_cli__global_flags__must_support_quiet_flag_that_suppresses_all_output_except_errors() {
+fn test_cli_global_flags_must_support_quiet_flag_that_suppresses_all_output_except_errors() {
     let bin = option_env!("CARGO_BIN_EXE_ought")
         .map(std::path::PathBuf::from)
         .unwrap_or_else(|| std::path::PathBuf::from("ought"));
@@ -1530,7 +1535,7 @@ fn test_cli__global_flags__must_support_quiet_flag_that_suppresses_all_output_ex
 // --- should_support_verbose_flag_for_debug_level_output_test.rs ---
 /// SHOULD support `--verbose` flag for debug-level output
 #[test]
-fn test_cli__global_flags__should_support_verbose_flag_for_debug_level_output() {
+fn test_cli_global_flags_should_support_verbose_flag_for_debug_level_output() {
     let bin = option_env!("CARGO_BIN_EXE_ought")
         .map(std::path::PathBuf::from)
         .unwrap_or_else(|| std::path::PathBuf::from("ought"));
@@ -1603,7 +1608,7 @@ fn test_cli__global_flags__should_support_verbose_flag_for_debug_level_output() 
 /// When stdin is not a terminal (piped from /dev/null), the command must not hang
 /// indefinitely; it must terminate with a defined exit code.
 #[test]
-fn test_cli__init__may_prompt_the_user_interactively_for_generator_provider_and_mod() {
+fn test_cli_init_may_prompt_the_user_interactively_for_generator_provider_and_mod() {
     let dir = std::env::temp_dir()
         .join(format!("ought_init_noninteractive_{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
@@ -1635,7 +1640,7 @@ fn test_cli__init__may_prompt_the_user_interactively_for_generator_provider_and_
 /// MUST detect the project language from existing config files (Cargo.toml, package.json,
 /// pyproject.toml, go.mod) and set defaults accordingly.
 #[test]
-fn test_cli__init__must_detect_the_project_language_from_existing_config_files_cargo() {
+fn test_cli_init_must_detect_the_project_language_from_existing_config_files_cargo() {
     let bin = option_env!("CARGO_BIN_EXE_ought")
         .map(std::path::PathBuf::from)
         .unwrap_or_else(|| std::path::PathBuf::from("ought"));
@@ -1709,7 +1714,7 @@ fn test_cli__init__must_detect_the_project_language_from_existing_config_files_c
 // --- must_not_overwrite_an_existing_ought_toml_test.rs ---
 /// MUST NOT overwrite an existing `ought.toml`.
 #[test]
-fn test_cli__init__must_not_overwrite_an_existing_ought_toml() {
+fn test_cli_init_must_not_overwrite_an_existing_ought_toml() {
     let dir = std::env::temp_dir()
         .join(format!("ought_init_no_overwrite_{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
@@ -1747,7 +1752,7 @@ fn test_cli__init__must_not_overwrite_an_existing_ought_toml() {
 /// MUST scaffold an `ought.toml`, an `ought/` directory, and an example spec file inside it
 /// when run in a project directory.
 #[test]
-fn test_cli__init__must_scaffold_an_ought_toml_an_ought_directory_and_an_example_spe() {
+fn test_cli_init_must_scaffold_an_ought_toml_an_ought_directory_and_an_example_spe() {
     let dir = std::env::temp_dir()
         .join(format!("ought_init_scaffold_{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
@@ -1800,7 +1805,7 @@ fn test_cli__init__must_scaffold_an_ought_toml_an_ought_directory_and_an_example
 /// MUST accept clause identifiers in the form `file::section::clause`
 /// (e.g. `auth::login::must_return_jwt`)
 #[test]
-fn test_cli__inspect__must_accept_clause_identifiers_in_the_form_file_section_clause_e() {
+fn test_cli_inspect_must_accept_clause_identifiers_in_the_form_file_section_clause_e() {
     let dir = std::env::temp_dir()
         .join(format!("ought_inspect_idform_{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
@@ -1855,7 +1860,7 @@ fn test_cli__inspect__must_accept_clause_identifiers_in_the_form_file_section_cl
 // --- must_print_the_generated_test_code_for_a_given_clause_identifier_test.rs ---
 /// MUST print the generated test code for a given clause identifier
 #[test]
-fn test_cli__inspect__must_print_the_generated_test_code_for_a_given_clause_identifier() {
+fn test_cli_inspect_must_print_the_generated_test_code_for_a_given_clause_identifier() {
     let dir = std::env::temp_dir()
         .join(format!("ought_inspect_print_{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
@@ -1904,7 +1909,7 @@ fn test_cli__inspect__must_print_the_generated_test_code_for_a_given_clause_iden
 // --- should_show_the_clause_text_alongside_the_generated_code_for_easy_c_test.rs ---
 /// SHOULD show the clause text alongside the generated code for easy comparison
 #[test]
-fn test_cli__inspect__should_show_the_clause_text_alongside_the_generated_code_for_easy_c() {
+fn test_cli_inspect_should_show_the_clause_text_alongside_the_generated_code_for_easy_c() {
     let dir = std::env::temp_dir()
         .join(format!("ought_inspect_clause_text_{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
@@ -1977,7 +1982,7 @@ fn test_cli__inspect__should_show_the_clause_text_alongside_the_generated_code_f
 // --- should_syntax_highlight_the_output_when_stdout_is_a_terminal_test.rs ---
 /// SHOULD syntax-highlight the output when stdout is a terminal
 #[test]
-fn test_cli__inspect__should_syntax_highlight_the_output_when_stdout_is_a_terminal() {
+fn test_cli_inspect_should_syntax_highlight_the_output_when_stdout_is_a_terminal() {
     // When stdout is piped (non-terminal), the command must still produce plain
     // readable output.  Syntax highlighting, if supported, must be suppressed in
     // that case so downstream tools are not polluted with ANSI escape sequences.
@@ -2062,7 +2067,7 @@ fn test_cli__inspect__should_syntax_highlight_the_output_when_stdout_is_a_termin
 /// MUST accept a glob pattern to run a subset:
 /// `ought run "ought/auth*.ought.md"`
 #[test]
-fn test_cli__run__must_accept_a_glob_pattern_to_run_a_subset_ought_run_ought_auth_o() {
+fn test_cli_run_must_accept_a_glob_pattern_to_run_a_subset_ought_run_ought_auth_o() {
     let dir = unique_dir("glob_arg");
     scaffold_project(&dir);
     std::fs::write(
@@ -2093,7 +2098,7 @@ fn test_cli__run__must_accept_a_glob_pattern_to_run_a_subset_ought_run_ought_aut
 /// MUST accept a path argument to run a specific spec file:
 /// `ought run ought/auth.ought.md`
 #[test]
-fn test_cli__run__must_accept_a_path_argument_to_run_a_specific_spec_file_ought_run() {
+fn test_cli_run_must_accept_a_path_argument_to_run_a_specific_spec_file_ought_run() {
     let dir = unique_dir("path_arg");
     scaffold_project(&dir);
     std::fs::write(
@@ -2126,7 +2131,7 @@ fn test_cli__run__must_accept_a_path_argument_to_run_a_specific_spec_file_ought_
 /// (graceful degradation accepted).
 /// GIVEN: a clause has an OTHERWISE chain and the primary obligation fails.
 #[test]
-fn test_cli__run__must_exit_with_code_0_if_any_otherwise_clause_in_the_chain_passes() {
+fn test_cli_run_must_exit_with_code_0_if_any_otherwise_clause_in_the_chain_passes() {
     let dir = unique_dir("otherwise_pass");
     scaffold_project(&dir);
     // Spec: MUST with an OTHERWISE fallback
@@ -2172,7 +2177,7 @@ fn test_cli__run__must_exit_with_code_0_if_any_otherwise_clause_in_the_chain_pas
 // --- must_exit_with_code_0_if_only_should_or_may_clauses_fail_test.rs ---
 /// MUST exit with code 0 if only SHOULD or MAY clauses fail.
 #[test]
-fn test_cli__run__must_exit_with_code_0_if_only_should_or_may_clauses_fail() {
+fn test_cli_run_must_exit_with_code_0_if_only_should_or_may_clauses_fail() {
     let dir = unique_dir("exit0_should");
     scaffold_project(&dir);
     // Spec has only a SHOULD-level clause, no MUST
@@ -2203,7 +2208,7 @@ fn test_cli__run__must_exit_with_code_0_if_only_should_or_may_clauses_fail() {
 /// (full degradation chain exhausted).
 /// GIVEN: a clause has an OTHERWISE chain and the primary obligation fails.
 #[test]
-fn test_cli__run__must_exit_with_code_1_if_all_otherwise_clauses_also_fail_full_deg() {
+fn test_cli_run_must_exit_with_code_1_if_all_otherwise_clauses_also_fail_full_deg() {
     let dir = unique_dir("otherwise_all_fail");
     scaffold_project(&dir);
     // Spec: MUST with an OTHERWISE fallback
@@ -2246,7 +2251,7 @@ fn test_cli__run__must_exit_with_code_1_if_all_otherwise_clauses_also_fail_full_
 // --- must_exit_with_code_1_if_any_must_must_not_must_always_or_must_by_test.rs ---
 /// MUST exit with code 1 if any MUST, MUST NOT, MUST ALWAYS, or MUST BY clause fails.
 #[test]
-fn test_cli__run__must_exit_with_code_1_if_any_must_must_not_must_always_or_must_by() {
+fn test_cli_run_must_exit_with_code_1_if_any_must_must_not_must_always_or_must_by() {
     let dir = unique_dir("exit1_must");
     scaffold_project(&dir);
     write_spec(&dir, "MUST", "authenticate users");
@@ -2271,7 +2276,7 @@ fn test_cli__run__must_exit_with_code_1_if_any_must_must_not_must_always_or_must
 // --- must_not_trigger_test_generation_ought_run_only_executes_existing_gen_test.rs ---
 /// MUST NOT trigger test generation — `ought run` only executes existing generated tests.
 #[test]
-fn test_cli__run__must_not_trigger_test_generation_ought_run_only_executes_existing_gen() {
+fn test_cli_run_must_not_trigger_test_generation_ought_run_only_executes_existing_gen() {
     let dir = unique_dir("no_generate");
     scaffold_project(&dir);
     write_spec(&dir, "MUST", "return HTTP 200");
@@ -2311,7 +2316,7 @@ fn test_cli__run__must_not_trigger_test_generation_ought_run_only_executes_exist
 /// MUST parse all spec files, execute generated tests, and report results
 /// mapped back to clauses.
 #[test]
-fn test_cli__run__must_parse_all_spec_files_execute_generated_tests_and_report_resu() {
+fn test_cli_run_must_parse_all_spec_files_execute_generated_tests_and_report_resu() {
     let dir = unique_dir("parse_all");
     scaffold_project(&dir);
     write_spec(&dir, "MUST", "authenticate users");
@@ -2346,7 +2351,7 @@ fn test_cli__run__must_parse_all_spec_files_execute_generated_tests_and_report_r
 // --- should_print_a_summary_at_the_end_showing_pass_fail_counts_by_sever_test.rs ---
 /// SHOULD print a summary at the end showing pass/fail counts by severity level.
 #[test]
-fn test_cli__run__should_print_a_summary_at_the_end_showing_pass_fail_counts_by_sever() {
+fn test_cli_run_should_print_a_summary_at_the_end_showing_pass_fail_counts_by_sever() {
     let dir = unique_dir("summary");
     scaffold_project(&dir);
     write_spec(&dir, "MUST", "authenticate users");
@@ -2373,7 +2378,7 @@ fn test_cli__run__should_print_a_summary_at_the_end_showing_pass_fail_counts_by_
 // --- should_support_fail_on_should_flag_to_also_fail_on_should_clause_fa_test.rs ---
 /// SHOULD support `--fail-on-should` flag to also fail on SHOULD clause failures.
 #[test]
-fn test_cli__run__should_support_fail_on_should_flag_to_also_fail_on_should_clause_fa() {
+fn test_cli_run_should_support_fail_on_should_flag_to_also_fail_on_should_clause_fa() {
     let dir = unique_dir("fail_on_should");
     scaffold_project(&dir);
     // Only a SHOULD clause — would normally be a soft failure
@@ -2411,7 +2416,7 @@ fn test_cli__run__should_support_fail_on_should_flag_to_also_fail_on_should_clau
 /// WONT execute tests in parallel by default in v0.1 (sequential is fine to start).
 /// Absence test: the CLI must not expose a `--parallel` flag.
 #[test]
-fn test_cli__run__wont_execute_tests_in_parallel_by_default_in_v0_1_sequential_is_f() {
+fn test_cli_run_wont_execute_tests_in_parallel_by_default_in_v0_1_sequential_is_f() {
     // Invoke without a project directory; clap argument parsing happens before
     // config is loaded, so an unknown flag is rejected immediately with exit 2.
     let out = std::process::Command::new(ought_bin())
@@ -2432,7 +2437,7 @@ fn test_cli__run__wont_execute_tests_in_parallel_by_default_in_v0_1_sequential_i
 // --- must_re_run_affected_specs_when_a_change_is_detected_test.rs ---
 /// MUST re-run affected specs when a change is detected
 #[test]
-fn test_cli__watch__must_re_run_affected_specs_when_a_change_is_detected() {
+fn test_cli_watch_must_re_run_affected_specs_when_a_change_is_detected() {
     let dir = unique_dir("watch_rerun");
     scaffold_project(&dir);
     write_spec(&dir, "MUST", "process items");
@@ -2484,7 +2489,7 @@ fn test_cli__watch__must_re_run_affected_specs_when_a_change_is_detected() {
 // --- must_watch_ought_md_files_and_source_files_for_changes_test.rs ---
 /// MUST watch `ought.md` files and source files for changes
 #[test]
-fn test_cli__watch__must_watch_ought_md_files_and_source_files_for_changes() {
+fn test_cli_watch_must_watch_ought_md_files_and_source_files_for_changes() {
     let dir = unique_dir("watch_files");
     scaffold_project(&dir);
     write_spec(&dir, "MUST", "handle requests");
@@ -2546,7 +2551,7 @@ fn test_cli__watch__must_watch_ought_md_files_and_source_files_for_changes() {
 // --- should_clear_the_terminal_and_reprint_results_on_each_cycle_test.rs ---
 /// SHOULD clear the terminal and reprint results on each cycle
 #[test]
-fn test_cli__watch__should_clear_the_terminal_and_reprint_results_on_each_cycle() {
+fn test_cli_watch_should_clear_the_terminal_and_reprint_results_on_each_cycle() {
     let dir = unique_dir("watch_clear");
     scaffold_project(&dir);
     write_spec(&dir, "MUST", "return results");
@@ -2595,7 +2600,7 @@ fn test_cli__watch__should_clear_the_terminal_and_reprint_results_on_each_cycle(
 // --- should_debounce_rapid_file_changes_at_least_500ms_test.rs ---
 /// SHOULD debounce rapid file changes (at least 500ms)
 #[test]
-fn test_cli__watch__should_debounce_rapid_file_changes_at_least_500ms() {
+fn test_cli_watch_should_debounce_rapid_file_changes_at_least_500ms() {
     let dir = unique_dir("watch_debounce");
     scaffold_project(&dir);
     write_spec(&dir, "MUST", "validate input");

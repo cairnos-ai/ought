@@ -26,7 +26,7 @@ fn parse_real_spec_file() {
         }
         n
     }
-    let total: usize = spec.sections.iter().map(|s| count_clauses(s)).sum();
+    let total: usize = spec.sections.iter().map(count_clauses).sum();
     assert!(total > 30, "parser spec should have many clauses, got {}", total);
 
     // Check that GIVEN blocks were parsed

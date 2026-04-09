@@ -24,14 +24,18 @@ fn command_exists(cmd: &str) -> bool {
 }
 
 /// Convert a `ClauseId` like `auth::login::must_return_jwt` into the test function
-/// name form used in generated code: `auth__login__must_return_jwt`.
+/// name form used in generated code: `auth_login_must_return_jwt`. The mapping is
+/// lossy (section boundaries are erased), so the runtime mapping back to a
+/// `ClauseId` relies on the `name_to_clause` HashMap built from the manifest;
+/// `test_name_to_clause_id` is only a best-effort fallback when that lookup misses.
 fn clause_id_to_test_name(clause_id: &ClauseId) -> String {
-    clause_id.0.replace("::", "__")
+    clause_id.0.replace("::", "_")
 }
 
-/// Reverse mapping: convert a test function name back into a `ClauseId`.
+/// Best-effort fallback: wrap the test name as a `ClauseId` directly. This is only
+/// used when the HashMap lookup fails; the mangling above is not reversible.
 fn test_name_to_clause_id(test_name: &str) -> ClauseId {
-    ClauseId(test_name.replace("__", "::"))
+    ClauseId(test_name.to_string())
 }
 
 /// Parse cargo test stdout to extract per-test results and failure messages.
@@ -290,30 +294,28 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_clause_id_roundtrip() {
+    fn test_clause_id_to_test_name() {
         let id = ClauseId("auth::login::must_return_jwt".to_string());
         let name = clause_id_to_test_name(&id);
-        assert_eq!(name, "auth__login__must_return_jwt");
-        let back = test_name_to_clause_id(&name);
-        assert_eq!(back, id);
+        assert_eq!(name, "auth_login_must_return_jwt");
     }
 
     #[test]
     fn test_parse_passing_output() {
         let output = "\
 running 2 tests
-test auth__login__must_return_jwt ... ok
-test auth__login__must_validate_token ... ok
+test auth_login_must_return_jwt ... ok
+test auth_login_must_validate_token ... ok
 
 test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
 ";
         let mut map = HashMap::new();
         map.insert(
-            "auth__login__must_return_jwt".to_string(),
+            "auth_login_must_return_jwt".to_string(),
             ClauseId("auth::login::must_return_jwt".to_string()),
         );
         map.insert(
-            "auth__login__must_validate_token".to_string(),
+            "auth_login_must_validate_token".to_string(),
             ClauseId("auth::login::must_validate_token".to_string()),
         );
 
@@ -326,26 +328,26 @@ test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
     fn test_parse_mixed_output() {
         let output = "\
 running 2 tests
-test auth__login__must_return_jwt ... ok
-test auth__login__must_validate_token ... FAILED
+test auth_login_must_return_jwt ... ok
+test auth_login_must_validate_token ... FAILED
 
 failures:
 
----- auth__login__must_validate_token stdout ----
-thread 'auth__login__must_validate_token' panicked at 'assertion failed: token.is_valid()'
+---- auth_login_must_validate_token stdout ----
+thread 'auth_login_must_validate_token' panicked at 'assertion failed: token.is_valid()'
 
 failures:
-    auth__login__must_validate_token
+    auth_login_must_validate_token
 
 test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out
 ";
         let mut map = HashMap::new();
         map.insert(
-            "auth__login__must_return_jwt".to_string(),
+            "auth_login_must_return_jwt".to_string(),
             ClauseId("auth::login::must_return_jwt".to_string()),
         );
         map.insert(
-            "auth__login__must_validate_token".to_string(),
+            "auth_login_must_validate_token".to_string(),
             ClauseId("auth::login::must_validate_token".to_string()),
         );
 

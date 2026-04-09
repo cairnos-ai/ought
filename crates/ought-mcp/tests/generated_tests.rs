@@ -1,3 +1,4 @@
+#![allow(dead_code, clippy::all)]
 #![allow(non_snake_case, unused_imports)]
 
 use std::path::PathBuf;
@@ -30,7 +31,7 @@ fn make_resource_handler() -> ResourceHandler {
 ///
 /// Verifies the McpServer type can be constructed and the Transport enum exists.
 #[test]
-fn test_mcp_server__server_lifecycle__must_start_the_mcp_server_via_ought_mcp_serve() {
+fn test_mcp_server_server_lifecycle_must_start_the_mcp_server_via_ought_mcp_serve() {
     let server = make_server();
     // McpServer was successfully constructed
     let _ = server;
@@ -40,7 +41,7 @@ fn test_mcp_server__server_lifecycle__must_start_the_mcp_server_via_ought_mcp_se
 ///
 /// Verifies the Transport::Stdio variant exists and can be constructed.
 #[test]
-fn test_mcp_server__server_lifecycle__must_support_stdio_transport_default_for_local_ide_integration() {
+fn test_mcp_server_server_lifecycle_must_support_stdio_transport_default_for_local_ide_integration() {
     let transport = Transport::Stdio;
     // Transport::Stdio must be the default mode
     assert!(
@@ -53,7 +54,7 @@ fn test_mcp_server__server_lifecycle__must_support_stdio_transport_default_for_l
 ///
 /// Verifies the Transport::Sse variant exists and carries a port number.
 #[test]
-fn test_mcp_server__server_lifecycle__must_support_sse_transport_via_transport_sse_port_port_for_remote() {
+fn test_mcp_server_server_lifecycle_must_support_sse_transport_via_transport_sse_port_port_for_remote() {
     let transport = Transport::Sse { port: 19877 };
     match transport {
         Transport::Sse { port } => assert_eq!(port, 19877, "SSE transport must carry a port"),
@@ -65,7 +66,7 @@ fn test_mcp_server__server_lifecycle__must_support_sse_transport_via_transport_s
 ///
 /// Verifies that ToolHandler and ResourceHandler types exist with all expected methods.
 #[test]
-fn test_mcp_server__server_lifecycle__must_advertise_all_available_tools_and_resources_on_initializatio() {
+fn test_mcp_server_server_lifecycle_must_advertise_all_available_tools_and_resources_on_initializatio() {
     // ToolHandler methods must exist (compile-time verification)
     let _tool_methods: [&str; 9] = [
         "ought_run",
@@ -91,7 +92,7 @@ fn test_mcp_server__server_lifecycle__must_advertise_all_available_tools_and_res
 
 /// MUST respond to JSON-RPC initialize request with correct protocol version and capabilities.
 #[test]
-fn test_mcp_server__server_lifecycle__must_respond_to_initialize() {
+fn test_mcp_server_server_lifecycle_must_respond_to_initialize() {
     let tool_handler = make_tool_handler();
     let resource_handler = make_resource_handler();
 
@@ -109,7 +110,7 @@ fn test_mcp_server__server_lifecycle__must_respond_to_initialize() {
 
 /// MUST return JSON-RPC error for unknown methods.
 #[test]
-fn test_mcp_server__server_lifecycle__must_return_error_for_unknown_method() {
+fn test_mcp_server_server_lifecycle_must_return_error_for_unknown_method() {
     let tool_handler = make_tool_handler();
     let resource_handler = make_resource_handler();
 
@@ -124,7 +125,7 @@ fn test_mcp_server__server_lifecycle__must_return_error_for_unknown_method() {
 
 /// MUST return JSON-RPC parse error for malformed JSON.
 #[test]
-fn test_mcp_server__server_lifecycle__must_return_parse_error_for_malformed_json() {
+fn test_mcp_server_server_lifecycle_must_return_parse_error_for_malformed_json() {
     let tool_handler = make_tool_handler();
     let resource_handler = make_resource_handler();
 
@@ -141,7 +142,7 @@ fn test_mcp_server__server_lifecycle__must_return_parse_error_for_malformed_json
 /// Requires running the actual server. Marked ignored because serve() requires I/O.
 #[test]
 #[ignore]
-fn test_mcp_server__server_lifecycle__must_shut_down_cleanly_on_sigterm_or_client_disconnect() {
+fn test_mcp_server_server_lifecycle_must_shut_down_cleanly_on_sigterm_or_client_disconnect() {
     // Would spawn `ought mcp serve`, send SIGTERM, and verify clean exit.
 }
 
@@ -150,7 +151,7 @@ fn test_mcp_server__server_lifecycle__must_shut_down_cleanly_on_sigterm_or_clien
 /// Requires file system access to HOME. Marked ignored for CI.
 #[test]
 #[ignore]
-fn test_mcp_server__server_lifecycle__should_support_ought_mcp_install_to_auto_register_with_mcp_compatib() {
+fn test_mcp_server_server_lifecycle_should_support_ought_mcp_install_to_auto_register_with_mcp_compatib() {
     // Would call McpServer::install() and verify it registers with agents.
 }
 
@@ -163,7 +164,7 @@ fn test_mcp_server__server_lifecycle__should_support_ought_mcp_install_to_auto_r
 /// Verifies the method exists and accepts args. Actual invocation requires config on disk.
 #[test]
 #[ignore]
-fn test_mcp_server__tools__must_expose_ought_run_run_specs_and_return_structured_results_acc() {
+fn test_mcp_server_tools_must_expose_ought_run_run_specs_and_return_structured_results_acc() {
     let handler = make_tool_handler();
     let _result = handler.ought_run(serde_json::json!({}));
 }
@@ -171,7 +172,7 @@ fn test_mcp_server__tools__must_expose_ought_run_run_specs_and_return_structured
 /// MUST expose `ought_generate` -- regenerate stale or specified clauses
 #[test]
 #[ignore]
-fn test_mcp_server__tools__must_expose_ought_generate_regenerate_stale_or_specified_clauses() {
+fn test_mcp_server_tools_must_expose_ought_generate_regenerate_stale_or_specified_clauses() {
     let handler = make_tool_handler();
     let _result = handler.ought_generate(serde_json::json!({}));
 }
@@ -179,7 +180,7 @@ fn test_mcp_server__tools__must_expose_ought_generate_regenerate_stale_or_specif
 /// MUST expose `ought_check` -- validate spec syntax
 #[test]
 #[ignore]
-fn test_mcp_server__tools__must_expose_ought_check_validate_spec_syntax() {
+fn test_mcp_server_tools_must_expose_ought_check_validate_spec_syntax() {
     let handler = make_tool_handler();
     let _result = handler.ought_check(serde_json::json!({}));
 }
@@ -187,7 +188,7 @@ fn test_mcp_server__tools__must_expose_ought_check_validate_spec_syntax() {
 /// MUST expose `ought_inspect` -- return generated test code for a clause
 #[test]
 #[ignore]
-fn test_mcp_server__tools__must_expose_ought_inspect_return_generated_test_code_for_a_clause() {
+fn test_mcp_server_tools_must_expose_ought_inspect_return_generated_test_code_for_a_clause() {
     let handler = make_tool_handler();
     let _result = handler.ought_inspect(serde_json::json!({"clause_id": "test::clause"}));
 }
@@ -195,7 +196,7 @@ fn test_mcp_server__tools__must_expose_ought_inspect_return_generated_test_code_
 /// MUST expose `ought_status` -- return spec coverage summary
 #[test]
 #[ignore]
-fn test_mcp_server__tools__must_expose_ought_status_return_spec_coverage_summary_clause_coun() {
+fn test_mcp_server_tools_must_expose_ought_status_return_spec_coverage_summary_clause_coun() {
     let handler = make_tool_handler();
     let _result = handler.ought_status(serde_json::json!({}));
 }
@@ -203,7 +204,7 @@ fn test_mcp_server__tools__must_expose_ought_status_return_spec_coverage_summary
 /// MUST expose `ought_survey` -- analyze source for uncovered behaviors
 #[test]
 #[ignore]
-fn test_mcp_server__tools__must_expose_ought_survey_analyze_source_for_uncovered_behaviors() {
+fn test_mcp_server_tools_must_expose_ought_survey_analyze_source_for_uncovered_behaviors() {
     let handler = make_tool_handler();
     let _result = handler.ought_survey(serde_json::json!({}));
 }
@@ -211,7 +212,7 @@ fn test_mcp_server__tools__must_expose_ought_survey_analyze_source_for_uncovered
 /// MUST expose `ought_audit` -- cross-spec conflict and gap analysis
 #[test]
 #[ignore]
-fn test_mcp_server__tools__must_expose_ought_audit_cross_spec_conflict_and_gap_analysis() {
+fn test_mcp_server_tools_must_expose_ought_audit_cross_spec_conflict_and_gap_analysis() {
     let handler = make_tool_handler();
     let _result = handler.ought_audit(serde_json::json!({}));
 }
@@ -219,7 +220,7 @@ fn test_mcp_server__tools__must_expose_ought_audit_cross_spec_conflict_and_gap_a
 /// MUST expose `ought_blame` -- explain why a clause is failing
 #[test]
 #[ignore]
-fn test_mcp_server__tools__must_expose_ought_blame_explain_why_a_clause_is_failing() {
+fn test_mcp_server_tools_must_expose_ought_blame_explain_why_a_clause_is_failing() {
     let handler = make_tool_handler();
     let _result = handler.ought_blame(serde_json::json!({"clause_id": "test::clause"}));
 }
@@ -227,7 +228,7 @@ fn test_mcp_server__tools__must_expose_ought_blame_explain_why_a_clause_is_faili
 /// SHOULD expose `ought_bisect` -- find the breaking commit for a clause
 #[test]
 #[ignore]
-fn test_mcp_server__tools__should_expose_ought_bisect_find_the_breaking_commit_for_a_clause() {
+fn test_mcp_server_tools_should_expose_ought_bisect_find_the_breaking_commit_for_a_clause() {
     let handler = make_tool_handler();
     let _result = handler.ought_bisect(serde_json::json!({"clause_id": "test::clause"}));
 }
@@ -237,7 +238,7 @@ fn test_mcp_server__tools__should_expose_ought_bisect_find_the_breaking_commit_f
 /// All tool handler methods return `anyhow::Result<serde_json::Value>`,
 /// proving that every tool response is structured JSON, not terminal text.
 #[test]
-fn test_mcp_server__tools__must_return_structured_json_responses_from_all_tools_not_terminal() {
+fn test_mcp_server_tools_must_return_structured_json_responses_from_all_tools_not_terminal() {
     // The ToolHandler return type is Result<serde_json::Value>.
     // This is a compile-time structural assertion: every tool method
     // returns Value (structured JSON), not String (terminal text).
@@ -264,7 +265,7 @@ fn test_mcp_server__tools__must_return_structured_json_responses_from_all_tools_
 
 /// MUST route tools/call correctly through JSON-RPC layer.
 #[test]
-fn test_mcp_server__tools__must_route_tool_call_through_jsonrpc() {
+fn test_mcp_server_tools_must_route_tool_call_through_jsonrpc() {
     let tool_handler = make_tool_handler();
     let resource_handler = make_resource_handler();
 
@@ -279,7 +280,7 @@ fn test_mcp_server__tools__must_route_tool_call_through_jsonrpc() {
 
 /// MUST return error when tools/call is missing the tool name.
 #[test]
-fn test_mcp_server__tools__must_return_error_when_missing_tool_name() {
+fn test_mcp_server_tools_must_return_error_when_missing_tool_name() {
     let tool_handler = make_tool_handler();
     let resource_handler = make_resource_handler();
 
@@ -299,7 +300,7 @@ fn test_mcp_server__tools__must_return_error_when_missing_tool_name() {
 /// the tools are implemented.
 #[test]
 #[ignore]
-fn test_mcp_server__tools__should_include_execution_duration_and_timestamp_in_tool_responses() {
+fn test_mcp_server_tools_should_include_execution_duration_and_timestamp_in_tool_responses() {
     // Would call a tool and verify the response contains duration_ms and timestamp.
 }
 
@@ -311,42 +312,42 @@ fn test_mcp_server__tools__should_include_execution_duration_and_timestamp_in_to
 ///
 /// Verifies the ResourceHandler::specs_list method exists and returns Result<Value>.
 #[test]
-fn test_mcp_server__resources__must_expose_ought_specs_list_of_all_spec_files_with_their_clause() {
+fn test_mcp_server_resources_must_expose_ought_specs_list_of_all_spec_files_with_their_clause() {
     let _: fn(&ResourceHandler) -> anyhow::Result<serde_json::Value> =
         ResourceHandler::specs_list;
 }
 
 /// MUST expose `ought://specs/{name}` -- parsed clauses for a specific spec file
 #[test]
-fn test_mcp_server__resources__must_expose_ought_specs_name_parsed_clauses_for_a_specific_spec_f() {
+fn test_mcp_server_resources_must_expose_ought_specs_name_parsed_clauses_for_a_specific_spec_f() {
     let _: fn(&ResourceHandler, &str) -> anyhow::Result<serde_json::Value> =
         ResourceHandler::specs_get;
 }
 
 /// MUST expose `ought://results/latest` -- results from the most recent run
 #[test]
-fn test_mcp_server__resources__must_expose_ought_results_latest_results_from_the_most_recent_run() {
+fn test_mcp_server_resources_must_expose_ought_results_latest_results_from_the_most_recent_run() {
     let _: fn(&ResourceHandler) -> anyhow::Result<serde_json::Value> =
         ResourceHandler::results_latest;
 }
 
 /// MUST expose `ought://coverage` -- clause coverage map
 #[test]
-fn test_mcp_server__resources__must_expose_ought_coverage_clause_coverage_map_which_clauses_have() {
+fn test_mcp_server_resources_must_expose_ought_coverage_clause_coverage_map_which_clauses_have() {
     let _: fn(&ResourceHandler) -> anyhow::Result<serde_json::Value> =
         ResourceHandler::coverage;
 }
 
 /// SHOULD expose `ought://manifest` -- current generation manifest
 #[test]
-fn test_mcp_server__resources__should_expose_ought_manifest_current_generation_manifest_hashes_tim() {
+fn test_mcp_server_resources_should_expose_ought_manifest_current_generation_manifest_hashes_tim() {
     let _: fn(&ResourceHandler) -> anyhow::Result<serde_json::Value> =
         ResourceHandler::manifest;
 }
 
 /// MUST route resources/read correctly through JSON-RPC layer.
 #[test]
-fn test_mcp_server__resources__must_route_resource_read_through_jsonrpc() {
+fn test_mcp_server_resources_must_route_resource_read_through_jsonrpc() {
     let tool_handler = make_tool_handler();
     let resource_handler = make_resource_handler();
 
@@ -361,7 +362,7 @@ fn test_mcp_server__resources__must_route_resource_read_through_jsonrpc() {
 
 /// MUST return error when resources/read is missing the URI.
 #[test]
-fn test_mcp_server__resources__must_return_error_when_missing_uri() {
+fn test_mcp_server_resources_must_return_error_when_missing_uri() {
     let tool_handler = make_tool_handler();
     let resource_handler = make_resource_handler();
 
@@ -379,7 +380,7 @@ fn test_mcp_server__resources__must_return_error_when_missing_uri() {
 /// Requires actual server implementation. Marked ignored.
 #[test]
 #[ignore]
-fn test_mcp_server__resources__should_support_resource_subscriptions_so_clients_get_notified_when() {
+fn test_mcp_server_resources_should_support_resource_subscriptions_so_clients_get_notified_when() {
     // Would connect to the MCP server and subscribe to ought://results/latest.
 }
 
@@ -392,7 +393,7 @@ fn test_mcp_server__resources__should_support_resource_subscriptions_so_clients_
 /// Verifies that tool methods return anyhow::Result, enabling structured error responses.
 /// Actual MCP error codes/messages require the server implementation.
 #[test]
-fn test_mcp_server__error_handling__must_return_mcp_compliant_error_responses_with_error_codes_and_me() {
+fn test_mcp_server_error_handling_must_return_mcp_compliant_error_responses_with_error_codes_and_me() {
     // All tool and resource methods return anyhow::Result<Value>.
     // When they fail, the server must wrap the error into a JSON-RPC error response.
     // This is a structural assertion: the types guarantee error paths produce data
@@ -407,7 +408,7 @@ fn test_mcp_server__error_handling__must_return_mcp_compliant_error_responses_wi
 ///
 /// Verifies that calling a tool with a missing config returns an error, not a panic.
 #[test]
-fn test_mcp_server__error_handling__must_not_crash_the_server_on_a_single_tool_invocation_failure() {
+fn test_mcp_server_error_handling_must_not_crash_the_server_on_a_single_tool_invocation_failure() {
     let tool_handler = make_tool_handler();
     let resource_handler = make_resource_handler();
 
@@ -425,7 +426,7 @@ fn test_mcp_server__error_handling__must_not_crash_the_server_on_a_single_tool_i
 
 /// MUST ALWAYS return valid JSON-RPC responses, even for internal errors
 #[test]
-fn test_mcp_server__error_handling__must_always_return_valid_json_rpc_responses_even_for_internal_errors() {
+fn test_mcp_server_error_handling_must_always_return_valid_json_rpc_responses_even_for_internal_errors() {
     let tool_handler = make_tool_handler();
     let resource_handler = make_resource_handler();
 
@@ -441,7 +442,7 @@ fn test_mcp_server__error_handling__must_always_return_valid_json_rpc_responses_
 /// Requires a running server to verify. Marked ignored.
 #[test]
 #[ignore]
-fn test_mcp_server__error_handling__must_always_remain_responsive_to_new_requests_while_processing_long_runn() {
+fn test_mcp_server_error_handling_must_always_remain_responsive_to_new_requests_while_processing_long_runn() {
     // Would pipeline a slow tool call and a fast one and verify the fast one responds.
 }
 
@@ -450,7 +451,7 @@ fn test_mcp_server__error_handling__must_always_remain_responsive_to_new_request
 /// Requires a running server to verify. Marked ignored.
 #[test]
 #[ignore]
-fn test_mcp_server__error_handling__should_include_actionable_error_details_e_g_claude_cli_not_found_in() {
+fn test_mcp_server_error_handling_should_include_actionable_error_details_e_g_claude_cli_not_found_in() {
     // Would call ought_generate with claude absent and verify the error mentions "install".
 }
 
@@ -459,7 +460,7 @@ fn test_mcp_server__error_handling__should_include_actionable_error_details_e_g_
 /// Requires a running server and a long-running tool. Marked ignored.
 #[test]
 #[ignore]
-fn test_mcp_server__error_handling__should_send_progress_notifications_to_the_client() {
+fn test_mcp_server_error_handling_should_send_progress_notifications_to_the_client() {
     // Would start a long-running tool and wait for a progress notification.
 }
 
@@ -468,6 +469,6 @@ fn test_mcp_server__error_handling__should_send_progress_notifications_to_the_cl
 /// Requires a running server. Marked ignored.
 #[test]
 #[ignore]
-fn test_mcp_server__error_handling__otherwise_the_client_may_assume_the_request_has_timed_out() {
+fn test_mcp_server_error_handling_otherwise_the_client_may_assume_the_request_has_timed_out() {
     // Would simulate a client disconnecting after 60s with no progress notification.
 }

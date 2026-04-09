@@ -24,14 +24,18 @@ fn command_exists(cmd: &str) -> bool {
 }
 
 /// Convert a `ClauseId` like `auth::login::must_return_jwt` into the jest
-/// test name: `auth__login__must_return_jwt`.
+/// test name: `auth_login_must_return_jwt`. The mapping is lossy (section
+/// boundaries are erased), so the runtime mapping back to a `ClauseId` relies
+/// on the `name_to_clause` HashMap built from the manifest;
+/// `test_name_to_clause_id` is only a best-effort fallback when that lookup misses.
 fn clause_id_to_test_name(clause_id: &ClauseId) -> String {
-    clause_id.0.replace("::", "__")
+    clause_id.0.replace("::", "_")
 }
 
-/// Reverse: convert `__` back to `::`.
+/// Best-effort fallback: wrap the test name as a `ClauseId` directly. This is only
+/// used when the HashMap lookup fails; the mangling above is not reversible.
 fn test_name_to_clause_id(test_name: &str) -> ClauseId {
-    ClauseId(test_name.replace("__", "::"))
+    ClauseId(test_name.to_string())
 }
 
 /// Parse jest --verbose output.
@@ -46,8 +50,8 @@ fn test_name_to_clause_id(test_name: &str) -> ClauseId {
 ///
 /// Or with `--verbose`:
 /// ```text
-///   ✓ auth__login__must_return_jwt (5 ms)
-///   ✕ auth__login__must_validate_token (10 ms)
+///   ✓ auth_login_must_return_jwt (5 ms)
+///   ✕ auth_login_must_validate_token (10 ms)
 /// ```
 fn parse_jest_output(
     output: &str,
@@ -195,24 +199,24 @@ mod tests {
     fn test_parse_jest_output() {
         let output = "\
  PASS src/tests/auth.test.ts
-  ✓ auth__login__must_return_jwt (5 ms)
-  ✕ auth__login__must_validate_token (10 ms)
-  ○ auth__login__may_cache
+  ✓ auth_login_must_return_jwt (5 ms)
+  ✕ auth_login_must_validate_token (10 ms)
+  ○ auth_login_may_cache
 
 Test Suites: 1 passed, 1 total
 Tests:       1 failed, 1 passed, 1 skipped, 3 total
 ";
         let mut map = HashMap::new();
         map.insert(
-            "auth__login__must_return_jwt".to_string(),
+            "auth_login_must_return_jwt".to_string(),
             ClauseId("auth::login::must_return_jwt".to_string()),
         );
         map.insert(
-            "auth__login__must_validate_token".to_string(),
+            "auth_login_must_validate_token".to_string(),
             ClauseId("auth::login::must_validate_token".to_string()),
         );
         map.insert(
-            "auth__login__may_cache".to_string(),
+            "auth_login_may_cache".to_string(),
             ClauseId("auth::login::may_cache".to_string()),
         );
 

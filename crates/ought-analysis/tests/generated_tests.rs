@@ -1,3 +1,4 @@
+#![allow(dead_code, clippy::all)]
 #![allow(non_snake_case, unused_imports)]
 
 use std::path::{Path, PathBuf};
@@ -42,7 +43,7 @@ impl Runner for StubRunner {
 
 /// SurveyResult can be constructed and holds a list of UncoveredBehavior items.
 #[test]
-fn test_survey__survey_result_can_be_constructed() {
+fn test_survey_survey_result_can_be_constructed() {
     let result = SurveyResult {
         uncovered: vec![],
     };
@@ -51,7 +52,7 @@ fn test_survey__survey_result_can_be_constructed() {
 
 /// UncoveredBehavior can be constructed with all expected fields.
 #[test]
-fn test_survey__uncovered_behavior_has_expected_fields() {
+fn test_survey_uncovered_behavior_has_expected_fields() {
     let behavior = UncoveredBehavior {
         file: PathBuf::from("src/api.rs"),
         line: 42,
@@ -72,7 +73,7 @@ fn test_survey__uncovered_behavior_has_expected_fields() {
 /// MUST output a list of uncovered behaviors with file and line references.
 /// Tests the UncoveredBehavior structure carries non-empty file and positive line.
 #[test]
-fn test_survey__must_output_a_list_of_uncovered_behaviors_with_file_and_line_refe() {
+fn test_survey_must_output_a_list_of_uncovered_behaviors_with_file_and_line_refe() {
     let behaviors = vec![
         UncoveredBehavior {
             file: PathBuf::from("src/api.rs"),
@@ -113,7 +114,7 @@ fn test_survey__must_output_a_list_of_uncovered_behaviors_with_file_and_line_ref
 /// MUST suggest concrete clause text with appropriate keyword for each uncovered behavior.
 /// All behavioral keywords (not structural ones like Given/Otherwise) are valid.
 #[test]
-fn test_survey__must_suggest_concrete_clause_text_with_appropriate_keyword_for_ea() {
+fn test_survey_must_suggest_concrete_clause_text_with_appropriate_keyword_for_ea() {
     const BEHAVIORAL_KEYWORDS: &[Keyword] = &[
         Keyword::Must,
         Keyword::MustNot,
@@ -160,7 +161,7 @@ fn test_survey__must_suggest_concrete_clause_text_with_appropriate_keyword_for_e
 /// SHOULD group suggestions by the spec file they would belong to.
 /// Behaviors for the same suggested_spec should appear adjacent.
 #[test]
-fn test_survey__should_group_suggestions_by_the_spec_file_they_would_belong_to() {
+fn test_survey_should_group_suggestions_by_the_spec_file_they_would_belong_to() {
     let behaviors = vec![
         UncoveredBehavior {
             file: PathBuf::from("src/lib.rs"),
@@ -215,7 +216,7 @@ fn test_survey__should_group_suggestions_by_the_spec_file_they_would_belong_to()
 /// SHOULD offer to append suggested clauses to the relevant spec file.
 /// Each UncoveredBehavior must carry a non-empty suggested_spec path.
 #[test]
-fn test_survey__should_offer_to_append_suggested_clauses_to_the_relevant_spec_file() {
+fn test_survey_should_offer_to_append_suggested_clauses_to_the_relevant_spec_file() {
     let behavior = UncoveredBehavior {
         file: PathBuf::from("src/router.rs"),
         line: 1,
@@ -234,7 +235,7 @@ fn test_survey__should_offer_to_append_suggested_clauses_to_the_relevant_spec_fi
 /// SHOULD rank uncovered behaviors by risk (public API > internal helper).
 /// The type supports this ordering via the data it stores.
 #[test]
-fn test_survey__should_rank_uncovered_behaviors_by_risk_public_api_internal_helper() {
+fn test_survey_should_rank_uncovered_behaviors_by_risk_public_api_internal_helper() {
     let public_behavior = UncoveredBehavior {
         file: PathBuf::from("src/lib.rs"),
         line: 1,
@@ -276,7 +277,7 @@ fn test_survey__should_rank_uncovered_behaviors_by_risk_public_api_internal_help
 /// survey() returns SurveyResult; it does not modify spec files on disk.
 /// The type has no side-effect fields -- it only carries suggestions.
 #[test]
-fn test_survey__wont_auto_add_clauses_without_user_confirmation() {
+fn test_survey_wont_auto_add_clauses_without_user_confirmation() {
     let result = SurveyResult {
         uncovered: vec![UncoveredBehavior {
             file: PathBuf::from("src/lib.rs"),
@@ -299,7 +300,7 @@ fn test_survey__wont_auto_add_clauses_without_user_confirmation() {
 /// MUST read source files from the given path or project source root.
 /// Tests that survey() reads source files and returns results without panicking.
 #[test]
-fn test_survey__must_read_source_files_from_the_given_path_or_project_source_root() {
+fn test_survey_must_read_source_files_from_the_given_path_or_project_source_root() {
     // Create a temp directory with a source file containing a public function.
     let tmp = std::env::temp_dir().join("ought_test_survey_source");
     let _ = std::fs::remove_dir_all(&tmp);
@@ -335,7 +336,7 @@ fn test_survey__must_read_source_files_from_the_given_path_or_project_source_roo
 /// MUST read all existing spec files to know what is already covered.
 /// Tests that survey() considers existing clauses and does not report them as uncovered.
 #[test]
-fn test_survey__must_read_all_existing_spec_files_to_know_what_is_already_covered() {
+fn test_survey_must_read_all_existing_spec_files_to_know_what_is_already_covered() {
     // Create a temp directory with a source file containing a function.
     let tmp = std::env::temp_dir().join("ought_test_survey_covered");
     let _ = std::fs::remove_dir_all(&tmp);
@@ -382,7 +383,7 @@ fn test_survey__must_read_all_existing_spec_files_to_know_what_is_already_covere
 /// Tests that survey() at minimum identifies public function signatures structurally.
 /// LLM enrichment is deferred to a future release, but structural analysis works.
 #[test]
-fn test_survey__must_use_the_llm_to_identify_public_behaviors_apis_and_logic_bran() {
+fn test_survey_must_use_the_llm_to_identify_public_behaviors_apis_and_logic_bran() {
     let tmp = std::env::temp_dir().join("ought_test_survey_public");
     let _ = std::fs::remove_dir_all(&tmp);
     std::fs::create_dir_all(&tmp).unwrap();
@@ -416,7 +417,7 @@ fn test_survey__must_use_the_llm_to_identify_public_behaviors_apis_and_logic_bra
 
 /// AuditResult can be constructed and holds a list of AuditFinding items.
 #[test]
-fn test_audit__audit_result_can_be_constructed() {
+fn test_audit_audit_result_can_be_constructed() {
     let result = AuditResult {
         findings: vec![],
     };
@@ -425,7 +426,7 @@ fn test_audit__audit_result_can_be_constructed() {
 
 /// AuditFinding can be constructed with all expected fields.
 #[test]
-fn test_audit__audit_finding_has_expected_fields() {
+fn test_audit_audit_finding_has_expected_fields() {
     let finding = AuditFinding {
         kind: AuditFindingKind::Contradiction,
         description: "Two clauses cannot both hold".to_string(),
@@ -447,7 +448,7 @@ fn test_audit__audit_finding_has_expected_fields() {
 /// MUST categorize findings as: contradiction, gap, ambiguity, or redundancy.
 /// Tests that AuditFindingKind has all four variants.
 #[test]
-fn test_audit__must_categorize_findings_as_contradiction_gap_ambiguity_or_redund() {
+fn test_audit_must_categorize_findings_as_contradiction_gap_ambiguity_or_redund() {
     let findings = vec![
         AuditFinding {
             kind: AuditFindingKind::Contradiction,
@@ -489,7 +490,7 @@ fn test_audit__must_categorize_findings_as_contradiction_gap_ambiguity_or_redund
 /// MUST reference the specific clauses involved in each finding.
 /// Each AuditFinding.clauses must contain at least one non-empty ClauseId.
 #[test]
-fn test_audit__must_reference_the_specific_clauses_involved_in_each_finding_file() {
+fn test_audit_must_reference_the_specific_clauses_involved_in_each_finding_file() {
     let finding = AuditFinding {
         kind: AuditFindingKind::Contradiction,
         description: "Conflicting HTTP status obligations".to_string(),
@@ -512,7 +513,7 @@ fn test_audit__must_reference_the_specific_clauses_involved_in_each_finding_file
 
 /// MUST detect MUST BY deadline conflicts represented in the data.
 #[test]
-fn test_audit__must_detect_must_by_deadline_conflicts_e_g_an_operation_with_a_10() {
+fn test_audit_must_detect_must_by_deadline_conflicts_e_g_an_operation_with_a_10() {
     let finding = AuditFinding {
         kind: AuditFindingKind::Contradiction,
         description: "checkout MUST BY 100ms but calls payment MUST BY 200ms -- sub-operation deadline exceeds parent deadline".to_string(),
@@ -533,7 +534,7 @@ fn test_audit__must_detect_must_by_deadline_conflicts_e_g_an_operation_with_a_10
 
 /// MUST detect MUST ALWAYS invariant conflicts.
 #[test]
-fn test_audit__must_detect_must_always_invariant_conflicts_e_g_two_invariants_th() {
+fn test_audit_must_detect_must_always_invariant_conflicts_e_g_two_invariants_th() {
     let finding = AuditFinding {
         kind: AuditFindingKind::Contradiction,
         description: "MUST ALWAYS maintain exactly one active session conflicts with MUST ALWAYS allow multiple concurrent sessions".to_string(),
@@ -554,7 +555,7 @@ fn test_audit__must_detect_must_always_invariant_conflicts_e_g_two_invariants_th
 
 /// SHOULD detect GIVEN blocks with overlapping conditions that impose contradictory obligations.
 #[test]
-fn test_audit__should_detect_given_blocks_with_overlapping_conditions_that_impose() {
+fn test_audit_should_detect_given_blocks_with_overlapping_conditions_that_impose() {
     let finding = AuditFinding {
         kind: AuditFindingKind::Contradiction,
         description: "GIVEN user is authenticated (MUST allow write) overlaps with GIVEN user is a guest (MUST NOT allow write)".to_string(),
@@ -578,7 +579,7 @@ fn test_audit__should_detect_given_blocks_with_overlapping_conditions_that_impos
 
 /// SHOULD detect MUST obligations that lack OTHERWISE fallbacks.
 #[test]
-fn test_audit__should_detect_must_obligations_that_lack_otherwise_fallbacks_where() {
+fn test_audit_should_detect_must_obligations_that_lack_otherwise_fallbacks_where() {
     let finding = AuditFinding {
         kind: AuditFindingKind::Gap,
         description: "MUST fetch configuration from the remote server has no OTHERWISE fallback".to_string(),
@@ -596,7 +597,7 @@ fn test_audit__should_detect_must_obligations_that_lack_otherwise_fallbacks_wher
 
 /// SHOULD suggest resolutions for each finding.
 #[test]
-fn test_audit__should_suggest_resolutions_for_each_finding() {
+fn test_audit_should_suggest_resolutions_for_each_finding() {
     let findings = vec![
         AuditFinding {
             kind: AuditFindingKind::Contradiction,
@@ -630,7 +631,7 @@ fn test_audit__should_suggest_resolutions_for_each_finding() {
 /// MAY assign a confidence score to each finding.
 /// When present, confidence must be in [0.0, 1.0]; absence (None) is also valid.
 #[test]
-fn test_audit__may_assign_a_confidence_score_to_each_finding() {
+fn test_audit_may_assign_a_confidence_score_to_each_finding() {
     let findings = vec![
         AuditFinding {
             kind: AuditFindingKind::Contradiction,
@@ -671,7 +672,7 @@ fn test_audit__may_assign_a_confidence_score_to_each_finding() {
 /// MUST use the LLM to identify gaps.
 /// Tests that audit() structurally identifies gaps (missing OTHERWISE on network clauses).
 #[test]
-fn test_audit__must_use_the_llm_to_identify_gaps_areas_where_related_clauses_exi() {
+fn test_audit_must_use_the_llm_to_identify_gaps_areas_where_related_clauses_exi() {
     // Create a spec with a MUST clause that mentions a network operation but has no OTHERWISE.
     let spec_dir = std::env::temp_dir().join("ought_test_audit_gaps");
     let _ = std::fs::remove_dir_all(&spec_dir);
@@ -699,7 +700,7 @@ fn test_audit__must_use_the_llm_to_identify_gaps_areas_where_related_clauses_exi
 /// Tests that audit() runs on valid specs without panicking.
 /// Full LLM-powered contradiction detection is deferred.
 #[test]
-fn test_audit__must_use_the_llm_to_identify_contradictions_between_clauses_acros() {
+fn test_audit_must_use_the_llm_to_identify_contradictions_between_clauses_acros() {
     let spec_dir = std::env::temp_dir().join("ought_test_audit_contradictions");
     let _ = std::fs::remove_dir_all(&spec_dir);
     std::fs::create_dir_all(&spec_dir).unwrap();
@@ -719,7 +720,7 @@ fn test_audit__must_use_the_llm_to_identify_contradictions_between_clauses_acros
 /// MUST read all spec files and their cross-references.
 /// Tests that audit() processes all specs in the graph.
 #[test]
-fn test_audit__must_read_all_spec_files_and_their_cross_references() {
+fn test_audit_must_read_all_spec_files_and_their_cross_references() {
     let spec_dir = std::env::temp_dir().join("ought_test_audit_cross_refs");
     let _ = std::fs::remove_dir_all(&spec_dir);
     std::fs::create_dir_all(&spec_dir).unwrap();
@@ -751,7 +752,7 @@ fn test_audit__must_read_all_spec_files_and_their_cross_references() {
 /// SHOULD read relevant source code to ground the analysis.
 /// Tests that audit() returns a valid result (source code reading is deferred to LLM enrichment).
 #[test]
-fn test_audit__should_read_relevant_source_code_to_ground_the_analysis_in_implemen() {
+fn test_audit_should_read_relevant_source_code_to_ground_the_analysis_in_implemen() {
     let spec_dir = std::env::temp_dir().join("ought_test_audit_source_code");
     let _ = std::fs::remove_dir_all(&spec_dir);
     std::fs::create_dir_all(&spec_dir).unwrap();
@@ -774,7 +775,7 @@ fn test_audit__should_read_relevant_source_code_to_ground_the_analysis_in_implem
 
 /// BlameResult can be constructed and holds expected fields.
 #[test]
-fn test_blame__blame_result_can_be_constructed() {
+fn test_blame_blame_result_can_be_constructed() {
     let result = BlameResult {
         clause_id: ClauseId("auth::login::must_return_401".to_string()),
         last_passed: None,
@@ -794,7 +795,7 @@ fn test_blame__blame_result_can_be_constructed() {
 
 /// CommitInfo can be constructed with all expected fields.
 #[test]
-fn test_blame__commit_info_has_expected_fields() {
+fn test_blame_commit_info_has_expected_fields() {
     let commit = CommitInfo {
         hash: "abc123def456".to_string(),
         message: "refactor: simplify auth responses".to_string(),
@@ -811,7 +812,7 @@ fn test_blame__commit_info_has_expected_fields() {
 /// MUST accept a clause identifier (e.g. auth::login::must_return_401).
 /// Tests that BlameResult carries back the same clause_id that was passed.
 #[test]
-fn test_blame__must_accept_a_clause_identifier_e_g_auth_login_must_return_401() {
+fn test_blame_must_accept_a_clause_identifier_e_g_auth_login_must_return_401() {
     let clause_id = ClauseId("auth::login::must_return_401".to_string());
     let result = BlameResult {
         clause_id: clause_id.clone(),
@@ -831,7 +832,7 @@ fn test_blame__must_accept_a_clause_identifier_e_g_auth_login_must_return_401() 
 /// MUST output a narrative explanation of what broke and why.
 /// Tests that BlameResult.narrative is non-empty.
 #[test]
-fn test_blame__must_output_a_narrative_explanation_of_what_broke_and_why() {
+fn test_blame_must_output_a_narrative_explanation_of_what_broke_and_why() {
     let result = BlameResult {
         clause_id: ClauseId("auth::login::must_return_401".to_string()),
         last_passed: Some(Utc::now()),
@@ -855,7 +856,7 @@ fn test_blame__must_output_a_narrative_explanation_of_what_broke_and_why() {
 /// MUST output the timeline: last passing run, first failure, relevant commits.
 /// Tests that BlameResult can hold all timeline fields.
 #[test]
-fn test_blame__must_output_the_timeline_last_passing_run_first_failure_relevant() {
+fn test_blame_must_output_the_timeline_last_passing_run_first_failure_relevant() {
     let now = Utc::now();
     let result = BlameResult {
         clause_id: ClauseId("auth::login::must_return_401".to_string()),
@@ -882,7 +883,7 @@ fn test_blame__must_output_the_timeline_last_passing_run_first_failure_relevant(
 /// SHOULD name the author of the likely-responsible commit.
 /// Tests that CommitInfo.author is populated.
 #[test]
-fn test_blame__should_name_the_author_of_the_likely_responsible_commit() {
+fn test_blame_should_name_the_author_of_the_likely_responsible_commit() {
     let commit = CommitInfo {
         hash: "deadbeef1234".to_string(),
         message: "refactor: simplify auth responses".to_string(),
@@ -899,7 +900,7 @@ fn test_blame__should_name_the_author_of_the_likely_responsible_commit() {
 /// SHOULD identify the specific commit and file change most likely responsible.
 /// Tests that CommitInfo.hash is populated.
 #[test]
-fn test_blame__should_identify_the_specific_commit_and_file_change_most_likely_res() {
+fn test_blame_should_identify_the_specific_commit_and_file_change_most_likely_res() {
     let result = BlameResult {
         clause_id: ClauseId("auth::login::must_return_401".to_string()),
         last_passed: None,
@@ -928,7 +929,7 @@ fn test_blame__should_identify_the_specific_commit_and_file_change_most_likely_r
 /// SHOULD suggest a fix when the cause is clear.
 /// Tests that BlameResult.suggested_fix can hold a value.
 #[test]
-fn test_blame__should_suggest_a_fix_when_the_cause_is_clear() {
+fn test_blame_should_suggest_a_fix_when_the_cause_is_clear() {
     let result = BlameResult {
         clause_id: ClauseId("auth::login::must_return_401".to_string()),
         last_passed: None,
@@ -951,7 +952,7 @@ fn test_blame__should_suggest_a_fix_when_the_cause_is_clear() {
 /// MUST NOT require a running LLM if the clause has never passed.
 /// The BlameResult type supports this via last_passed=None and a narrative that says "never passed".
 #[test]
-fn test_blame__must_not_require_a_running_llm_if_the_clause_has_never_passed_just_re() {
+fn test_blame_must_not_require_a_running_llm_if_the_clause_has_never_passed_just_re() {
     let result = BlameResult {
         clause_id: ClauseId("auth::login::must_return_401".to_string()),
         last_passed: None,
@@ -975,7 +976,7 @@ fn test_blame__must_not_require_a_running_llm_if_the_clause_has_never_passed_jus
 /// MUST use git history to find when the clause last passed.
 /// Tests that blame() returns a valid result for a failing clause.
 #[test]
-fn test_blame__must_use_git_history_to_find_when_the_clause_last_passed_and_what() {
+fn test_blame_must_use_git_history_to_find_when_the_clause_last_passed_and_what() {
     let clause_id = ClauseId("auth::login::must_return_401".to_string());
 
     let spec_dir = std::env::temp_dir().join("ought_test_blame_git_history");
@@ -1014,7 +1015,7 @@ fn test_blame__must_use_git_history_to_find_when_the_clause_last_passed_and_what
 /// Tests that blame() includes commit info in its result when git is available.
 /// Full LLM-powered correlation is deferred; structural git analysis is tested.
 #[test]
-fn test_blame__must_use_the_llm_to_correlate_the_source_diff_with_the_failure_an() {
+fn test_blame_must_use_the_llm_to_correlate_the_source_diff_with_the_failure_an() {
     let clause_id = ClauseId("svc::process::must_succeed".to_string());
 
     let spec_dir = std::env::temp_dir().join("ought_test_blame_llm_correlate");
@@ -1042,7 +1043,7 @@ fn test_blame__must_use_the_llm_to_correlate_the_source_diff_with_the_failure_an
 /// MUST retrieve the clause, its generated test, and the failure output.
 /// Tests that blame() includes the failure message in its narrative.
 #[test]
-fn test_blame__must_retrieve_the_clause_its_generated_test_and_the_failure_outpu() {
+fn test_blame_must_retrieve_the_clause_its_generated_test_and_the_failure_outpu() {
     let clause_id = ClauseId("data::store::must_persist".to_string());
 
     let spec_dir = std::env::temp_dir().join("ought_test_blame_retrieve");
@@ -1081,7 +1082,7 @@ fn test_blame__must_retrieve_the_clause_its_generated_test_and_the_failure_outpu
 
 /// BisectResult can be constructed and holds expected fields.
 #[test]
-fn test_bisect__bisect_result_can_be_constructed() {
+fn test_bisect_bisect_result_can_be_constructed() {
     let result = BisectResult {
         clause_id: ClauseId("auth::login::must_return_401".to_string()),
         breaking_commit: CommitInfo {
@@ -1105,7 +1106,7 @@ fn test_bisect__bisect_result_can_be_constructed() {
 
 /// BisectOptions can be constructed with expected fields.
 #[test]
-fn test_bisect__bisect_options_can_be_constructed() {
+fn test_bisect_bisect_options_can_be_constructed() {
     let options_default = bisect::BisectOptions {
         range: None,
         regenerate: false,
@@ -1124,7 +1125,7 @@ fn test_bisect__bisect_options_can_be_constructed() {
 /// MUST accept a clause identifier.
 /// Tests that BisectResult carries the same clause_id back.
 #[test]
-fn test_bisect__must_accept_a_clause_identifier() {
+fn test_bisect_must_accept_a_clause_identifier() {
     let clause_id = ClauseId("auth::login::must_return_401".to_string());
     let result = BisectResult {
         clause_id: clause_id.clone(),
@@ -1145,7 +1146,7 @@ fn test_bisect__must_accept_a_clause_identifier() {
 
 /// MUST show the commit message, author, date, and diff summary for the breaking commit.
 #[test]
-fn test_bisect__must_show_the_commit_message_author_date_and_diff_summary_for_the() {
+fn test_bisect_must_show_the_commit_message_author_date_and_diff_summary_for_the() {
     let now = Utc::now();
     let result = BisectResult {
         clause_id: ClauseId("auth::login::must_return_401".to_string()),
@@ -1196,7 +1197,7 @@ fn test_bisect__must_show_the_commit_message_author_date_and_diff_summary_for_th
 /// MUST report the first commit where the clause fails.
 /// Tests that BisectResult.breaking_commit can represent the first failing commit.
 #[test]
-fn test_bisect__must_report_the_first_commit_where_the_clause_fails() {
+fn test_bisect_must_report_the_first_commit_where_the_clause_fails() {
     let result = BisectResult {
         clause_id: ClauseId("auth::login::must_return_401".to_string()),
         breaking_commit: CommitInfo {
@@ -1218,7 +1219,7 @@ fn test_bisect__must_report_the_first_commit_where_the_clause_fails() {
 /// SHOULD support --range <from>..<to> to limit the search space.
 /// Tests that BisectOptions.range can hold a revision range.
 #[test]
-fn test_bisect__should_support_range_from_to_to_limit_the_search_space() {
+fn test_bisect_should_support_range_from_to_to_limit_the_search_space() {
     let options = bisect::BisectOptions {
         range: Some("abc123..def456".to_string()),
         regenerate: false,
@@ -1239,7 +1240,7 @@ fn test_bisect__should_support_range_from_to_to_limit_the_search_space() {
 /// SHOULD use the generated test from the current manifest (not regenerate).
 /// Tests that BisectOptions.regenerate defaults to false.
 #[test]
-fn test_bisect__should_use_the_generated_test_from_the_current_manifest_not_regener() {
+fn test_bisect_should_use_the_generated_test_from_the_current_manifest_not_regener() {
     let options = bisect::BisectOptions {
         range: None,
         regenerate: false,
@@ -1256,7 +1257,7 @@ fn test_bisect__should_use_the_generated_test_from_the_current_manifest_not_rege
 /// requires a dedicated test repository and is tested via integration tests.
 #[test]
 #[ignore = "requires a dedicated test git repository to verify working tree restoration"]
-fn test_bisect__must_always_restore_the_working_tree_to_its_original_state_after_complet() {
+fn test_bisect_must_always_restore_the_working_tree_to_its_original_state_after_complet() {
     // This test would need a scratch git repo with known commits to verify.
 }
 
@@ -1264,7 +1265,7 @@ fn test_bisect__must_always_restore_the_working_tree_to_its_original_state_after
 /// Verifying actual binary search requires a dedicated test repository with known commits.
 #[test]
 #[ignore = "requires a dedicated test git repository with known failing commits"]
-fn test_bisect__must_perform_a_git_bisect_style_binary_search_checkout_commit_gen() {
+fn test_bisect_must_perform_a_git_bisect_style_binary_search_checkout_commit_gen() {
     // This test would need a scratch git repo with commits where a test transitions pass->fail.
 }
 
@@ -1272,7 +1273,7 @@ fn test_bisect__must_perform_a_git_bisect_style_binary_search_checkout_commit_ge
 /// Verifying restoration after interruption requires a dedicated test repository.
 #[test]
 #[ignore = "requires a dedicated test git repository to verify branch restoration"]
-fn test_bisect__must_restore_the_working_tree_to_the_original_branch() {
+fn test_bisect_must_restore_the_working_tree_to_the_original_branch() {
     // This test would need a scratch git repo to verify checkout restoration.
 }
 
@@ -1280,7 +1281,7 @@ fn test_bisect__must_restore_the_working_tree_to_the_original_branch() {
 /// Progress saving is not yet implemented; deferred to a future release.
 #[test]
 #[ignore = "bisect progress saving (--continue) is not yet implemented"]
-fn test_bisect__should_save_progress_so_ought_bisect_continue_can_resume() {
+fn test_bisect_should_save_progress_so_ought_bisect_continue_can_resume() {
     // Deferred feature: save/resume bisect progress.
 }
 
@@ -1288,7 +1289,7 @@ fn test_bisect__should_save_progress_so_ought_bisect_continue_can_resume() {
 /// Result caching is not yet implemented; deferred to a future release.
 #[test]
 #[ignore = "bisect result caching is not yet implemented"]
-fn test_bisect__should_cache_test_results_per_commit_to_avoid_redundant_runs() {
+fn test_bisect_should_cache_test_results_per_commit_to_avoid_redundant_runs() {
     // Deferred feature: cache test results per commit.
 }
 
@@ -1298,7 +1299,7 @@ fn test_bisect__should_cache_test_results_per_commit_to_avoid_redundant_runs() {
 
 /// The Runner trait can be implemented with a mock.
 #[test]
-fn test_traits__runner_trait_can_be_implemented() {
+fn test_traits_runner_trait_can_be_implemented() {
     let runner = StubRunner;
     assert!(runner.is_available());
     assert_eq!(runner.name(), "stub");
@@ -1312,7 +1313,7 @@ fn test_traits__runner_trait_can_be_implemented() {
 
 /// The Runner trait is object-safe (can be used as dyn Runner).
 #[test]
-fn test_traits__runner_is_object_safe() {
+fn test_traits_runner_is_object_safe() {
     let runner: Box<dyn Runner> = Box::new(StubRunner);
     assert!(runner.is_available());
     assert_eq!(runner.name(), "stub");
@@ -1325,7 +1326,7 @@ fn test_traits__runner_is_object_safe() {
 /// survey() function exists with the expected signature.
 /// It takes (&SpecGraph, &[PathBuf]) and returns Result<SurveyResult>.
 #[test]
-fn test_signatures__survey_function_exists() {
+fn test_signatures_survey_function_exists() {
     let _fn_ptr: fn(&SpecGraph, &[PathBuf]) -> anyhow::Result<SurveyResult> =
         survey::survey;
 }
@@ -1333,14 +1334,14 @@ fn test_signatures__survey_function_exists() {
 /// audit() function exists with the expected signature.
 /// It takes (&SpecGraph) and returns Result<AuditResult>.
 #[test]
-fn test_signatures__audit_function_exists() {
+fn test_signatures_audit_function_exists() {
     let _fn_ptr: fn(&SpecGraph) -> anyhow::Result<AuditResult> = audit::audit;
 }
 
 /// blame() function exists with the expected signature.
 /// It takes (&ClauseId, &SpecGraph, &RunResult) and returns Result<BlameResult>.
 #[test]
-fn test_signatures__blame_function_exists() {
+fn test_signatures_blame_function_exists() {
     let _fn_ptr: fn(
         &ClauseId,
         &SpecGraph,
@@ -1351,7 +1352,7 @@ fn test_signatures__blame_function_exists() {
 /// bisect() function exists with the expected signature.
 /// It takes (&ClauseId, &SpecGraph, &dyn Runner, &BisectOptions) and returns Result<BisectResult>.
 #[test]
-fn test_signatures__bisect_function_exists() {
+fn test_signatures_bisect_function_exists() {
     let _fn_ptr: fn(
         &ClauseId,
         &SpecGraph,

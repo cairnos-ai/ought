@@ -24,23 +24,21 @@ fn command_exists(cmd: &str) -> bool {
 }
 
 /// Convert a `ClauseId` like `auth::login::must_return_jwt` into the Go test
-/// function name: `TestAuth__Login__MustReturnJwt` — but we use a simpler
-/// mapping since generated code controls the name.
+/// function name: `Testauth_login_must_return_jwt`. The mapping is lossy
+/// (section boundaries are erased), so the runtime mapping back to a `ClauseId`
+/// relies on the `name_to_clause` HashMap built from the manifest;
+/// `test_name_to_clause_id` is only a best-effort fallback when that lookup misses.
 ///
-/// For our purposes the generated Go test name is the clause ID with `::` replaced
-/// by `__` and a `Test` prefix: `TestAuth__login__must_return_jwt`.
-/// However, since we control the generation, we use a direct mapping with the
-/// raw clause_id segments joined by `__`.
+/// Note: Go convention is CamelCase, but since generated code controls the name
+/// we use snake_case after the `Test` prefix for consistency with other runners.
 fn clause_id_to_test_name(clause_id: &ClauseId) -> String {
-    // Go test names use CamelCase by convention, but our generated tests
-    // just use the clause id with `::` -> `__` and a `Test` prefix.
-    format!("Test{}", clause_id.0.replace("::", "__"))
+    format!("Test{}", clause_id.0.replace("::", "_"))
 }
 
-/// Reverse: strip the `Test` prefix and convert `__` back to `::`.
+/// Best-effort fallback: wrap the test name as a `ClauseId` directly. This is only
+/// used when the HashMap lookup fails; the mangling above is not reversible.
 fn test_name_to_clause_id(test_name: &str) -> ClauseId {
-    let stripped = test_name.strip_prefix("Test").unwrap_or(test_name);
-    ClauseId(stripped.replace("__", "::"))
+    ClauseId(test_name.to_string())
 }
 
 /// Parse `go test -v` output.
@@ -234,26 +232,26 @@ mod tests {
     #[test]
     fn test_parse_go_test_output() {
         let output = "\
-=== RUN   Testauth__login__must_return_jwt
---- PASS: Testauth__login__must_return_jwt (0.00s)
-=== RUN   Testauth__login__must_validate_token
+=== RUN   Testauth_login_must_return_jwt
+--- PASS: Testauth_login_must_return_jwt (0.00s)
+=== RUN   Testauth_login_must_validate_token
     auth_test.go:15: expected valid token
---- FAIL: Testauth__login__must_validate_token (0.01s)
-=== RUN   Testauth__login__may_cache
---- SKIP: Testauth__login__may_cache (0.00s)
+--- FAIL: Testauth_login_must_validate_token (0.01s)
+=== RUN   Testauth_login_may_cache
+--- SKIP: Testauth_login_may_cache (0.00s)
 FAIL
 ";
         let mut map = HashMap::new();
         map.insert(
-            "Testauth__login__must_return_jwt".to_string(),
+            "Testauth_login_must_return_jwt".to_string(),
             ClauseId("auth::login::must_return_jwt".to_string()),
         );
         map.insert(
-            "Testauth__login__must_validate_token".to_string(),
+            "Testauth_login_must_validate_token".to_string(),
             ClauseId("auth::login::must_validate_token".to_string()),
         );
         map.insert(
-            "Testauth__login__may_cache".to_string(),
+            "Testauth_login_may_cache".to_string(),
             ClauseId("auth::login::may_cache".to_string()),
         );
 

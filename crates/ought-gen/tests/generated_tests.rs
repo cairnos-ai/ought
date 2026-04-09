@@ -1,3 +1,4 @@
+#![allow(dead_code, clippy::all)]
 #![allow(non_snake_case, unused_imports)]
 use std::path::{Path, PathBuf};
 use std::fs;
@@ -14,7 +15,7 @@ use ought_gen::manifest::*;
 
 /// MUST compute a clause hash from the keyword + clause text + context metadata
 #[test]
-fn test_generator__manifest_and_hashing__must_compute_a_clause_hash_from_the_keyword_clause_text_context_m() {
+fn test_generator_manifest_and_hashing_must_compute_a_clause_hash_from_the_keyword_clause_text_context_m() {
     let path = PathBuf::from("spec.ought.md");
 
     // Parse a baseline MUST clause.
@@ -88,7 +89,7 @@ fn test_generator__manifest_and_hashing__must_compute_a_clause_hash_from_the_key
 
 /// MUST compute a source hash from the contents of referenced source files
 #[test]
-fn test_generator__manifest_and_hashing__must_compute_a_source_hash_from_the_contents_of_referenced_source() {
+fn test_generator_manifest_and_hashing_must_compute_a_source_hash_from_the_contents_of_referenced_source() {
     use std::collections::hash_map::DefaultHasher;
     use std::hash::{Hash, Hasher};
     use chrono::Utc;
@@ -160,7 +161,7 @@ fn test_generator__manifest_and_hashing__must_compute_a_source_hash_from_the_con
 
 /// MUST skip generation for clauses whose hashes match the manifest (unless `--force`)
 #[test]
-fn test_generator__manifest_and_hashing__must_skip_generation_for_clauses_whose_hashes_match_the_manifest() {
+fn test_generator_manifest_and_hashing_must_skip_generation_for_clauses_whose_hashes_match_the_manifest() {
     use chrono::Utc;
 
     // Unit: Manifest::is_stale() drives the skip decision
@@ -208,7 +209,7 @@ fn test_generator__manifest_and_hashing__must_skip_generation_for_clauses_whose_
 
 /// MUST write both hashes to `ought/ought-gen/manifest.toml` after generation
 #[test]
-fn test_generator__manifest_and_hashing__must_write_both_hashes_to_ought_ought_gen_manifest_toml_after_gen() {
+fn test_generator_manifest_and_hashing_must_write_both_hashes_to_ought_ought_gen_manifest_toml_after_gen() {
     use chrono::Utc;
 
     let tmp = std::env::temp_dir()
@@ -275,7 +276,7 @@ fn test_generator__manifest_and_hashing__must_write_both_hashes_to_ought_ought_g
 
 /// MUST record the model name and timestamp in the manifest entry
 #[test]
-fn test_generator__manifest_and_hashing__must_record_the_model_name_and_timestamp_in_the_manifest_entry() {
+fn test_generator_manifest_and_hashing_must_record_the_model_name_and_timestamp_in_the_manifest_entry() {
     use chrono::DateTime;
 
     let tmp = std::env::temp_dir()
@@ -344,7 +345,7 @@ fn test_generator__manifest_and_hashing__must_record_the_model_name_and_timestam
 
 /// MUST detect and remove orphaned generated tests (clause was deleted from spec)
 #[test]
-fn test_generator__manifest_and_hashing__must_detect_and_remove_orphaned_generated_tests_clause_was_delete() {
+fn test_generator_manifest_and_hashing_must_detect_and_remove_orphaned_generated_tests_clause_was_delete() {
     use chrono::Utc;
 
     let make_entry = || ManifestEntry {
@@ -409,7 +410,7 @@ fn test_generator__manifest_and_hashing__must_detect_and_remove_orphaned_generat
 
 /// keyword_str must return the correct display string for each keyword
 #[test]
-fn test_generator__keyword_str__returns_correct_display_string_for_each_keyword() {
+fn test_generator_keyword_str_returns_correct_display_string_for_each_keyword() {
     assert_eq!(keyword_str(Keyword::Must), "MUST");
     assert_eq!(keyword_str(Keyword::MustNot), "MUST NOT");
     assert_eq!(keyword_str(Keyword::Should), "SHOULD");
@@ -428,7 +429,7 @@ fn test_generator__keyword_str__returns_correct_display_string_for_each_keyword(
 
 /// AgentAssignment must serialize and deserialize via serde_json
 #[test]
-fn test_generator__agent_assignment__must_round_trip_through_json() {
+fn test_generator_agent_assignment_must_round_trip_through_json() {
     use ought_gen::{AgentAssignment, AssignmentGroup, AssignmentClause};
 
     let assignment = AgentAssignment {
@@ -473,7 +474,7 @@ fn test_generator__agent_assignment__must_round_trip_through_json() {
 
 /// AgentReport tracks generated count and errors
 #[test]
-fn test_generator__agent_report__tracks_generated_and_errors() {
+fn test_generator_agent_report_tracks_generated_and_errors() {
     use ought_gen::AgentReport;
 
     let report = AgentReport {
@@ -494,7 +495,7 @@ fn test_generator__agent_report__tracks_generated_and_errors() {
 
 /// MUST NOT leave the manifest in an inconsistent state if generation is interrupted
 #[test]
-fn test_generator__error_handling__must_not_leave_the_manifest_in_an_inconsistent_state_if_generation_is() {
+fn test_generator_error_handling_must_not_leave_the_manifest_in_an_inconsistent_state_if_generation_is() {
     use chrono::Utc;
 
     let dir = std::env::temp_dir().join(format!(

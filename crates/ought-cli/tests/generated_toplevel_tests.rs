@@ -1,3 +1,4 @@
+#![allow(dead_code, clippy::all)]
 #![allow(non_snake_case, unused_imports)]
 use std::path::{Path, PathBuf};
 use std::fs;
@@ -11,7 +12,7 @@ use ought_spec::types::*;
 
 /// MUST accept behavioral specifications written in standard markdown files (`.ought.md`)
 #[test]
-fn test_ought__what_ought_does__must_accept_behavioral_specifications_written_in_standard_markdow() {
+fn test_ought_what_ought_does_must_accept_behavioral_specifications_written_in_standard_markdow() {
     let tmp_path = std::env::temp_dir().join(format!("test_spec_{}.ought.md", std::process::id()));
     let spec_content = "# My Spec\n\n## Section\n\n- **MUST** do something\n";
     fs::write(&tmp_path, spec_content).expect("Failed to write test .ought.md file");
@@ -35,7 +36,7 @@ fn test_ought__what_ought_does__must_accept_behavioral_specifications_written_in
 
 /// MUST provide a CLI (`ought`) as the primary interface for all operations
 #[test]
-fn test_ought__what_ought_does__must_provide_a_cli_ought_as_the_primary_interface_for_all_operati() {
+fn test_ought_what_ought_does_must_provide_a_cli_ought_as_the_primary_interface_for_all_operati() {
     let bin = PathBuf::from(env!("CARGO_BIN_EXE_ought"));
     let output = Command::new(&bin).arg("--help").output();
 
@@ -59,7 +60,7 @@ fn test_ought__what_ought_does__must_provide_a_cli_ought_as_the_primary_interfac
 
 /// MUST execute generated tests and report pass/fail results mapped back to the original spec clauses
 #[test]
-fn test_ought__what_ought_does__must_execute_generated_tests_and_report_pass_fail_results_mapped() {
+fn test_ought_what_ought_does_must_execute_generated_tests_and_report_pass_fail_results_mapped() {
     #[derive(Debug, PartialEq)]
     enum TestOutcome { Pass, Fail }
 
@@ -89,7 +90,7 @@ fn test_ought__what_ought_does__must_execute_generated_tests_and_report_pass_fai
 
 /// MUST use an LLM to generate concrete, runnable test code from those specifications
 #[test]
-fn test_ought__what_ought_does__must_use_an_llm_to_generate_concrete_runnable_test_code_from_thos() {
+fn test_ought_what_ought_does_must_use_an_llm_to_generate_concrete_runnable_test_code_from_thos() {
     let generated_samples = vec![
         "#[test]\nfn test_example() { assert!(true); }",
         "#[test]\nfn test_another() { let x = 1; assert_eq!(x, 1); }",
@@ -106,7 +107,7 @@ fn test_ought__what_ought_does__must_use_an_llm_to_generate_concrete_runnable_te
 
 /// MUST NOT require users to write any test code by hand
 #[test]
-fn test_ought__what_ought_does__must_not_require_users_to_write_any_test_code_by_hand() {
+fn test_ought_what_ought_does_must_not_require_users_to_write_any_test_code_by_hand() {
     let tmp_dir = std::env::temp_dir().join(format!("ought_no_manual_tests_{}", std::process::id()));
     let _ = fs::create_dir_all(&tmp_dir);
 
@@ -131,7 +132,7 @@ fn test_ought__what_ought_does__must_not_require_users_to_write_any_test_code_by
 
 /// MUST support RFC 2119 keywords (MUST, MUST NOT, SHOULD, SHOULD NOT, MAY) as deontic operators.
 #[test]
-fn test_ought__spec_format__must_support_rfc_2119_keywords_must_must_not_should_should_not_ma() {
+fn test_ought_spec_format_must_support_rfc_2119_keywords_must_must_not_should_should_not_ma() {
     let md = r#"# Spec Format
 
 ## Rules
@@ -171,7 +172,7 @@ fn test_ought__spec_format__must_support_rfc_2119_keywords_must_must_not_should_
 
 /// MUST use standard markdown (CommonMark) so specs render in GitHub, editors, and browsers.
 #[test]
-fn test_ought__spec_format__must_use_standard_markdown_commonmark_so_specs_render_in_github_e() {
+fn test_ought_spec_format_must_use_standard_markdown_commonmark_so_specs_render_in_github_e() {
     let md = r#"# Spec Format
 
 > This spec is written in standard CommonMark.
@@ -203,7 +204,7 @@ Some *introductory* prose with `inline code` and **bold** text.
 
 /// MUST support the WONT keyword for deliberately absent capabilities.
 #[test]
-fn test_ought__spec_format__must_support_the_wont_keyword_for_deliberately_absent_capabilitie() {
+fn test_ought_spec_format_must_support_the_wont_keyword_for_deliberately_absent_capabilitie() {
     let md = r#"# Spec Format
 
 ## Scope Exclusions
@@ -228,7 +229,7 @@ fn test_ought__spec_format__must_support_the_wont_keyword_for_deliberately_absen
 
 /// MUST support GIVEN blocks for conditional obligations.
 #[test]
-fn test_ought__spec_format__must_support_given_blocks_for_conditional_obligations_clauses_tha() {
+fn test_ought_spec_format_must_support_given_blocks_for_conditional_obligations_clauses_tha() {
     let md = r#"# Spec Format
 
 ## Access Control
@@ -261,7 +262,7 @@ fn test_ought__spec_format__must_support_given_blocks_for_conditional_obligation
 
 /// MUST support OTHERWISE chains for contrary-to-duty fallbacks.
 #[test]
-fn test_ought__spec_format__must_support_otherwise_chains_for_contrary_to_duty_fallbacks_grac() {
+fn test_ought_spec_format_must_support_otherwise_chains_for_contrary_to_duty_fallbacks_grac() {
     let md = r#"# Spec Format
 
 ## Resilience
@@ -291,7 +292,7 @@ fn test_ought__spec_format__must_support_otherwise_chains_for_contrary_to_duty_f
 
 /// MUST support MUST ALWAYS for invariants.
 #[test]
-fn test_ought__spec_format__must_support_must_always_for_invariants_properties_that_must_hold() {
+fn test_ought_spec_format_must_support_must_always_for_invariants_properties_that_must_hold() {
     let md = r#"# Spec Format
 
 ## Invariants
@@ -320,7 +321,7 @@ fn test_ought__spec_format__must_support_must_always_for_invariants_properties_t
 
 /// MUST support MUST BY for deadline obligations.
 #[test]
-fn test_ought__spec_format__must_support_must_by_for_deadline_obligations_operations_that_mus() {
+fn test_ought_spec_format_must_support_must_by_for_deadline_obligations_operations_that_mus() {
     use std::time::Duration;
 
     let md = r#"# Spec Format
@@ -363,7 +364,7 @@ fn test_ought__spec_format__must_support_must_by_for_deadline_obligations_operat
 
 /// MUST support cross-file references via standard markdown links.
 #[test]
-fn test_ought__spec_format__must_support_cross_file_references_via_standard_markdown_links_so() {
+fn test_ought_spec_format_must_support_cross_file_references_via_standard_markdown_links_so() {
     let md = r#"# Spec Format
 
 requires: [Auth](auth.ought.md), [Billing](billing.ought.md#invoices), [Core](core/base.ought.md#rules)
@@ -393,7 +394,7 @@ requires: [Auth](auth.ought.md), [Billing](billing.ought.md#invoices), [Core](co
 
 /// SHOULD be parseable by a standalone library with no LLM dependency.
 #[test]
-fn test_ought__spec_format__should_be_parseable_by_a_standalone_library_with_no_llm_dependency() {
+fn test_ought_spec_format_should_be_parseable_by_a_standalone_library_with_no_llm_dependency() {
     let md = r#"# Standalone Spec
 
 context: Verifies the parser works with no external dependencies
@@ -478,7 +479,7 @@ requires: [Other](other.ought.md)
 
 /// MUST be written in Rust
 #[test]
-fn test_ought__implementation__must_be_written_in_rust() {
+fn test_ought_implementation_must_be_written_in_rust() {
     let manifest_dir = std::env::var("CARGO_MANIFEST_DIR")
         .expect("CARGO_MANIFEST_DIR must be set by cargo");
 
@@ -503,7 +504,7 @@ fn test_ought__implementation__must_be_written_in_rust() {
 
 /// SHOULD use a workspace structure so components can be used independently
 #[test]
-fn test_ought__implementation__should_use_a_workspace_structure_so_components_can_be_used_independ() {
+fn test_ought_implementation_should_use_a_workspace_structure_so_components_can_be_used_independ() {
     let manifest_dir = std::env::var("CARGO_MANIFEST_DIR")
         .expect("CARGO_MANIFEST_DIR must be set by cargo");
 
@@ -547,7 +548,7 @@ fn test_ought__implementation__should_use_a_workspace_structure_so_components_ca
 
 /// MUST publish the spec parser as a standalone crate (ought-spec) with no LLM dependencies
 #[test]
-fn test_ought__implementation__must_publish_the_spec_parser_as_a_standalone_crate_ought_spec_wit() {
+fn test_ought_implementation_must_publish_the_spec_parser_as_a_standalone_crate_ought_spec_wit() {
     let manifest_dir = std::env::var("CARGO_MANIFEST_DIR")
         .expect("CARGO_MANIFEST_DIR must be set by cargo");
 
@@ -588,7 +589,7 @@ fn test_ought__implementation__must_publish_the_spec_parser_as_a_standalone_crat
 
 /// MUST only regenerate tests when the user explicitly runs `ought generate`
 #[test]
-fn test_ought__generated_test_management__must_only_regenerate_tests_on_generate_not_run() {
+fn test_ought_generated_test_management_must_only_regenerate_tests_on_generate_not_run() {
     #[derive(PartialEq, Debug)]
     enum Cmd { Generate, Run }
 
@@ -617,7 +618,7 @@ fn test_ought__generated_test_management__must_only_regenerate_tests_on_generate
 
 /// MUST detect and remove orphaned tests when a clause is deleted from a spec.
 #[test]
-fn test_ought__generated_test_management__must_detect_and_remove_orphaned_tests() {
+fn test_ought_generated_test_management_must_detect_and_remove_orphaned_tests() {
     use std::collections::HashMap;
 
     struct Manifest { entries: HashMap<String, ()> }
@@ -655,7 +656,7 @@ fn test_ought__generated_test_management__must_detect_and_remove_orphaned_tests(
 
 /// MUST track generated tests with content hashes so they are only regenerated when the spec or source changes.
 #[test]
-fn test_ought__generated_test_management__must_track_generated_tests_with_content_hashes() {
+fn test_ought_generated_test_management_must_track_generated_tests_with_content_hashes() {
     use std::collections::HashMap;
 
     struct ManifestEntry { clause_hash: String, source_hash: String }
@@ -691,7 +692,7 @@ fn test_ought__generated_test_management__must_track_generated_tests_with_conten
 
 /// MUST be agnostic to which LLM provider generates the test code
 #[test]
-fn test_ought__llm_agnostic__must_be_agnostic_to_which_llm_provider_generates_the_test_code() {
+fn test_ought_llm_agnostic_must_be_agnostic_to_which_llm_provider_generates_the_test_code() {
     use ought_gen::generator::{GeneratedTest, Language};
 
     // The GeneratedTest struct carries no provider information -- it is purely
@@ -716,7 +717,7 @@ fn test_ought__llm_agnostic__must_be_agnostic_to_which_llm_provider_generates_th
 
 /// MUST allow the provider and model to be configured in `ought.toml`
 #[test]
-fn test_ought__llm_agnostic__must_allow_the_provider_and_model_to_be_configured_in_ought_toml() {
+fn test_ought_llm_agnostic_must_allow_the_provider_and_model_to_be_configured_in_ought_toml() {
     use ought_spec::config::Config;
 
     let dir = std::env::temp_dir().join(format!("ought_llm_agnostic_config_test_{}", std::process::id()));
@@ -761,7 +762,7 @@ fn test_ought__llm_agnostic__must_allow_the_provider_and_model_to_be_configured_
 
 /// MUST NOT depend on any provider-specific features in the core spec format or runner
 #[test]
-fn test_ought__llm_agnostic__must_not_depend_on_any_provider_specific_features_in_the_core_spec_fo() {
+fn test_ought_llm_agnostic_must_not_depend_on_any_provider_specific_features_in_the_core_spec_fo() {
     use ought_gen::generator::{GeneratedTest, Language};
     use ought_run::runner::Runner;
     use ought_run::types::RunResult;
@@ -808,7 +809,7 @@ fn test_ought__llm_agnostic__must_not_depend_on_any_provider_specific_features_i
 
 /// MUST support at least Anthropic (Claude) and OpenAI as providers via agent mode
 #[test]
-fn test_ought__llm_agnostic__must_support_at_least_anthropic_claude_and_openai_as_providers() {
+fn test_ought_llm_agnostic_must_support_at_least_anthropic_claude_and_openai_as_providers() {
     // Provider configuration is validated at the config level. The orchestrator
     // maps provider names to agent CLI commands. Verify the config accepts these providers.
     let dir = std::env::temp_dir().join(format!("ought_provider_test_{}", std::process::id()));
@@ -838,7 +839,7 @@ fn test_ought__llm_agnostic__must_support_at_least_anthropic_claude_and_openai_a
 
 /// MUST be agnostic to the programming language of the project under test
 #[test]
-fn test_ought__language_agnostic__must_be_agnostic_to_the_programming_language_of_the_project_under() {
+fn test_ought_language_agnostic_must_be_agnostic_to_the_programming_language_of_the_project_under() {
     let languages = ["rust", "python", "typescript", "go"];
     for lang in languages {
         let runner = ought_run::runners::from_name(lang)
@@ -858,7 +859,7 @@ fn test_ought__language_agnostic__must_be_agnostic_to_the_programming_language_o
 
 /// MUST delegate test execution to the project's existing test harness
 #[test]
-fn test_ought__language_agnostic__must_delegate_test_execution_to_the_project_s_existing_test_harne() {
+fn test_ought_language_agnostic_must_delegate_test_execution_to_the_project_s_existing_test_harne() {
     let harness_map: &[(&str, &str)] = &[
         ("rust",       "cargo"),
         ("python",     "pytest"),
@@ -881,7 +882,7 @@ fn test_ought__language_agnostic__must_delegate_test_execution_to_the_project_s_
 
 /// MUST ship with runners for at least Rust and one other mainstream language
 #[test]
-fn test_ought__language_agnostic__must_ship_with_runners_for_at_least_rust_and_one_other_mainstream() {
+fn test_ought_language_agnostic_must_ship_with_runners_for_at_least_rust_and_one_other_mainstream() {
     let rust_runner = ought_run::runners::from_name("rust")
         .expect("Rust runner must be included");
     assert_eq!(rust_runner.name(), "rust");
@@ -897,7 +898,7 @@ fn test_ought__language_agnostic__must_ship_with_runners_for_at_least_rust_and_o
 
 /// MUST NOT require any language-specific SDK or library in the project under test
 #[test]
-fn test_ought__language_agnostic__must_not_require_any_language_specific_sdk_or_library_in_the_project() {
+fn test_ought_language_agnostic_must_not_require_any_language_specific_sdk_or_library_in_the_project() {
     use ought_spec::config::RunnerConfig;
     use ought_gen::GeneratedTest;
     use ought_gen::generator::Language;
@@ -928,7 +929,7 @@ fn test_ought__language_agnostic__must_not_require_any_language_specific_sdk_or_
 
 /// SHOULD support custom runners via configuration
 #[test]
-fn test_ought__language_agnostic__should_support_custom_runners_via_configuration() {
+fn test_ought_language_agnostic_should_support_custom_runners_via_configuration() {
     use ought_spec::config::Config;
 
     let toml_str = r#"
@@ -983,7 +984,7 @@ test_dir = "tests/ought/"
 
 /// MUST map test results back to the original spec clauses (not just test function names)
 #[test]
-fn test_ought__reporting__must_map_test_results_back_to_the_original_spec_clauses_not_just() {
+fn test_ought_reporting_must_map_test_results_back_to_the_original_spec_clauses_not_just() {
     use ought_report::json;
     use ought_run::{RunResult, TestResult, TestStatus, TestDetails};
 
@@ -1033,7 +1034,7 @@ fn test_ought__reporting__must_map_test_results_back_to_the_original_spec_clause
 
 /// MUST distinguish failure severity -- MUST failures are errors, SHOULD failures are warnings
 #[test]
-fn test_ought__reporting__must_distinguish_failure_severity_must_failures_are_errors_should() {
+fn test_ought_reporting_must_distinguish_failure_severity_must_failures_are_errors_should() {
     use ought_report::json;
     use ought_run::{RunResult, TestResult, TestStatus, TestDetails};
 
@@ -1114,7 +1115,7 @@ fn test_ought__reporting__must_distinguish_failure_severity_must_failures_are_er
 ///
 /// Tests that the terminal reporter and JSON reporter accept well-formed input.
 #[test]
-fn test_ought__reporting__must_produce_visually_attractive_terminal_output_that_makes_specs() {
+fn test_ought_reporting_must_produce_visually_attractive_terminal_output_that_makes_specs() {
     use ought_report::json;
     use ought_report::terminal;
     use ought_report::types::{ColorChoice, ReportOptions};
@@ -1213,7 +1214,7 @@ fn test_ought__reporting__must_produce_visually_attractive_terminal_output_that_
 ///
 /// Calls the diagnose() function which currently returns an empty list (stubbed).
 #[test]
-fn test_ought__reporting__should_support_llm_powered_failure_diagnosis_that_explains_why_a_te() {
+fn test_ought_reporting_should_support_llm_powered_failure_diagnosis_that_explains_why_a_te() {
     use ought_report::diagnosis::diagnose;
     use ought_report::types::{Diagnosis, SuggestedFix};
     use ought_run::{RunResult, TestResult, TestStatus, TestDetails};
@@ -1280,7 +1281,7 @@ fn test_ought__reporting__should_support_llm_powered_failure_diagnosis_that_expl
 ///
 /// Calls the grade() function which currently returns an empty list (stubbed).
 #[test]
-fn test_ought__reporting__should_support_llm_powered_test_quality_grading_that_evaluates_whet() {
+fn test_ought_reporting_should_support_llm_powered_test_quality_grading_that_evaluates_whet() {
     use ought_report::grade::grade;
     use ought_report::types::Grade;
     use ought_run::{RunResult, TestResult, TestStatus, TestDetails};
@@ -1349,7 +1350,7 @@ fn test_ought__reporting__should_support_llm_powered_test_quality_grading_that_e
 /// Requires LLM. Marked ignored.
 #[test]
 #[ignore]
-fn test_ought__llm_powered_analysis__must_support_surveying_source_code_to_discover_behaviors_not_cove() {
+fn test_ought_llm_powered_analysis_must_support_surveying_source_code_to_discover_behaviors_not_cove() {
     // Would call ought_analysis::survey::survey() with a stub generator.
 }
 
@@ -1358,7 +1359,7 @@ fn test_ought__llm_powered_analysis__must_support_surveying_source_code_to_disco
 /// Requires LLM. Marked ignored.
 #[test]
 #[ignore]
-fn test_ought__llm_powered_analysis__must_support_auditing_specs_for_contradictions_gaps_and_coherence() {
+fn test_ought_llm_powered_analysis_must_support_auditing_specs_for_contradictions_gaps_and_coherence() {
     // Would call ought_analysis::audit::audit() with a stub generator.
 }
 
@@ -1367,7 +1368,7 @@ fn test_ought__llm_powered_analysis__must_support_auditing_specs_for_contradicti
 /// Requires LLM. Marked ignored.
 #[test]
 #[ignore]
-fn test_ought__llm_powered_analysis__must_support_blaming_a_failure_on_a_specific_source_change_with_a() {
+fn test_ought_llm_powered_analysis_must_support_blaming_a_failure_on_a_specific_source_change_with_a() {
     // Would call ought_analysis::blame::blame() with a stub generator.
 }
 
@@ -1376,7 +1377,7 @@ fn test_ought__llm_powered_analysis__must_support_blaming_a_failure_on_a_specifi
 /// Requires LLM + git history. Marked ignored.
 #[test]
 #[ignore]
-fn test_ought__llm_powered_analysis__should_support_bisecting_git_history_to_find_the_exact_commit_that() {
+fn test_ought_llm_powered_analysis_should_support_bisecting_git_history_to_find_the_exact_commit_that() {
     // Would call ought_analysis::bisect::bisect() with a test runner.
 }
 
@@ -1389,13 +1390,13 @@ fn test_ought__llm_powered_analysis__should_support_bisecting_git_history_to_fin
 /// Requires the MCP server implementation. Marked ignored.
 #[test]
 #[ignore]
-fn test_ought__integration__must_provide_an_mcp_server_so_ai_assistants_and_ide_extensions_ca() {
+fn test_ought_integration_must_provide_an_mcp_server_so_ai_assistants_and_ide_extensions_ca() {
     // Would spawn `ought mcp serve` and verify it is a recognised subcommand.
 }
 
 /// SHOULD be installable via cargo, Homebrew, and as a standalone binary
 #[test]
-fn test_ought__integration__should_be_installable_via_cargo_homebrew_and_as_a_standalone_binary() {
+fn test_ought_integration_should_be_installable_via_cargo_homebrew_and_as_a_standalone_binary() {
     let bin = PathBuf::from(env!("CARGO_BIN_EXE_ought"));
 
     // Verify the binary runs as a standalone executable via --help
@@ -1436,7 +1437,7 @@ fn test_ought__integration__should_be_installable_via_cargo_homebrew_and_as_a_st
 /// The action.yml file does not exist yet. Marked ignored until implemented.
 #[test]
 #[ignore]
-fn test_ought__integration__should_provide_a_github_action_for_pr_level_reporting() {
+fn test_ought_integration_should_provide_a_github_action_for_pr_level_reporting() {
     let manifest_dir = PathBuf::from(std::env::var("CARGO_MANIFEST_DIR")
         .expect("CARGO_MANIFEST_DIR must be set"));
     let workspace_root = manifest_dir.ancestors()
@@ -1466,7 +1467,7 @@ fn test_ought__integration__should_provide_a_github_action_for_pr_level_reportin
 
 /// MUST be easy to integrate into CI pipelines (run without LLM access)
 #[test]
-fn test_ought__integration__must_be_easy_to_integrate_into_ci_pipelines_run_without_llm_acces() {
+fn test_ought_integration_must_be_easy_to_integrate_into_ci_pipelines_run_without_llm_acces() {
     let bin = PathBuf::from(env!("CARGO_BIN_EXE_ought"));
 
     let run_help = Command::new(&bin)

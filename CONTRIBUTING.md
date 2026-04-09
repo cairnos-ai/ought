@@ -17,9 +17,9 @@ project, you agree that:
    includes, but is not limited to, dual-licensing, relicensing under a
    different open-source license, or relicensing under a commercial license.
 
-This relicensing right is granted irrevocably and without requiring further
-notice or compensation. If you do not agree to these terms, please do not
-submit contributions to this project.
+   This relicensing right is granted irrevocably and without requiring further
+   notice or compensation. If you do not agree to these terms, please do not
+   submit contributions to this project.
 
 ## How to contribute
 
