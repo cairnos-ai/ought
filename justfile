@@ -74,6 +74,11 @@ lint: lint-ui lint-rust
 [group: 'all']
 ci: test lint
 
+# Publish all workspace crates to crates.io (cargo handles dep ordering)
+[group: 'all']
+publish-crates: build-ui
+    cargo publish --workspace
+
 # Remove all build artifacts
 [group: 'all']
 clean:

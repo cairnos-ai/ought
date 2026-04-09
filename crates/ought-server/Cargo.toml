@@ -8,6 +8,15 @@ repository.workspace = true
 homepage.workspace = true
 keywords.workspace = true
 categories.workspace = true
+# The Vite-built UI in `dist/` is gitignored (it's a build artifact), but
+# `rust-embed` reads it at compile time. Use `include` (allowlist mode) to
+# explicitly ship `dist/` in the published .crate so consumers can compile
+# without needing Node.js.
+include = [
+    "src/**/*",
+    "dist/**/*",
+    "Cargo.toml",
+]
 
 [dependencies]
 ought-spec.workspace = true
