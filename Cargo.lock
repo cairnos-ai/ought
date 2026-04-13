@@ -793,6 +793,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "ought-dogfood"
+version = "0.2.0-rc3"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "ought",
+ "ought-analysis",
+ "ought-core",
+ "ought-gen",
+ "ought-mcp",
+ "ought-report",
+ "ought-run",
+ "ought-server",
+ "ought-spec",
+ "serde",
+ "serde_json",
+ "toml",
+]
+
+[[package]]
 name = "ought-gen"
 version = "0.2.0-rc3"
 dependencies = [

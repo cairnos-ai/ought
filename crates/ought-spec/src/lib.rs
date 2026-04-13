@@ -5,5 +5,5 @@ pub mod types;
 
 pub use config::SpecsConfig;
 pub use graph::SpecGraph;
-pub use parser::Parser;
+pub use parser::{OughtMdParser, Parser};
 pub use types::*;

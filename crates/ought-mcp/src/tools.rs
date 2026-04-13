@@ -6,7 +6,7 @@ use chrono::Utc;
 use serde_json::Value;
 
 use ought_run::RunnerConfig;
-use ought_spec::{ClauseId, Parser, SpecGraph};
+use ought_spec::{ClauseId, OughtMdParser, Parser, SpecGraph};
 
 use crate::{collect_clauses, count_clauses};
 
@@ -168,7 +168,7 @@ impl ToolHandler {
                     }
                 }
 
-                match Parser::parse_file(&file) {
+                match OughtMdParser.parse_file(&file) {
                     Ok(spec) => {
                         let clause_count = count_clauses(&spec.sections);
                         results.push(serde_json::json!({

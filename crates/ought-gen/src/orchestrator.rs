@@ -44,7 +44,21 @@ fn build_system_prompt(assignment: &AgentAssignment) -> String {
          3. Generate test functions and write them using write_test or write_tests_batch\n\
          4. Call check_compiles to verify tests compile, fix any errors\n\
          5. Call report_progress to report your status\n\n\
-         Generate self-contained tests with the clause text as a doc comment.\n"
+         Generate self-contained tests with the clause text as a doc comment.\n\n"
+    );
+
+    prompt.push_str(
+        "TEST FILE LAYOUT (per-subsection):\n\
+         All clauses under the same subsection share a single test file.\n\
+         For a clause ID like `parser::clause_ir::must_generate_foo`, the file is\n\
+         `<test_dir>/src/parser/clause_ir_test.rs` (for Rust). Write only the\n\
+         `#[test]` function plus its leading doc comment; write_test merges it\n\
+         into the file, replacing any previous version with the same fn name.\n\n\
+         Name each Rust test function as:\n\
+         `fn test_<subsystem>__<subsection>__<clause_slug>()` — using DOUBLE\n\
+         underscores to separate `::` boundaries, so the full clause path is\n\
+         recoverable from the function name. The clause_slug is everything\n\
+         after the subsection in the clause ID.\n\n"
     );
 
     prompt.push_str(&format!("Target language: {}. ", assignment.target_language));
