@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "ought-view",
+      "runtimeExecutable": "just",
+      "runtimeArgs": ["run", "--", "view", "--port", "3333", "--no-open"],
+      "port": 3333
+    }
+  ]
+}
