@@ -1049,12 +1049,16 @@ name = "ought-gen"
 version = "0.2.0-rc3"
 dependencies = [
  "anyhow",
+ "async-trait",
  "chrono",
+ "ought-agent",
+ "ought-llm",
  "ought-spec",
  "serde",
  "serde_json",
  "tempfile",
  "thiserror",
+ "tokio",
  "toml",
 ]
 

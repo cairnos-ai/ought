@@ -5,22 +5,74 @@ use serde::{Deserialize, Serialize};
 /// Composed into the aggregate `ought.toml` config by the CLI crate.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GeneratorConfig {
-    pub provider: String,
+    /// Which upstream LLM provider to talk to.
+    pub provider: Provider,
+
+    /// Provider-specific model identifier (e.g. `"claude-sonnet-4-6"`).
+    pub model: String,
+
+    /// Maximum number of model turns per assignment before giving up.
+    #[serde(default = "default_max_turns")]
+    pub max_turns: u32,
+
+    /// Token cap on each individual model response.
+    #[serde(default = "default_max_tokens_per_response")]
+    pub max_tokens_per_response: u32,
+
+    /// Optional sampling temperature.
     #[serde(default)]
-    pub model: Option<String>,
+    pub temperature: Option<f32>,
+
     #[serde(default)]
     pub tolerance: ToleranceConfig,
+
+    /// Number of assignments to run concurrently.
     #[serde(default = "default_parallelism")]
     pub parallelism: usize,
+
+    /// Anthropic-provider settings. Used when `provider = "anthropic"`.
+    #[serde(default)]
+    pub anthropic: AnthropicConfig,
 }
 
 impl Default for GeneratorConfig {
     fn default() -> Self {
         Self {
-            provider: "claude".to_string(),
-            model: None,
+            provider: Provider::Anthropic,
+            model: "claude-sonnet-4-6".to_string(),
+            max_turns: default_max_turns(),
+            max_tokens_per_response: default_max_tokens_per_response(),
+            temperature: None,
             tolerance: ToleranceConfig::default(),
             parallelism: default_parallelism(),
+            anthropic: AnthropicConfig::default(),
+        }
+    }
+}
+
+/// Which upstream LLM provider to use.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Provider {
+    Anthropic,
+    // OpenAi, OpenRouter, Ollama land in a follow-up.
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AnthropicConfig {
+    /// Name of the env var to read the API key from.
+    #[serde(default = "default_anthropic_key_env")]
+    pub api_key_env: String,
+    /// Override the API base URL (proxies, gateways, etc.).
+    #[serde(default)]
+    pub base_url: Option<String>,
+}
+
+impl Default for AnthropicConfig {
+    fn default() -> Self {
+        Self {
+            api_key_env: default_anthropic_key_env(),
+            base_url: None,
         }
     }
 }
@@ -44,4 +96,13 @@ fn default_multiplier() -> f64 {
 }
 fn default_parallelism() -> usize {
     1
+}
+fn default_max_turns() -> u32 {
+    50
+}
+fn default_max_tokens_per_response() -> u32 {
+    8192
+}
+fn default_anthropic_key_env() -> String {
+    "ANTHROPIC_API_KEY".to_string()
 }
