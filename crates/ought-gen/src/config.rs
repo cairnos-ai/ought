@@ -6,9 +6,11 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GeneratorConfig {
     /// Which upstream LLM provider to talk to.
+    #[serde(default = "default_provider")]
     pub provider: Provider,
 
     /// Provider-specific model identifier (e.g. `"claude-sonnet-4-6"`).
+    #[serde(default = "default_model")]
     pub model: String,
 
     /// Maximum number of model turns per assignment before giving up.
@@ -168,6 +170,12 @@ fn default_max_tokens_per_response() -> u32 {
 }
 fn default_anthropic_key_env() -> String {
     "ANTHROPIC_API_KEY".to_string()
+}
+fn default_provider() -> Provider {
+    Provider::Anthropic
+}
+fn default_model() -> String {
+    "claude-sonnet-4-6".to_string()
 }
 fn default_openai_key_env() -> String {
     "OPENAI_API_KEY".to_string()
