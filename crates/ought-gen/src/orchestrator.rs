@@ -56,8 +56,11 @@ impl Orchestrator {
             max_turns: self.config.max_turns,
             max_tokens_per_response: self.config.max_tokens_per_response,
             temperature: self.config.temperature,
+            context_budget_tokens: self.config.context_budget_tokens,
+            eviction_threshold_tokens: self.config.eviction_threshold_tokens,
             ..AgentConfig::default()
         };
+        let read_source_limit = self.config.read_source_limit_bytes;
 
         let parallelism = self.config.parallelism.max(1);
         let sem = Arc::new(Semaphore::new(parallelism));
@@ -73,8 +76,16 @@ impl Orchestrator {
 
             tasks.spawn(async move {
                 let _permit = permit;
-                run_one_assignment(assignment, llm, agent_cfg, manifest, manifest_path, verbose)
-                    .await
+                run_one_assignment(
+                    assignment,
+                    llm,
+                    agent_cfg,
+                    manifest,
+                    manifest_path,
+                    read_source_limit,
+                    verbose,
+                )
+                .await
             });
         }
 
@@ -99,6 +110,7 @@ async fn run_one_assignment(
     agent_cfg: AgentConfig,
     manifest: Arc<Mutex<Manifest>>,
     manifest_path: PathBuf,
+    read_source_limit_bytes: usize,
     verbose: bool,
 ) -> AgentReport {
     let assignment_id = assignment.id.clone();
@@ -112,7 +124,12 @@ async fn run_one_assignment(
         );
     }
 
-    let tools = GenerateToolSet::new(assignment.clone(), manifest, manifest_path);
+    let tools = GenerateToolSet::with_limits(
+        assignment.clone(),
+        manifest,
+        manifest_path,
+        read_source_limit_bytes,
+    );
     let system = build_system_prompt(&assignment);
     let initial = build_initial_user_message(&assignment);
 
@@ -133,6 +150,7 @@ async fn run_one_assignment(
                 RunStatus::Completed => AgentRunStatus::Completed,
                 RunStatus::MaxTurnsExceeded => AgentRunStatus::MaxTurnsExceeded,
                 RunStatus::Truncated => AgentRunStatus::Truncated,
+                RunStatus::ContextExhausted => AgentRunStatus::ContextExhausted,
             };
             report.turns = outcome.turns;
             report.usage_input_tokens = outcome.usage.input_tokens;

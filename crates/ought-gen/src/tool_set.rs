@@ -18,7 +18,7 @@ use ought_llm::ToolSpec;
 
 use crate::agent::AgentAssignment;
 use crate::manifest::Manifest;
-use crate::tools::{self, CompileResult, WriteTestResult};
+use crate::tools::{self, CompileResult, DEFAULT_READ_SOURCE_LIMIT_BYTES, WriteTestResult};
 
 /// Tracker for what the agent did. Read by the orchestrator after the
 /// agent loop terminates to populate the report.
@@ -35,13 +35,30 @@ pub struct GenerateToolSet {
     manifest_path: PathBuf,
     specs: Vec<ToolSpec>,
     usage: Arc<Mutex<ToolUsage>>,
+    read_source_limit_bytes: usize,
 }
 
 impl GenerateToolSet {
+    /// Construct with the default `read_source` size cap.
     pub fn new(
         assignment: AgentAssignment,
         manifest: Arc<Mutex<Manifest>>,
         manifest_path: PathBuf,
+    ) -> Self {
+        Self::with_limits(
+            assignment,
+            manifest,
+            manifest_path,
+            DEFAULT_READ_SOURCE_LIMIT_BYTES,
+        )
+    }
+
+    /// Construct with an explicit `read_source` cap (in bytes).
+    pub fn with_limits(
+        assignment: AgentAssignment,
+        manifest: Arc<Mutex<Manifest>>,
+        manifest_path: PathBuf,
+        read_source_limit_bytes: usize,
     ) -> Self {
         Self {
             assignment,
@@ -49,6 +66,7 @@ impl GenerateToolSet {
             manifest_path,
             specs: tool_specs(),
             usage: Arc::new(Mutex::new(ToolUsage::default())),
+            read_source_limit_bytes,
         }
     }
 
@@ -76,9 +94,18 @@ impl ToolSet for GenerateToolSet {
                     Some(p) => p.to_string(),
                     None => return ToolOutcome::err("missing required argument: path"),
                 };
+                let start_line = input
+                    .get("start_line")
+                    .and_then(|v| v.as_u64())
+                    .map(|n| n as usize);
+                let end_line = input
+                    .get("end_line")
+                    .and_then(|v| v.as_u64())
+                    .map(|n| n as usize);
                 let project_root = PathBuf::from(&self.assignment.project_root);
+                let limit = self.read_source_limit_bytes;
                 match tokio::task::spawn_blocking(move || {
-                    tools::read_source(&project_root, &path)
+                    tools::read_source_with(&project_root, &path, start_line, end_line, limit)
                 })
                 .await
                 {
@@ -267,12 +294,22 @@ fn tool_specs() -> Vec<ToolSpec> {
             name: "read_source".into(),
             description:
                 "Read a source file relative to the project root. Use this to understand \
-                 the code under test before generating assertions against it."
+                 the code under test before generating assertions against it. Reads are \
+                 capped at a few tens of KB; if `truncated: true` comes back, call again \
+                 with `start_line` / `end_line` to read a specific window."
                     .into(),
             input_schema: json!({
                 "type": "object",
                 "properties": {
-                    "path": { "type": "string", "description": "path relative to project root" }
+                    "path": { "type": "string", "description": "path relative to project root" },
+                    "start_line": {
+                        "type": "integer",
+                        "description": "1-based inclusive start line. Optional."
+                    },
+                    "end_line": {
+                        "type": "integer",
+                        "description": "1-based inclusive end line. Optional."
+                    }
                 },
                 "required": ["path"]
             }),

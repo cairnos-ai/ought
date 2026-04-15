@@ -32,7 +32,34 @@ use crate::manifest::{Manifest, ManifestEntry};
 pub struct ReadSourceOutput {
     pub path: String,
     pub content: String,
+    /// 1-based line of the first line returned. `None` when reading from
+    /// the start of the file (the common case).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub start_line: Option<usize>,
+    /// 1-based line of the last line returned. `None` when reading to
+    /// EOF and not truncated.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub end_line: Option<usize>,
+    /// True when the requested read was clipped at the size limit. The
+    /// agent should call again with a `start_line`/`end_line` range to
+    /// see the rest if it cares.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub truncated: bool,
+    /// Size of the underlying file in bytes. Helps the agent decide how
+    /// to chunk subsequent reads.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub total_bytes: Option<u64>,
 }
+
+fn is_false(b: &bool) -> bool {
+    !b
+}
+
+/// Default per-call cap on the bytes returned by `read_source`. Calibrated
+/// at ~16K Anthropic tokens, which is large enough for nearly every source
+/// file in a typical Rust/Python/TS project but small enough that an agent
+/// reading 5+ files won't blow past a 200K context window.
+pub const DEFAULT_READ_SOURCE_LIMIT_BYTES: usize = 64 * 1024;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ListSourceFilesOutput {
@@ -109,11 +136,27 @@ pub fn get_assignment(assignment: &AgentAssignment) -> AgentAssignment {
     assignment.clone()
 }
 
-/// Read a source file relative to the project root.
+/// Read a source file relative to the project root, with the default
+/// size cap and no range restriction.
 ///
-/// Resolves the path under `project_root` and refuses to read anything
-/// that canonicalises outside it (basic traversal protection).
+/// Convenience wrapper over [`read_source_with`] for the common case.
 pub fn read_source(project_root: &Path, path: &str) -> anyhow::Result<ReadSourceOutput> {
+    read_source_with(project_root, path, None, None, DEFAULT_READ_SOURCE_LIMIT_BYTES)
+}
+
+/// Read a source file with optional 1-based line range and an explicit
+/// size cap.
+///
+/// Returns whatever fits in `max_bytes`, marking `truncated: true` if
+/// the read was clipped. The agent recovers by calling again with a
+/// narrower line range.
+pub fn read_source_with(
+    project_root: &Path,
+    path: &str,
+    start_line: Option<usize>,
+    end_line: Option<usize>,
+    max_bytes: usize,
+) -> anyhow::Result<ReadSourceOutput> {
     let resolved = project_root.join(path);
     let canonical_root = project_root
         .canonicalize()
@@ -124,11 +167,64 @@ pub fn read_source(project_root: &Path, path: &str) -> anyhow::Result<ReadSource
     if !canonical_path.starts_with(&canonical_root) {
         anyhow::bail!("path '{}' is outside the project root", path);
     }
-    let content = std::fs::read_to_string(&canonical_path)
+
+    let total_bytes = std::fs::metadata(&canonical_path).ok().map(|m| m.len());
+    let raw = std::fs::read_to_string(&canonical_path)
         .map_err(|e| anyhow::anyhow!("failed to read '{}': {}", path, e))?;
+
+    let lines: Vec<&str> = raw.lines().collect();
+    let total_lines = lines.len();
+
+    let start = start_line.map(|s| s.saturating_sub(1)).unwrap_or(0);
+    let end_exclusive = end_line.map(|e| e.min(total_lines)).unwrap_or(total_lines);
+    if start >= end_exclusive && total_lines > 0 {
+        anyhow::bail!(
+            "empty range: start_line {:?} > end_line {:?} (file has {} lines)",
+            start_line,
+            end_line,
+            total_lines
+        );
+    }
+
+    // Build the requested slice with line endings preserved.
+    let mut content = String::new();
+    let mut last_line_returned = start;
+    let mut truncated = false;
+    for (i, line) in lines[start..end_exclusive].iter().enumerate() {
+        // +1 for the newline we'll re-add below.
+        if content.len() + line.len() + 1 > max_bytes {
+            truncated = true;
+            break;
+        }
+        content.push_str(line);
+        content.push('\n');
+        last_line_returned = start + i;
+    }
+
+    // Edge case: even the first requested line overruns max_bytes.
+    if content.is_empty() && !lines.is_empty() && start < end_exclusive {
+        truncated = true;
+        let first = lines[start];
+        let take = first.len().min(max_bytes.saturating_sub(1));
+        content.push_str(&first[..take]);
+        content.push('\n');
+        last_line_returned = start;
+    }
+
+    let returned_start = if start_line.is_some() { Some(start + 1) } else { None };
+    let returned_end = if start_line.is_some() || truncated {
+        Some(last_line_returned + 1)
+    } else {
+        None
+    };
+
     Ok(ReadSourceOutput {
         path: path.to_string(),
         content,
+        start_line: returned_start,
+        end_line: returned_end,
+        truncated,
+        total_bytes,
     })
 }
 
@@ -629,6 +725,58 @@ mod tests {
         let result = read_source(root, "../outside.txt");
         assert!(result.is_err(), "expected traversal block, got {:?}", result);
         let _ = std::fs::remove_file(&outside);
+    }
+
+    #[test]
+    fn read_source_returns_full_file_when_under_limit() {
+        let tmp = tempfile::tempdir().unwrap();
+        let root = tmp.path();
+        std::fs::write(root.join("small.rs"), "fn a() {}\nfn b() {}\n").unwrap();
+        let out = read_source(root, "small.rs").unwrap();
+        assert!(out.content.contains("fn a"));
+        assert!(out.content.contains("fn b"));
+        assert!(!out.truncated);
+        assert_eq!(out.start_line, None);
+        assert_eq!(out.end_line, None);
+    }
+
+    #[test]
+    fn read_source_truncates_at_byte_limit() {
+        let tmp = tempfile::tempdir().unwrap();
+        let root = tmp.path();
+        // 100 lines of "X" * 100 = ~10 KB
+        let big: String = (0..100)
+            .map(|i| format!("line_{}_{}\n", i, "X".repeat(100)))
+            .collect();
+        std::fs::write(root.join("big.txt"), &big).unwrap();
+        let out = read_source_with(root, "big.txt", None, None, 1024).unwrap();
+        assert!(out.truncated);
+        assert!(out.content.len() <= 1024);
+        assert!(out.end_line.unwrap() < 100); // didn't reach end
+        assert!(out.total_bytes.unwrap() > 1024);
+    }
+
+    #[test]
+    fn read_source_with_line_range_reads_requested_window() {
+        let tmp = tempfile::tempdir().unwrap();
+        let root = tmp.path();
+        let body: String = (1..=20).map(|i| format!("line {}\n", i)).collect();
+        std::fs::write(root.join("ranged.txt"), &body).unwrap();
+        let out = read_source_with(root, "ranged.txt", Some(5), Some(7), 4096).unwrap();
+        assert_eq!(out.content, "line 5\nline 6\nline 7\n");
+        assert_eq!(out.start_line, Some(5));
+        assert_eq!(out.end_line, Some(7));
+        assert!(!out.truncated);
+    }
+
+    #[test]
+    fn read_source_truncates_an_overlong_first_line() {
+        let tmp = tempfile::tempdir().unwrap();
+        let root = tmp.path();
+        std::fs::write(root.join("long_line.txt"), "X".repeat(10_000)).unwrap();
+        let out = read_source_with(root, "long_line.txt", None, None, 256).unwrap();
+        assert!(out.truncated);
+        assert!(out.content.len() <= 256);
     }
 
     #[test]

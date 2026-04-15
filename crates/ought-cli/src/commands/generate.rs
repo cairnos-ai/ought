@@ -112,6 +112,7 @@ fn render_report(report: &AgentReport, verbose: bool) {
         AgentRunStatus::Completed => "completed",
         AgentRunStatus::MaxTurnsExceeded => "max-turns-exceeded",
         AgentRunStatus::Truncated => "truncated",
+        AgentRunStatus::ContextExhausted => "context-exhausted",
         AgentRunStatus::Errored => "errored",
         AgentRunStatus::NotRun => "not-run",
     };

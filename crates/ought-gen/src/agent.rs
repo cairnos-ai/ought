@@ -73,6 +73,9 @@ pub enum AgentRunStatus {
     MaxTurnsExceeded,
     /// Model truncated due to `max_tokens` on its final turn.
     Truncated,
+    /// Per-request input tokens crossed the configured budget; the loop
+    /// terminated pre-emptively.
+    ContextExhausted,
     /// Agent loop returned an error (LLM auth/rate-limit/etc.).
     Errored,
 }

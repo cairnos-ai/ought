@@ -25,6 +25,24 @@ pub struct GeneratorConfig {
     #[serde(default)]
     pub temperature: Option<f32>,
 
+    /// Per-call cap on bytes returned by `read_source`. Files larger
+    /// than this are truncated; the agent recovers by calling again
+    /// with `start_line` / `end_line`.
+    #[serde(default = "default_read_source_limit_bytes")]
+    pub read_source_limit_bytes: usize,
+
+    /// Hard cap on per-request input tokens. The agent loop terminates
+    /// with `ContextExhausted` rather than letting the next request hit
+    /// a 400 from the provider. Default is calibrated for Claude
+    /// Sonnet 4.6's 200K window; lower it for smaller models.
+    #[serde(default = "default_context_budget_tokens")]
+    pub context_budget_tokens: u32,
+
+    /// Soft threshold at which older `tool_result` blocks get rewritten
+    /// as short placeholders so the next request fits.
+    #[serde(default = "default_eviction_threshold_tokens")]
+    pub eviction_threshold_tokens: u32,
+
     #[serde(default)]
     pub tolerance: ToleranceConfig,
 
@@ -57,6 +75,9 @@ impl Default for GeneratorConfig {
             max_turns: default_max_turns(),
             max_tokens_per_response: default_max_tokens_per_response(),
             temperature: None,
+            read_source_limit_bytes: default_read_source_limit_bytes(),
+            context_budget_tokens: default_context_budget_tokens(),
+            eviction_threshold_tokens: default_eviction_threshold_tokens(),
             tolerance: ToleranceConfig::default(),
             parallelism: default_parallelism(),
             anthropic: AnthropicConfig::default(),
@@ -167,6 +188,15 @@ fn default_max_turns() -> u32 {
 }
 fn default_max_tokens_per_response() -> u32 {
     8192
+}
+fn default_read_source_limit_bytes() -> usize {
+    crate::tools::DEFAULT_READ_SOURCE_LIMIT_BYTES
+}
+fn default_context_budget_tokens() -> u32 {
+    180_000
+}
+fn default_eviction_threshold_tokens() -> u32 {
+    130_000
 }
 fn default_anthropic_key_env() -> String {
     "ANTHROPIC_API_KEY".to_string()
