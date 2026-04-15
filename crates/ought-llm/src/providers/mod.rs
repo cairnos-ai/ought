@@ -2,3 +2,4 @@
 //! upstream API.
 
 pub mod anthropic;
+pub mod openai;

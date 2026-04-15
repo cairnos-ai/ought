@@ -22,6 +22,7 @@ pub use types::{
 };
 
 pub use providers::anthropic::AnthropicLlm;
+pub use providers::openai::OpenAiLlm;
 
 use async_trait::async_trait;
 

@@ -13,7 +13,7 @@ use tokio::sync::Semaphore;
 use tokio::task::JoinSet;
 
 use ought_agent::{Agent, AgentConfig, AgentError, RunStatus};
-use ought_llm::{AnthropicLlm, Llm};
+use ought_llm::{AnthropicLlm, Llm, OpenAiLlm};
 
 use crate::agent::{AgentAssignment, AgentReport, AgentRunStatus};
 use crate::config::{GeneratorConfig, Provider};
@@ -165,18 +165,40 @@ async fn run_one_assignment(
 }
 
 fn build_llm(config: &GeneratorConfig) -> anyhow::Result<Arc<dyn Llm>> {
+    fn require_env(var: &str) -> anyhow::Result<String> {
+        std::env::var(var).map_err(|_| {
+            anyhow::anyhow!("{} not set; export it or change provider in ought.toml", var)
+        })
+    }
+
     match config.provider {
         Provider::Anthropic => {
-            let key = std::env::var(&config.anthropic.api_key_env).map_err(|_| {
-                anyhow::anyhow!(
-                    "{} not set; export it or change provider in ought.toml",
-                    config.anthropic.api_key_env
-                )
-            })?;
+            let key = require_env(&config.anthropic.api_key_env)?;
             let llm = match &config.anthropic.base_url {
                 Some(url) => AnthropicLlm::with_base_url(key, url.clone())?,
                 None => AnthropicLlm::new(key)?,
             };
+            Ok(Arc::new(llm))
+        }
+        Provider::Openai => {
+            let key = require_env(&config.openai.api_key_env)?;
+            let llm = match &config.openai.base_url {
+                Some(url) => OpenAiLlm::custom("openai", Some(key), url.clone(), vec![])?,
+                None => OpenAiLlm::openai(key)?,
+            };
+            Ok(Arc::new(llm))
+        }
+        Provider::Openrouter => {
+            let key = require_env(&config.openrouter.api_key_env)?;
+            let llm = OpenAiLlm::openrouter(
+                key,
+                config.openrouter.app_url.clone(),
+                config.openrouter.app_title.clone(),
+            )?;
+            Ok(Arc::new(llm))
+        }
+        Provider::Ollama => {
+            let llm = OpenAiLlm::ollama(config.ollama.base_url.clone())?;
             Ok(Arc::new(llm))
         }
     }
