@@ -1,7 +1,7 @@
 ---
 title: CLI reference
 description: Every ought subcommand and what it does.
-order: 6
+order: 7
 ---
 
 Every Ought workflow is driven through the `ought` CLI. Run `ought help` or `ought <command> --help` for the full flag listing.
@@ -109,7 +109,7 @@ Spec-level analysis commands.
 
 ### ought analyze survey
 
-Find behaviors in your source code that are not covered by any spec clause. Useful for catching test gaps in legacy code.
+Find behaviors in your source code that are not covered by any spec clause.
 
 ```sh
 ought analyze survey

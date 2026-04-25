@@ -1,5 +1,5 @@
 ---
-title: Deontic keywords
+title: Keywords
 description: The full set of keywords ought recognizes and what each one means.
 order: 5
 ---
