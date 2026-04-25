@@ -216,16 +216,16 @@ Specs are hierarchical. A top-level spec captures broad product-level requiremen
 | `ought generate --force` | Regenerate all tests |
 | `ought generate --check` | Exit 1 if any clause is stale (CI gate) |
 | `ought run` | Execute tests, report results mapped to clauses |
-| `ought run --diagnose` | Add LLM-powered failure narratives |
-| `ought run --grade` | Add LLM-powered test quality grading |
+| `ought run --fail-on-should` | Exit 1 on SHOULD failures too (default: MUST only) |
 | `ought check` | Validate spec syntax only (no LLM, no execution) |
+| `ought extract [paths...]` | Audit existing specs and reverse-engineer drafts for uncovered source |
 | `ought inspect <clause>` | Show generated test code for a clause |
 | `ought diff` | Show pending generation changes |
 | `ought analyze survey [path]` | Discover source behaviors not covered by any spec |
-| `ought analyze audit` | Cross-spec coherence analysis (contradictions, gaps) |
 | `ought debug blame <clause>` | Explain a failure with git history context |
 | `ought debug bisect <clause>` | Find the exact commit that broke a clause |
 | `ought watch` | Re-run on file changes |
+| `ought view` | Launch the visual spec viewer in the browser |
 | `ought mcp serve` | Start the MCP server |
 | `ought mcp install` | Register with Claude Code, Codex, OpenCode |
 
@@ -257,7 +257,7 @@ Beyond test generation and execution, ought uses LLMs to reason about relationsh
 
 **`ought analyze survey [path]`** -- Scans source code and identifies behaviors not covered by any spec. Suggests concrete clauses with appropriate keywords. Never auto-adds clauses without user confirmation.
 
-**`ought analyze audit`** -- Checks specs for contradictions (conflicting MUSTs), deadline conflicts (a MUST BY calling a sub-operation with a longer deadline), MUST ALWAYS invariant conflicts, gaps (e.g., login and refresh specified but no logout), and missing OTHERWISE chains on network-dependent operations.
+**`ought extract [paths...]`** -- Cold-start sibling of survey that writes files. Runs a rule-based audit over your existing specs (contradictions, gaps, missing OTHERWISE chains, deadline conflicts), then dispatches LLM agents to draft `.ought.md` files for uncovered source areas.
 
 **`ought debug blame <clause>`** -- Correlates a failing clause with git history to build a causal narrative: what commit broke it, who authored it, and what the change was trying to do.
 
@@ -289,7 +289,7 @@ provider = "anthropic"
 model = "claude-sonnet-4-6"
 
 [generator.tolerance]
-must_by_multiplier = 1.5     # CI timing tolerance for MUST BY
+must_by_multiplier = 1.0     # CI timing tolerance for MUST BY (default 1.0; bump if your CI is slow)
 
 [runner.rust]
 command = "cargo test"
