@@ -10,21 +10,7 @@ Ought pulls intent up into a human-readable spec and delegates the mechanical wo
 
 ## What Ought Does
 
-Ought maintains a three-way sync between intent, source code, and tests -- with the LLM as the mediator:
-
-```
-            Intent (.ought.md)
-               /         \
-        survey/   audit    \generate
-            /               \
-      Source Code <--blame--> Tests
-            \               /
-        diagnose\         /grade
-                 \       /
-              Results + Reports
-```
-
-Every arrow is LLM-powered. Traditional test tools only have the bottom triangle (code, tests, results). Ought adds the intent layer and connects everything through it.
+Ought maintains a three-way sync between intent (`.ought.md` specs), source code, and tests — with the LLM as the mediator. Traditional test tools only see code, tests, and results; ought adds the intent layer and connects everything through it.
 
 ## Quick Start
 
