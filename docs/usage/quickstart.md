@@ -4,7 +4,7 @@ description: Write your first spec, generate tests, and run them.
 order: 3
 ---
 
-This walkthrough takes a small project from zero to a passing `ought run` in three steps.
+This walkthrough takes a small project from zero to a passing `ought run` in four steps. If you're retrofitting Ought onto an existing codebase, [`ought extract`](/products/ought/docs/cli-reference#ought-extract) does steps 1–2 for you.
 
 ## 1. Initialize
 
@@ -54,5 +54,6 @@ You'll see a report grouped by spec section, with each clause marked as passing,
 ## What's next
 
 - [Writing specs](/products/ought/docs/writing-specs) — the full spec syntax
-- [Deontic keywords](/products/ought/docs/deontic-keywords) — every keyword and what it means
+- [Keywords](/products/ought/docs/keywords) — every keyword and what it means
+- [Configuration](/products/ought/docs/configuration) — the `ought.toml` schema
 - [CLI reference](/products/ought/docs/cli-reference) — every command

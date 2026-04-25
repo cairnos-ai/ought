@@ -6,7 +6,7 @@ order: 4
 
 A spec is a markdown file with the extension `.ought.md`. It is plain markdown — it renders correctly in GitHub, displays in any editor, and requires no special tooling to read.
 
-The authoritative grammar lives in `docs/grammar.md`. This page is the practical walkthrough.
+The authoritative grammar lives in the [Ought repo](https://github.com/soseinai/ought/blob/main/docs/grammar.md). This page is the practical walkthrough.
 
 ## File layout
 
@@ -49,7 +49,7 @@ Clauses are list items beginning with a **bold** deontic keyword. The keyword se
 - **WONT** support basic auth (deprecated in v2)
 ```
 
-Keywords must be bold. A list item starting with the bare word `MUST` is treated as prose. See [Deontic keywords](/products/ought/docs/deontic-keywords) for the full list.
+Keywords must be bold. A list item starting with the bare word `MUST` is treated as prose. See [Keywords](/products/ought/docs/keywords) for the full list.
 
 ## Nested clauses and OTHERWISE fallbacks
 
