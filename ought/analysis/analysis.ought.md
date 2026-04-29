@@ -1,41 +1,10 @@
-# Analysis
+# Diagnostics
 
-context: The analysis commands are LLM-powered features that go beyond basic test generation and execution. They reason about the relationships between intent (specs), implementation (source), and evidence (results). These are the features that differentiate ought from conventional test tools.
+context: The diagnostic commands go beyond basic test generation and execution. They may use LLMs when they need causal explanation. Source/spec drift reporting belongs to `ought align`; missing-spec discovery belongs to `ought discover`.
 
 source: src/analysis/
 
 requires: [parser](../engine/parser.ought.md), [generator](../engine/generator.ought.md), [runner](../engine/runner.ought.md)
-
-## Survey
-
-`ought analyze survey [path]` — discovers behaviors in source code that are not covered by any spec.
-
-- **MUST** read source files from the given path (or project source roots if no path given)
-- **MUST** read all existing spec files to know what is already covered
-- **MUST** use the LLM to identify public behaviors, APIs, and logic branches in the source that lack corresponding clauses
-- **MUST** output a list of uncovered behaviors with file and line references
-- **MUST** suggest concrete clause text (with appropriate keyword) for each uncovered behavior
-- **SHOULD** offer to append suggested clauses to the relevant spec file (or create a new one)
-- **SHOULD** group suggestions by the spec file they would belong to
-- **SHOULD** rank uncovered behaviors by risk (public API > internal helper)
-- **WONT** auto-add clauses without user confirmation
-
-## Audit
-
-`ought analyze audit` — cross-spec analysis for contradictions, gaps, and coherence issues.
-
-- **MUST** read all spec files and their cross-references
-- **MUST** use the LLM to identify contradictions between clauses (across files or within)
-- **MUST** use the LLM to identify gaps — areas where related clauses exist but expected companion clauses are missing
-- **MUST** categorize findings as: contradiction, gap, ambiguity, or redundancy
-- **MUST** reference the specific clauses involved in each finding (file, section, line)
-- **MUST** detect MUST BY deadline conflicts (e.g. an operation with a 100ms deadline that calls a sub-operation with a 200ms deadline)
-- **MUST** detect MUST ALWAYS invariant conflicts (e.g. two invariants that cannot simultaneously hold)
-- **SHOULD** detect GIVEN blocks with overlapping conditions that impose contradictory obligations
-- **SHOULD** detect MUST obligations that lack OTHERWISE fallbacks where degradation is likely (e.g. network-dependent operations)
-- **SHOULD** read relevant source code to ground the analysis in implementation reality
-- **SHOULD** suggest resolutions for each finding
-- **MAY** assign a confidence score to each finding
 
 ## Blame
 

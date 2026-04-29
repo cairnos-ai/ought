@@ -30,7 +30,11 @@ impl ToolHandler {
         spec_roots: Vec<PathBuf>,
         runners: HashMap<String, RunnerConfig>,
     ) -> Self {
-        Self { project_root, spec_roots, runners }
+        Self {
+            project_root,
+            spec_roots,
+            runners,
+        }
     }
 
     /// Load the spec graph from the configured roots.
@@ -114,10 +118,7 @@ impl ToolHandler {
         let start = Instant::now();
         let specs = self.load_specs()?;
 
-        let force = args
-            .get("force")
-            .and_then(|v| v.as_bool())
-            .unwrap_or(false);
+        let force = args.get("force").and_then(|v| v.as_bool()).unwrap_or(false);
 
         // Load manifest
         let manifest_path = self.base().join("ought/ought-gen/manifest.toml");
@@ -160,10 +161,7 @@ impl ToolHandler {
             for file in files {
                 // Apply filter if given
                 if let Some(ref filter) = filter_spec {
-                    let file_name = file
-                        .file_stem()
-                        .and_then(|s| s.to_str())
-                        .unwrap_or("");
+                    let file_name = file.file_stem().and_then(|s| s.to_str()).unwrap_or("");
                     if !file_name.contains(filter.as_str()) {
                         continue;
                     }
@@ -285,71 +283,6 @@ impl ToolHandler {
         Ok(Self::with_timing(start, result))
     }
 
-    pub fn ought_survey(&self, args: Value) -> anyhow::Result<Value> {
-        let start = Instant::now();
-        let specs = self.load_specs()?;
-
-        let paths: Vec<PathBuf> = args
-            .get("paths")
-            .and_then(|v| v.as_array())
-            .map(|arr| {
-                arr.iter()
-                    .filter_map(|v| v.as_str().map(PathBuf::from))
-                    .collect()
-            })
-            .unwrap_or_default();
-
-        let result = ought_analysis::survey::survey(&specs, &paths)?;
-
-        let uncovered: Vec<Value> = result
-            .uncovered
-            .iter()
-            .map(|u| {
-                serde_json::json!({
-                    "file": u.file.display().to_string(),
-                    "line": u.line,
-                    "description": u.description,
-                    "suggested_clause": u.suggested_clause,
-                    "suggested_keyword": format!("{:?}", u.suggested_keyword),
-                    "suggested_spec": u.suggested_spec.display().to_string(),
-                })
-            })
-            .collect();
-
-        let result = serde_json::json!({
-            "uncovered_count": uncovered.len(),
-            "uncovered": uncovered,
-        });
-        Ok(Self::with_timing(start, result))
-    }
-
-    pub fn ought_audit(&self, _args: Value) -> anyhow::Result<Value> {
-        let start = Instant::now();
-        let specs = self.load_specs()?;
-
-        let result = ought_analysis::audit::audit(&specs)?;
-
-        let findings: Vec<Value> = result
-            .findings
-            .iter()
-            .map(|f| {
-                serde_json::json!({
-                    "kind": format!("{:?}", f.kind),
-                    "description": f.description,
-                    "clauses": f.clauses.iter().map(|c| &c.0).collect::<Vec<_>>(),
-                    "suggestion": f.suggestion,
-                    "confidence": f.confidence,
-                })
-            })
-            .collect();
-
-        let result = serde_json::json!({
-            "findings_count": findings.len(),
-            "findings": findings,
-        });
-        Ok(Self::with_timing(start, result))
-    }
-
     pub fn ought_blame(&self, args: Value) -> anyhow::Result<Value> {
         let start = Instant::now();
         let clause_id_str = args
@@ -367,8 +300,7 @@ impl ToolHandler {
             total_duration: std::time::Duration::ZERO,
         };
 
-        let result =
-            ought_analysis::blame::blame(&clause_id, &specs, &empty_run)?;
+        let result = ought_analysis::blame::blame(&clause_id, &specs, &empty_run)?;
 
         let result = serde_json::json!({
             "clause_id": result.clause_id.0,
@@ -414,8 +346,7 @@ impl ToolHandler {
             regenerate: false,
         };
 
-        let result =
-            ought_analysis::bisect::bisect(&clause_id, &specs, runner.as_ref(), &options)?;
+        let result = ought_analysis::bisect::bisect(&clause_id, &specs, runner.as_ref(), &options)?;
 
         let result = serde_json::json!({
             "clause_id": result.clause_id.0,

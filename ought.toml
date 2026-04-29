@@ -6,7 +6,7 @@ version = "0.1.0"
 roots = ["ought/"]
 
 [context]
-search_paths = ["src/"]
+search_paths = ["crates/"]
 exclude = ["target/", "ought/ought-gen/"]
 
 [generator]

@@ -16,8 +16,8 @@ use ought_spec::types::*;
 // --- must_link_each_otherwise_clause_to_its_parent_obligation_in_the_c_test.rs ---
 /// MUST link each OTHERWISE clause to its parent obligation in the clause IR
 #[test]
-fn test_parser__contrary_to_duty_chains_otherwise__must_link_each_otherwise_clause_to_its_parent_obligation_in_the_c() {
-
+fn test_parser__contrary_to_duty_chains_otherwise__must_link_each_otherwise_clause_to_its_parent_obligation_in_the_c()
+ {
     let md = r#"# Svc
 
 ## Api
@@ -28,7 +28,9 @@ fn test_parser__contrary_to_duty_chains_otherwise__must_link_each_otherwise_clau
 - **MUST** authenticate the caller
   - **OTHERWISE** reject with 401 Unauthorized
 "#;
-    let spec = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
     let clauses = &spec.sections[0].clauses;
     assert_eq!(clauses.len(), 2);
 
@@ -51,8 +53,8 @@ fn test_parser__contrary_to_duty_chains_otherwise__must_link_each_otherwise_clau
 // --- must_not_allow_otherwise_at_the_top_level_it_must_have_a_parent_oblig_test.rs ---
 /// MUST NOT allow OTHERWISE at the top level (it must have a parent obligation)
 #[test]
-fn test_parser__contrary_to_duty_chains_otherwise__must_not_allow_otherwise_at_the_top_level_it_must_have_a_parent_oblig() {
-
+fn test_parser__contrary_to_duty_chains_otherwise__must_not_allow_otherwise_at_the_top_level_it_must_have_a_parent_oblig()
+ {
     let md = r#"# Svc
 
 ## Section
@@ -69,8 +71,8 @@ fn test_parser__contrary_to_duty_chains_otherwise__must_not_allow_otherwise_at_t
 // --- must_not_allow_otherwise_under_may_wont_or_given_only_under_obligatio_test.rs ---
 /// MUST NOT allow OTHERWISE under MAY, WONT, or GIVEN (only under obligations that can be violated)
 #[test]
-fn test_parser__contrary_to_duty_chains_otherwise__must_not_allow_otherwise_under_may_wont_or_given_only_under_obligatio() {
-
+fn test_parser__contrary_to_duty_chains_otherwise__must_not_allow_otherwise_under_may_wont_or_given_only_under_obligatio()
+ {
     // OTHERWISE under MAY is invalid — MAY cannot be violated
     let md_may = r#"# Svc
 
@@ -80,7 +82,9 @@ fn test_parser__contrary_to_duty_chains_otherwise__must_not_allow_otherwise_unde
   - **OTHERWISE** do nothing
 "#;
     assert!(
-        OughtMdParser.parse_string(md_may, Path::new("test.ought.md")).is_err(),
+        OughtMdParser
+            .parse_string(md_may, Path::new("test.ought.md"))
+            .is_err(),
         "OTHERWISE under MAY must be a parse error"
     );
 
@@ -93,7 +97,9 @@ fn test_parser__contrary_to_duty_chains_otherwise__must_not_allow_otherwise_unde
   - **OTHERWISE** implement feature Y instead
 "#;
     assert!(
-        OughtMdParser.parse_string(md_wont, Path::new("test.ought.md")).is_err(),
+        OughtMdParser
+            .parse_string(md_wont, Path::new("test.ought.md"))
+            .is_err(),
         "OTHERWISE under WONT must be a parse error"
     );
 
@@ -106,7 +112,9 @@ fn test_parser__contrary_to_duty_chains_otherwise__must_not_allow_otherwise_unde
   - **OTHERWISE** fallback without an obligation
 "#;
     assert!(
-        OughtMdParser.parse_string(md_given, Path::new("test.ought.md")).is_err(),
+        OughtMdParser
+            .parse_string(md_given, Path::new("test.ought.md"))
+            .is_err(),
         "OTHERWISE under GIVEN must be a parse error"
     );
 }
@@ -114,8 +122,8 @@ fn test_parser__contrary_to_duty_chains_otherwise__must_not_allow_otherwise_unde
 // --- must_parse_otherwise_as_a_clause_nested_under_a_parent_obligation_test.rs ---
 /// MUST parse `**OTHERWISE**` as a clause nested under a parent obligation
 #[test]
-fn test_parser__contrary_to_duty_chains_otherwise__must_parse_otherwise_as_a_clause_nested_under_a_parent_obligation() {
-
+fn test_parser__contrary_to_duty_chains_otherwise__must_parse_otherwise_as_a_clause_nested_under_a_parent_obligation()
+ {
     let md = r#"# Svc
 
 ## Resilience
@@ -123,11 +131,17 @@ fn test_parser__contrary_to_duty_chains_otherwise__must_parse_otherwise_as_a_cla
 - **MUST** respond within 200ms
   - **OTHERWISE** return a cached response
 "#;
-    let spec = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
     let clauses = &spec.sections[0].clauses;
 
     // The parent MUST is the only top-level clause; OTHERWISE is not promoted to the top level
-    assert_eq!(clauses.len(), 1, "only the parent obligation should appear as a top-level clause");
+    assert_eq!(
+        clauses.len(),
+        1,
+        "only the parent obligation should appear as a top-level clause"
+    );
     assert_eq!(clauses[0].keyword, Keyword::Must);
 
     let otherwise = &clauses[0].otherwise;
@@ -139,8 +153,8 @@ fn test_parser__contrary_to_duty_chains_otherwise__must_parse_otherwise_as_a_cla
 // --- must_preserve_the_ordering_of_otherwise_clauses_they_form_a_degra_test.rs ---
 /// MUST preserve the ordering of OTHERWISE clauses (they form a degradation chain)
 #[test]
-fn test_parser__contrary_to_duty_chains_otherwise__must_preserve_the_ordering_of_otherwise_clauses_they_form_a_degra() {
-
+fn test_parser__contrary_to_duty_chains_otherwise__must_preserve_the_ordering_of_otherwise_clauses_they_form_a_degra()
+ {
     let md = r#"# Svc
 
 ## Resilience
@@ -150,21 +164,32 @@ fn test_parser__contrary_to_duty_chains_otherwise__must_preserve_the_ordering_of
   - **OTHERWISE** return degraded placeholder
   - **OTHERWISE** return HTTP 503
 "#;
-    let spec = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
     let otherwise = &spec.sections[0].clauses[0].otherwise;
 
     assert_eq!(otherwise.len(), 3);
     // Degradation chain order must match declaration order
-    assert!(otherwise[0].text.contains("stale cache"),        "first fallback must be stale cache");
-    assert!(otherwise[1].text.contains("degraded placeholder"), "second fallback must be degraded placeholder");
-    assert!(otherwise[2].text.contains("503"),                "third fallback must be 503");
+    assert!(
+        otherwise[0].text.contains("stale cache"),
+        "first fallback must be stale cache"
+    );
+    assert!(
+        otherwise[1].text.contains("degraded placeholder"),
+        "second fallback must be degraded placeholder"
+    );
+    assert!(
+        otherwise[2].text.contains("503"),
+        "third fallback must be 503"
+    );
 }
 
 // --- must_support_multiple_otherwise_clauses_under_a_single_parent_ord_test.rs ---
 /// MUST support multiple OTHERWISE clauses under a single parent (ordered fallback chain)
 #[test]
-fn test_parser__contrary_to_duty_chains_otherwise__must_support_multiple_otherwise_clauses_under_a_single_parent_ord() {
-
+fn test_parser__contrary_to_duty_chains_otherwise__must_support_multiple_otherwise_clauses_under_a_single_parent_ord()
+ {
     let md = r#"# Svc
 
 ## Payments
@@ -174,13 +199,19 @@ fn test_parser__contrary_to_duty_chains_otherwise__must_support_multiple_otherwi
   - **OTHERWISE** add to pending queue
   - **OTHERWISE** reject with insufficient funds error
 "#;
-    let spec = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
     let clauses = &spec.sections[0].clauses;
 
     assert_eq!(clauses.len(), 1, "only one top-level clause should exist");
 
     let otherwise = &clauses[0].otherwise;
-    assert_eq!(otherwise.len(), 3, "all three fallbacks must be collected under the single parent");
+    assert_eq!(
+        otherwise.len(),
+        3,
+        "all three fallbacks must be collected under the single parent"
+    );
     assert!(otherwise.iter().all(|c| c.keyword == Keyword::Otherwise));
 
     assert!(otherwise[0].text.contains("backup card"));
@@ -191,8 +222,8 @@ fn test_parser__contrary_to_duty_chains_otherwise__must_support_multiple_otherwi
 // --- must_support_otherwise_under_any_obligation_keyword_must_should_m_test.rs ---
 /// MUST support OTHERWISE under any obligation keyword (MUST, SHOULD, MUST ALWAYS, MUST BY)
 #[test]
-fn test_parser__contrary_to_duty_chains_otherwise__must_support_otherwise_under_any_obligation_keyword_must_should_m() {
-
+fn test_parser__contrary_to_duty_chains_otherwise__must_support_otherwise_under_any_obligation_keyword_must_should_m()
+ {
     let md = r#"# Svc
 
 ## Obligations
@@ -209,7 +240,9 @@ fn test_parser__contrary_to_duty_chains_otherwise__must_support_otherwise_under_
 - **MUST BY 5s** complete the handshake
   - **OTHERWISE** abort and log timeout
 "#;
-    let spec = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
     let clauses = &spec.sections[0].clauses;
     assert_eq!(clauses.len(), 4);
 
@@ -217,20 +250,32 @@ fn test_parser__contrary_to_duty_chains_otherwise__must_support_otherwise_under_
     assert_eq!(clauses[0].otherwise.len(), 1, "MUST must support OTHERWISE");
 
     assert_eq!(clauses[1].keyword, Keyword::Should);
-    assert_eq!(clauses[1].otherwise.len(), 1, "SHOULD must support OTHERWISE");
+    assert_eq!(
+        clauses[1].otherwise.len(),
+        1,
+        "SHOULD must support OTHERWISE"
+    );
 
     assert_eq!(clauses[2].keyword, Keyword::MustAlways);
-    assert_eq!(clauses[2].otherwise.len(), 1, "MUST ALWAYS must support OTHERWISE");
+    assert_eq!(
+        clauses[2].otherwise.len(),
+        1,
+        "MUST ALWAYS must support OTHERWISE"
+    );
 
     assert_eq!(clauses[3].keyword, Keyword::MustBy);
-    assert_eq!(clauses[3].otherwise.len(), 1, "MUST BY must support OTHERWISE");
+    assert_eq!(
+        clauses[3].otherwise.len(),
+        1,
+        "MUST BY must support OTHERWISE"
+    );
 }
 
 // --- should_inherit_the_parent_s_severity_unless_the_otherwise_clause_sp_test.rs ---
 /// SHOULD inherit the parent's severity unless the OTHERWISE clause specifies its own keyword
 #[test]
-fn test_parser__contrary_to_duty_chains_otherwise__should_inherit_the_parent_s_severity_unless_the_otherwise_clause_sp() {
-
+fn test_parser__contrary_to_duty_chains_otherwise__should_inherit_the_parent_s_severity_unless_the_otherwise_clause_sp()
+ {
     let md = r#"# Svc
 
 ## Graceful
@@ -241,7 +286,9 @@ fn test_parser__contrary_to_duty_chains_otherwise__should_inherit_the_parent_s_s
 - **SHOULD** include metadata
   - **OTHERWISE** omit metadata field
 "#;
-    let spec = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
     let clauses = &spec.sections[0].clauses;
     assert_eq!(clauses.len(), 2);
 
@@ -261,4 +308,3 @@ fn test_parser__contrary_to_duty_chains_otherwise__should_inherit_the_parent_s_s
         "OTHERWISE under SHOULD must inherit Recommended severity"
     );
 }
-

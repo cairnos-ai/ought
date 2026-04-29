@@ -9,40 +9,59 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use ought_cli::config::Config;
-use ought_spec::{OughtMdParser, Parser, SpecGraph};
 use ought_spec::types::*;
+use ought_spec::{OughtMdParser, Parser, SpecGraph};
 
-use crate::helpers::{
-    ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test,
-};
+use crate::helpers::{ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test};
 
 /// MUST only regenerate tests when the user explicitly runs `ought generate`
 #[test]
 fn test_ought__generated_test_management__must_only_regenerate_tests_on_generate_not_run() {
     #[derive(PartialEq, Debug)]
-    enum Cmd { Generate, Run }
+    enum Cmd {
+        Generate,
+        Run,
+    }
 
-    struct ManifestState { generation_count: usize }
+    struct ManifestState {
+        generation_count: usize,
+    }
 
     impl ManifestState {
         fn execute(&mut self, cmd: Cmd) {
-            if cmd == Cmd::Generate { self.generation_count += 1; }
+            if cmd == Cmd::Generate {
+                self.generation_count += 1;
+            }
         }
     }
 
-    let mut state = ManifestState { generation_count: 0 };
+    let mut state = ManifestState {
+        generation_count: 0,
+    };
 
     state.execute(Cmd::Run);
-    assert_eq!(state.generation_count, 0, "`ought run` must not regenerate tests");
+    assert_eq!(
+        state.generation_count, 0,
+        "`ought run` must not regenerate tests"
+    );
 
     state.execute(Cmd::Run);
-    assert_eq!(state.generation_count, 0, "repeated `ought run` must not regenerate tests");
+    assert_eq!(
+        state.generation_count, 0,
+        "repeated `ought run` must not regenerate tests"
+    );
 
     state.execute(Cmd::Generate);
-    assert_eq!(state.generation_count, 1, "`ought generate` must trigger exactly one regeneration pass");
+    assert_eq!(
+        state.generation_count, 1,
+        "`ought generate` must trigger exactly one regeneration pass"
+    );
 
     state.execute(Cmd::Run);
-    assert_eq!(state.generation_count, 1, "`ought run` after `ought generate` must not increment generation count");
+    assert_eq!(
+        state.generation_count, 1,
+        "`ought run` after `ought generate` must not increment generation count"
+    );
 }
 
 /// MUST detect and remove orphaned tests when a clause is deleted from a spec.
@@ -50,7 +69,9 @@ fn test_ought__generated_test_management__must_only_regenerate_tests_on_generate
 fn test_ought__generated_test_management__must_detect_and_remove_orphaned_tests() {
     use std::collections::HashMap;
 
-    struct Manifest { entries: HashMap<String, ()> }
+    struct Manifest {
+        entries: HashMap<String, ()>,
+    }
 
     impl Manifest {
         fn remove_orphans(&mut self, valid_ids: &[&str]) {
@@ -71,16 +92,35 @@ fn test_ought__generated_test_management__must_detect_and_remove_orphaned_tests(
 
     assert_eq!(manifest.entries.len(), 3);
 
-    let still_valid = vec!["auth::login::must_return_jwt", "auth::login::must_reject_bad_password"];
+    let still_valid = vec![
+        "auth::login::must_return_jwt",
+        "auth::login::must_reject_bad_password",
+    ];
     manifest.remove_orphans(&still_valid);
 
-    assert!(!manifest.entries.contains_key("auth::login::must_hash_password"), "orphaned clause must be removed");
-    assert!(manifest.entries.contains_key("auth::login::must_return_jwt"));
-    assert!(manifest.entries.contains_key("auth::login::must_reject_bad_password"));
+    assert!(
+        !manifest
+            .entries
+            .contains_key("auth::login::must_hash_password"),
+        "orphaned clause must be removed"
+    );
+    assert!(
+        manifest
+            .entries
+            .contains_key("auth::login::must_return_jwt")
+    );
+    assert!(
+        manifest
+            .entries
+            .contains_key("auth::login::must_reject_bad_password")
+    );
     assert_eq!(manifest.entries.len(), 2);
 
     manifest.remove_orphans(&[]);
-    assert!(manifest.entries.is_empty(), "removing all valid ids must leave an empty manifest");
+    assert!(
+        manifest.entries.is_empty(),
+        "removing all valid ids must leave an empty manifest"
+    );
 }
 
 /// MUST track generated tests with content hashes so they are only regenerated when the spec or source changes.
@@ -88,9 +128,14 @@ fn test_ought__generated_test_management__must_detect_and_remove_orphaned_tests(
 fn test_ought__generated_test_management__must_track_generated_tests_with_content_hashes() {
     use std::collections::HashMap;
 
-    struct ManifestEntry { clause_hash: String, source_hash: String }
+    struct ManifestEntry {
+        clause_hash: String,
+        source_hash: String,
+    }
 
-    struct Manifest { entries: HashMap<String, ManifestEntry> }
+    struct Manifest {
+        entries: HashMap<String, ManifestEntry>,
+    }
 
     impl Manifest {
         fn is_stale(&self, clause_id: &str, clause_hash: &str, source_hash: &str) -> bool {
@@ -106,16 +151,33 @@ fn test_ought__generated_test_management__must_track_generated_tests_with_conten
     let source_hash = "";
 
     let mut entries = HashMap::new();
-    entries.insert(clause_id.to_string(), ManifestEntry { clause_hash: clause_hash.to_string(), source_hash: source_hash.to_string() });
+    entries.insert(
+        clause_id.to_string(),
+        ManifestEntry {
+            clause_hash: clause_hash.to_string(),
+            source_hash: source_hash.to_string(),
+        },
+    );
     let manifest = Manifest { entries };
 
-    assert!(!manifest.is_stale(clause_id, clause_hash, source_hash), "clause with matching hash must not be stale");
-    assert!(manifest.is_stale(clause_id, "different_hash_00000", source_hash), "changed clause hash must be stale");
-    assert!(manifest.is_stale(clause_id, clause_hash, "source_changed_hash"), "changed source hash must be stale");
-    assert!(manifest.is_stale("auth::login::unknown_clause", clause_hash, source_hash), "absent clause must be stale");
+    assert!(
+        !manifest.is_stale(clause_id, clause_hash, source_hash),
+        "clause with matching hash must not be stale"
+    );
+    assert!(
+        manifest.is_stale(clause_id, "different_hash_00000", source_hash),
+        "changed clause hash must be stale"
+    );
+    assert!(
+        manifest.is_stale(clause_id, clause_hash, "source_changed_hash"),
+        "changed source hash must be stale"
+    );
+    assert!(
+        manifest.is_stale("auth::login::unknown_clause", clause_hash, source_hash),
+        "absent clause must be stale"
+    );
 }
 
 // ===========================================================================
 // llm_agnostic
 // ===========================================================================
-

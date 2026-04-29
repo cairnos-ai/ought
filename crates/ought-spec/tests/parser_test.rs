@@ -5,7 +5,9 @@ use ought_spec::parser::{OughtMdParser, Parser};
 use ought_spec::types::*;
 
 fn parse(md: &str) -> Spec {
-    OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed")
+    OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed")
 }
 
 #[test]
@@ -28,16 +30,28 @@ requires: [Pricing](pricing.ought.md), [Users](users.ought.md#profiles)
 - **MUST** work
 "#;
     let spec = parse(md);
-    assert_eq!(spec.metadata.context.as_deref(), Some("Authentication service"));
+    assert_eq!(
+        spec.metadata.context.as_deref(),
+        Some("Authentication service")
+    );
     assert_eq!(spec.metadata.sources, vec!["src/auth/", "src/middleware/"]);
     assert_eq!(spec.metadata.schemas, vec!["schema/auth.graphql"]);
     assert_eq!(spec.metadata.requires.len(), 2);
     assert_eq!(spec.metadata.requires[0].label, "Pricing");
-    assert_eq!(spec.metadata.requires[0].path.to_str().unwrap(), "pricing.ought.md");
+    assert_eq!(
+        spec.metadata.requires[0].path.to_str().unwrap(),
+        "pricing.ought.md"
+    );
     assert_eq!(spec.metadata.requires[0].anchor, None);
     assert_eq!(spec.metadata.requires[1].label, "Users");
-    assert_eq!(spec.metadata.requires[1].path.to_str().unwrap(), "users.ought.md");
-    assert_eq!(spec.metadata.requires[1].anchor.as_deref(), Some("profiles"));
+    assert_eq!(
+        spec.metadata.requires[1].path.to_str().unwrap(),
+        "users.ought.md"
+    );
+    assert_eq!(
+        spec.metadata.requires[1].anchor.as_deref(),
+        Some("profiles")
+    );
 }
 
 #[test]
@@ -293,7 +307,10 @@ fn test_source_location() {
     let md = "# Svc\n\n## Rules\n\n- **MUST** first clause\n- **SHOULD** second clause\n";
     let spec = parse(md);
     let clauses = &spec.sections[0].clauses;
-    assert_eq!(clauses[0].source_location.file.to_str().unwrap(), "test.ought.md");
+    assert_eq!(
+        clauses[0].source_location.file.to_str().unwrap(),
+        "test.ought.md"
+    );
     // Line numbers should be positive
     assert!(clauses[0].source_location.line > 0);
     assert!(clauses[1].source_location.line > clauses[0].source_location.line);
@@ -331,9 +348,15 @@ fn test_pending_must() {
     let clauses = &spec.sections[0].clauses;
     assert_eq!(clauses.len(), 2);
     assert_eq!(clauses[0].keyword, Keyword::Must);
-    assert!(!clauses[0].pending, "non-pending clause should have pending=false");
+    assert!(
+        !clauses[0].pending,
+        "non-pending clause should have pending=false"
+    );
     assert_eq!(clauses[1].keyword, Keyword::Must);
-    assert!(clauses[1].pending, "PENDING MUST clause should have pending=true");
+    assert!(
+        clauses[1].pending,
+        "PENDING MUST clause should have pending=true"
+    );
     assert!(clauses[1].text.contains("passkeys"));
     // Severity is preserved — PENDING doesn't change the eventual strength.
     assert_eq!(clauses[1].severity, Severity::Required);
@@ -403,8 +426,7 @@ fn test_pending_promotes_hash_change() {
     let pending = parse(pending_md);
     let promoted = parse(promoted_md);
     assert_ne!(
-        pending.sections[0].clauses[0].content_hash,
-        promoted.sections[0].clauses[0].content_hash,
+        pending.sections[0].clauses[0].content_hash, promoted.sections[0].clauses[0].content_hash,
         "promoting PENDING should change the content hash"
     );
 }
@@ -473,8 +495,13 @@ fn test_pending_does_not_inherit_to_nested_obligations() {
 #[test]
 fn test_bare_pending_errors() {
     let md = "# Svc\n\n## Rules\n\n- **PENDING** no strength here\n";
-    let err = OughtMdParser.parse_string(md, Path::new("t.ought.md")).expect_err("should fail");
-    assert!(err.iter().any(|e| e.message.contains("PENDING must be followed")));
+    let err = OughtMdParser
+        .parse_string(md, Path::new("t.ought.md"))
+        .expect_err("should fail");
+    assert!(
+        err.iter()
+            .any(|e| e.message.contains("PENDING must be followed"))
+    );
 }
 
 #[test]
@@ -514,6 +541,11 @@ fn test_pending_given_errors() {
     // GIVEN is the one keyword PENDING cannot modify: it's a grouping
     // construct that never becomes a clause, so there's no test to defer.
     let md = "# Svc\n\n## Rules\n\n- **PENDING GIVEN** the user is authed\n";
-    let err = OughtMdParser.parse_string(md, Path::new("t.ought.md")).expect_err("should fail");
-    assert!(err.iter().any(|e| e.message.contains("PENDING cannot modify GIVEN")));
+    let err = OughtMdParser
+        .parse_string(md, Path::new("t.ought.md"))
+        .expect_err("should fail");
+    assert!(
+        err.iter()
+            .any(|e| e.message.contains("PENDING cannot modify GIVEN"))
+    );
 }

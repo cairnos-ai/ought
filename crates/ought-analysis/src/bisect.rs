@@ -182,9 +182,10 @@ fn get_current_ref() -> anyhow::Result<String> {
         .output();
 
     if let Ok(output) = output
-        && output.status.success() {
-            return Ok(String::from_utf8_lossy(&output.stdout).trim().to_string());
-        }
+        && output.status.success()
+    {
+        return Ok(String::from_utf8_lossy(&output.stdout).trim().to_string());
+    }
 
     // Fall back to HEAD hash.
     let output = std::process::Command::new("git")
@@ -200,18 +201,10 @@ fn get_current_ref() -> anyhow::Result<String> {
 
 /// Get the list of commits in the given range.
 fn get_commit_range(options: &BisectOptions) -> anyhow::Result<Vec<CommitInfo>> {
-    let range = options
-        .range
-        .as_deref()
-        .unwrap_or("HEAD~20..HEAD");
+    let range = options.range.as_deref().unwrap_or("HEAD~20..HEAD");
 
     let output = std::process::Command::new("git")
-        .args([
-            "log",
-            range,
-            "--format=%H|%s|%an <%ae>|%aI",
-            "--reverse",
-        ])
+        .args(["log", range, "--format=%H|%s|%an <%ae>|%aI", "--reverse"])
         .output()?;
 
     if !output.status.success() {
@@ -308,22 +301,23 @@ fn collect_test_files_for_clause(
     for ext in &extensions {
         let file_path = test_dir.join(format!("{}{}", path_component, ext));
         if file_path.is_file()
-            && let Ok(code) = std::fs::read_to_string(&file_path) {
-                let language = match *ext {
-                    "_test.rs" => ought_gen::generator::Language::Rust,
-                    "_test.py" => ought_gen::generator::Language::Python,
-                    ".test.ts" => ought_gen::generator::Language::TypeScript,
-                    ".test.js" => ought_gen::generator::Language::JavaScript,
-                    "_test.go" => ought_gen::generator::Language::Go,
-                    _ => ought_gen::generator::Language::Rust,
-                };
-                return vec![ought_gen::GeneratedTest {
-                    clause_id: clause_id.clone(),
-                    code,
-                    language,
-                    file_path,
-                }];
-            }
+            && let Ok(code) = std::fs::read_to_string(&file_path)
+        {
+            let language = match *ext {
+                "_test.rs" => ought_gen::generator::Language::Rust,
+                "_test.py" => ought_gen::generator::Language::Python,
+                ".test.ts" => ought_gen::generator::Language::TypeScript,
+                ".test.js" => ought_gen::generator::Language::JavaScript,
+                "_test.go" => ought_gen::generator::Language::Go,
+                _ => ought_gen::generator::Language::Rust,
+            };
+            return vec![ought_gen::GeneratedTest {
+                clause_id: clause_id.clone(),
+                code,
+                language,
+                file_path,
+            }];
+        }
     }
 
     Vec::new()

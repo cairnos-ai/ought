@@ -9,37 +9,18 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use ought_cli::config::Config;
-use ought_spec::{OughtMdParser, Parser, SpecGraph};
 use ought_spec::types::*;
+use ought_spec::{OughtMdParser, Parser, SpecGraph};
 
-use crate::helpers::{
-    ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test,
-};
-
-/// MUST support surveying source code to discover behaviors not covered by any spec
-///
-/// Requires LLM. Marked ignored.
-#[test]
-#[ignore]
-fn test_ought__llm_powered_analysis__must_support_surveying_source_code_to_discover_behaviors_not_cove() {
-    // Would call ought_analysis::survey::survey() with a stub generator.
-}
-
-/// MUST support auditing specs for contradictions, gaps, and coherence issues
-///
-/// Requires LLM. Marked ignored.
-#[test]
-#[ignore]
-fn test_ought__llm_powered_analysis__must_support_auditing_specs_for_contradictions_gaps_and_coherence() {
-    // Would call ought_analysis::audit::audit() with a stub generator.
-}
+use crate::helpers::{ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test};
 
 /// MUST support blaming a failure on a specific source change with a causal narrative
 ///
 /// Requires LLM. Marked ignored.
 #[test]
 #[ignore]
-fn test_ought__llm_powered_analysis__must_support_blaming_a_failure_on_a_specific_source_change_with_a() {
+fn test_ought__llm_powered_analysis__must_support_blaming_a_failure_on_a_specific_source_change_with_a()
+ {
     // Would call ought_analysis::blame::blame() with a stub generator.
 }
 
@@ -48,11 +29,11 @@ fn test_ought__llm_powered_analysis__must_support_blaming_a_failure_on_a_specifi
 /// Requires LLM + git history. Marked ignored.
 #[test]
 #[ignore]
-fn test_ought__llm_powered_analysis__should_support_bisecting_git_history_to_find_the_exact_commit_that() {
+fn test_ought__llm_powered_analysis__should_support_bisecting_git_history_to_find_the_exact_commit_that()
+ {
     // Would call ought_analysis::bisect::bisect() with a test runner.
 }
 
 // ===========================================================================
 // integration
 // ===========================================================================
-

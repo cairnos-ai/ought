@@ -52,11 +52,7 @@ impl TerminalEventSink {
                 let mut state = lock_state(&self.state);
                 close_open_line(&self.assignment_id, &mut state);
                 with_stderr(|stderr| {
-                    let _ = writeln!(
-                        stderr,
-                        "  [agent {}] llm error: {reason}",
-                        self.assignment_id
-                    );
+                    write_multiline_detail(stderr, &self.assignment_id, "llm error", &reason);
                 });
             }
             EventKind::ToolCallStarted(ToolCallStartedPayload {
@@ -94,10 +90,11 @@ impl TerminalEventSink {
                 ..
             }) => {
                 with_stderr(|stderr| {
-                    let _ = writeln!(
+                    write_multiline_detail(
                         stderr,
-                        "  [agent {}] tool failed: {tool_name} ({tool_use_id}): {reason}",
-                        self.assignment_id
+                        &self.assignment_id,
+                        &format!("tool failed: {tool_name} ({tool_use_id})"),
+                        &reason,
                     );
                 });
             }
@@ -205,6 +202,24 @@ fn close_open_line(_assignment_id: &str, state: &mut TerminalState) {
             let _ = writeln!(stderr);
         });
         state.line_open = false;
+    }
+}
+
+fn write_multiline_detail(
+    stderr: &mut std::io::Stderr,
+    assignment_id: &str,
+    label: &str,
+    detail: &str,
+) {
+    let mut lines = detail.lines();
+    if let Some(first) = lines.next() {
+        let _ = writeln!(stderr, "  [agent {assignment_id}] {label}: {first}");
+    } else {
+        let _ = writeln!(stderr, "  [agent {assignment_id}] {label}");
+        return;
+    }
+    for line in lines {
+        let _ = writeln!(stderr, "    {line}");
     }
 }
 

@@ -64,16 +64,17 @@ Details: [Generator — Manifest and Hashing](./engine/generator.ought.md#manife
 
 Details: [Reporter](./engine/reporter.ought.md)
 
-## LLM-Powered Analysis
+## Alignment and Diagnostics
 
-Beyond generating and running tests, ought uses LLMs to reason about the relationships between specs, source code, and results.
+Beyond generating and running tests, ought reports on the relationships between specs, source code, and results. Alignment and discovery use the configured LLM agent harness; diagnostic commands may use LLMs when causal explanation is requested.
 
-- **MUST** support surveying source code to discover behaviors not covered by any spec (`ought analyze survey`)
-- **MUST** support auditing specs for contradictions, gaps, and coherence issues (`ought analyze audit`)
+- **MUST** support reporting drift in existing specs with mapped source (`ought align`)
+- **MUST** support discovering source behavior that appears to be missing specs (`ought discover`)
+- **MUST** apply discovered specs only when explicitly requested (`ought discover --apply`)
 - **MUST** support blaming a failure on a specific source change with a causal narrative (`ought debug blame`)
 - **SHOULD** support bisecting git history to find the exact commit that broke a clause (`ought debug bisect`)
 
-Details: [Analysis](./analysis/analysis.ought.md)
+Details: [Diagnostics](./analysis/analysis.ought.md)
 
 ## Integration
 

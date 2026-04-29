@@ -9,12 +9,10 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use ought_cli::config::Config;
-use ought_spec::{OughtMdParser, Parser, SpecGraph};
 use ought_spec::types::*;
+use ought_spec::{OughtMdParser, Parser, SpecGraph};
 
-use crate::helpers::{
-    ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test,
-};
+use crate::helpers::{ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test};
 
 /// MUST be agnostic to which LLM provider generates the test code
 #[test]
@@ -46,7 +44,10 @@ fn test_ought__llm_agnostic__must_be_agnostic_to_which_llm_provider_generates_th
 fn test_ought__llm_agnostic__must_allow_the_provider_and_model_to_be_configured_in_ought_toml() {
     use ought_cli::config::Config;
 
-    let dir = std::env::temp_dir().join(format!("ought_llm_agnostic_config_test_{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!(
+        "ought_llm_agnostic_config_test_{}",
+        std::process::id()
+    ));
     fs::create_dir_all(&dir).expect("must create temp dir");
 
     // Provider is a typed enum in the config surface; the TOML value is
@@ -77,7 +78,9 @@ fn test_ought__llm_agnostic__must_allow_the_provider_and_model_to_be_configured_
         fs::write(&path, &toml).expect("must write ought.toml");
 
         let config = Config::load(&path).unwrap_or_else(|e| {
-            panic!("Config::load must succeed for provider=\"{toml_name}\" model={model:?}; got: {e}")
+            panic!(
+                "Config::load must succeed for provider=\"{toml_name}\" model={model:?}; got: {e}"
+            )
         });
 
         assert_eq!(config.generator.provider, *expected_provider);
@@ -100,7 +103,8 @@ fn test_ought__llm_agnostic__must_allow_the_provider_and_model_to_be_configured_
 
 /// MUST NOT depend on any provider-specific features in the core spec format or runner
 #[test]
-fn test_ought__llm_agnostic__must_not_depend_on_any_provider_specific_features_in_the_core_spec_fo() {
+fn test_ought__llm_agnostic__must_not_depend_on_any_provider_specific_features_in_the_core_spec_fo()
+{
     use ought_gen::generator::{GeneratedTest, Language};
     use ought_run::runner::Runner;
     use ought_run::types::RunResult;
@@ -114,7 +118,10 @@ fn test_ought__llm_agnostic__must_not_depend_on_any_provider_specific_features_i
         otherwise: vec![],
         temporal: None,
         hints: vec![],
-        source_location: SourceLocation { file: PathBuf::from("spec.ought.md"), line: 1 },
+        source_location: SourceLocation {
+            file: PathBuf::from("spec.ought.md"),
+            line: 1,
+        },
         content_hash: "xyz".to_string(),
         pending: false,
     };
@@ -130,18 +137,30 @@ fn test_ought__llm_agnostic__must_not_depend_on_any_provider_specific_features_i
 
     struct NeutralRunner;
     impl Runner for NeutralRunner {
-        fn run(&self, _tests: &[GeneratedTest], _test_dir: &std::path::Path) -> anyhow::Result<RunResult> {
-            Ok(RunResult { results: vec![], total_duration: std::time::Duration::ZERO })
+        fn run(
+            &self,
+            _tests: &[GeneratedTest],
+            _test_dir: &std::path::Path,
+        ) -> anyhow::Result<RunResult> {
+            Ok(RunResult {
+                results: vec![],
+                total_duration: std::time::Duration::ZERO,
+            })
         }
-        fn is_available(&self) -> bool { true }
-        fn name(&self) -> &str { "neutral" }
+        fn is_available(&self) -> bool {
+            true
+        }
+        fn name(&self) -> &str {
+            "neutral"
+        }
     }
 
     let runner: Box<dyn Runner> = Box::new(NeutralRunner);
     assert_eq!(runner.name(), "neutral");
     assert!(runner.is_available());
 
-    let result = runner.run(&[test], &PathBuf::from("/tmp"))
+    let result = runner
+        .run(&[test], &PathBuf::from("/tmp"))
         .expect("Runner must accept GeneratedTest without caring about the originating provider");
     assert_eq!(result.results.len(), 0);
 }
@@ -183,4 +202,3 @@ fn test_ought__llm_agnostic__must_support_at_least_anthropic_claude_and_openai_a
 // ===========================================================================
 // language_agnostic
 // ===========================================================================
-

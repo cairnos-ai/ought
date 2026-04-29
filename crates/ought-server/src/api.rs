@@ -39,7 +39,9 @@ pub(crate) fn section_to_json(section: &Section, proofs: &ProofIndex) -> Value {
 pub(crate) fn clause_to_json(clause: &Clause, proofs: &ProofIndex) -> Value {
     let temporal = clause.temporal.as_ref().map(|t| match t {
         ought_spec::Temporal::Invariant => json!({ "kind": "invariant" }),
-        ought_spec::Temporal::Deadline(dur) => json!({ "kind": "deadline", "duration": format!("{:?}", dur) }),
+        ought_spec::Temporal::Deadline(dur) => {
+            json!({ "kind": "deadline", "duration": format!("{:?}", dur) })
+        }
     });
 
     let proofs_json = proofs

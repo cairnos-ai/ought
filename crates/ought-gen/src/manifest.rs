@@ -62,6 +62,7 @@ impl Manifest {
     pub fn remove_orphans(&mut self, valid_ids: &[&ClauseId]) {
         let valid_strings: std::collections::HashSet<&str> =
             valid_ids.iter().map(|id| id.0.as_str()).collect();
-        self.entries.retain(|key, _| valid_strings.contains(key.as_str()));
+        self.entries
+            .retain(|key, _| valid_strings.contains(key.as_str()));
     }
 }

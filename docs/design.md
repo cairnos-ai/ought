@@ -4,12 +4,12 @@
 
 Ought separates **test intent** from **test implementation**. Today these are fused together in code — the "what should be true" is buried inside assertion calls and fixture setup. Ought pulls intent up into a human-readable spec and delegates the mechanical implementation to an LLM.
 
-The result is a three-way sync between intent, implementation, and verification — with the LLM as the mediator:
+The result is a three-way sync between intent, implementation, and verification:
 
 ```
             Intent (.ought.md)
                ╱         ╲
-        survey╱   audit    ╲generate
+      discover╱            ╲generate
             ╱               ╲
       Source Code ◄──blame──► Tests
             ╲               ╱
@@ -18,7 +18,7 @@ The result is a three-way sync between intent, implementation, and verification 
               Results + Reports
 ```
 
-Every arrow is LLM-powered. Today's test tools only have the bottom triangle (code, tests, results). Ought adds the intent layer and connects everything through it.
+Generation, discovery, and alignment use the configured LLM provider. Diagnostics and grading use LLMs only when explicitly requested.
 
 The name comes from philosophy. Hume's is-ought gap (1739) observes that you cannot derive an "ought" from an "is." A spec says what the system *ought* to do. The source code says what it *does*. Testing is detecting when they diverge. Ought lives in that gap.
 
@@ -40,7 +40,7 @@ The spec language is grounded in deontic logic — the formal logic of obligatio
 
 ### Kant's "Ought Implies Can"
 
-If you're obligated to do something, it must be possible. This maps directly to spec satisfiability checking in `ought analyze audit` — detect contradictory MUSTs, deadline conflicts, and invariants that can't simultaneously hold.
+If you're obligated to do something, it must be possible. Ought keeps this visible in the spec language and generated tests, but it does not expose a separate spec-satisfiability command in the initial surface.
 
 ## Spec Format: `.ought.md`
 
@@ -59,7 +59,7 @@ ought/
     runner.ought.md                # how test execution works
     reporter.ought.md              # how reporting/TUI works
   analysis/
-    analysis.ought.md              # how survey, audit, blame, bisect work
+    analysis.ought.md              # how blame and bisect work
   cli/
     cli.ought.md                   # CLI commands, flags, exit codes
   integration/
@@ -246,15 +246,15 @@ Each clause gets a stable identifier derived from the section path and clause te
 
 ### Generator
 
-Takes parsed clause IR plus source code context and uses an LLM to produce concrete test implementations. Provider-agnostic via the `ought-llm` crate's `Llm` trait; ought owns the agent loop in-process via the `ought-agent` crate.
+Takes parsed clause IR plus source code context and uses an LLM to produce concrete test implementations. Provider-agnostic model access and the agent loop come from the sibling `open-harness` crates (`oharness-llm`, `oharness-providers`, `oharness-loop`, and `oharness-tools`).
 
-**Architecture: ought-as-harness, not subprocess-as-harness.** The agent is genuinely agentic — the model decides which tool to call next, when to read more source, when to retry, when it's done — but the loop runs *inside* ought rather than inside a separate `claude` / `chatgpt` CLI subprocess. Tools (`read_source`, `write_test`, `check_compiles`, etc.) are plain Rust functions in `ought-gen::tools`; the loop dispatches model-emitted tool-use blocks to them directly. No MCP plumbing on the hot path; no subprocess to coordinate with; tools are unit-testable; the same primitives can be re-exported via MCP for *external* agents that want to drive ought.
+**Architecture: ought-as-harness, not subprocess-as-harness.** The agent is genuinely agentic — the model decides which tool to call next, when to read more source, when to retry, when it's done — but the loop runs *inside* ought through `open-harness` rather than inside a separate `claude` / `chatgpt` CLI subprocess. Tools (`read_source`, `write_test`, `check_compiles`, etc.) are plain Rust functions in `ought-gen`; the loop dispatches model-emitted tool-use blocks to them directly. No MCP plumbing on the hot path; no subprocess to coordinate with; tools are unit-testable; the same primitives can be re-exported via MCP for *external* agents that want to drive ought.
 
 - Ships with Anthropic (Messages API), OpenAI (Chat Completions), OpenAI Codex (ChatGPT/Codex OAuth), OpenRouter (OpenAI-compatible with attribution headers), and Ollama (OpenAI-compatible local) providers.
-- Custom providers by adding a new `Llm` impl in `ought-llm` or via OpenAI-compatible endpoints with a custom base URL.
+- Custom providers by adding a new `Llm` implementation in `open-harness` or via OpenAI-compatible endpoints with a custom base URL.
 - Auth via env vars (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `OPENROUTER_API_KEY`), or `ought auth login openai-codex` for ChatGPT/Codex OAuth; Ollama needs no auth. No API keys live in `ought.toml`.
 
-This is a deliberate reversal of the earlier "exec a CLI to inherit the user's auth session" design. The CLI-exec approach only ever worked for Claude in practice; supporting OpenAI / OpenRouter / local models meant writing per-CLI invocation shims with subtly different flag conventions — strictly more work than calling four well-documented HTTP APIs. The agent loop itself is small (~300 LOC) and gives ought direct control over prompt caching, retry policy, turn budgets, and observability.
+This is a deliberate reversal of the earlier "exec a CLI to inherit the user's auth session" design. The CLI-exec approach only ever worked for Claude in practice; supporting OpenAI / OpenRouter / local models meant writing per-CLI invocation shims with subtly different flag conventions — strictly more work than using provider APIs and the shared `open-harness` loop.
 
 **Context assembly** — the generator reads source files from `source:` metadata (or auto-discovers relevant files), schema files, the `context:` block, and code-block hints attached to clauses. Respects a `max_files` limit to stay within LLM context.
 
@@ -340,9 +340,9 @@ Status indicators: `✓` passed, `✗` failed, `!` errored, `⊘` confirmed abse
 
 Color-coding: MUST failures in red, SHOULD in yellow, MAY in dim. Passing clauses dimmed, failures highlighted.
 
-## LLM-Powered Analysis
+## Analysis and Diagnostics
 
-These features go beyond generation. They reason about the relationships between intent, implementation, and evidence — things that are genuinely impossible without LLMs.
+These features go beyond generation. `ought align` reports drift in existing specs with mapped source, and `ought discover` reports missing specs for uncovered source behavior. Diagnostic commands use LLMs when they need causal explanations or quality grading.
 
 ### Failure Narratives — `ought run --diagnose`
 
@@ -380,49 +380,39 @@ A second LLM pass reviews whether the generated test actually validates the clau
 
 Grades A through F. Explanations for anything below B. Only activated with `--grade`.
 
-### Survey — `ought analyze survey [path]`
+### Align — `ought align [paths...]`
 
-Inverts the flow. Instead of spec-to-tests, goes code-to-gaps:
-
-```
- ought analyze survey src/auth/
-
- Discovered behaviors not covered by any spec:
-   src/auth/handler.rs
-     · Token blacklisting on logout (line 89-102)
-     · Admin bypass for service accounts (line 134)
-
-   Suggested clauses for auth.ought.md:
-     - MUST invalidate token on logout
-     - MUST allow service account bypass when role=admin
-
- Add these to auth.ought.md? [y/n/edit]
-```
-
-Never auto-adds clauses without user confirmation.
-
-### Audit — `ought analyze audit`
-
-Cross-spec reasoning about coherence:
+Agent-backed drift reporting for existing specs with `source:` mappings:
 
 ```
- ought analyze audit
+ ought align src/auth/
 
- Potential conflicts:
-   auth.ought.md:14    SHOULD rate-limit to 5 req/min/ip
-   perf.ought.md:8     MUST BY 50ms return a response
+ Alignment report: 2 change(s) (0 add, 1 update, 1 remove)
 
-   Under sustained load, rate-limit middleware adds ~30ms
-   of overhead per request. At p99 this could push response
-   times past 50ms.
+   [UPDATE] billing.ought.md
+     Refund behavior changed from synchronous to queued.
 
- Gaps:
-   auth.ought.md specifies login and refresh but no logout.
-   checkout.ought.md assumes auth context exists but doesn't
-   specify what happens when the token expires mid-checkout.
+   [REMOVE] legacy.ought.md
+     Source mapping no longer exists; clauses should be marked pending.
+
 ```
 
-Also detects: MUST BY deadline conflicts (operation calling sub-operation with a longer deadline), MUST ALWAYS invariant conflicts, contradictory obligations under overlapping GIVEN conditions, and missing OTHERWISE chains on network-dependent operations.
+`ought align` is report-only. It does not write files.
+
+### Discover — `ought discover [focus]`
+
+Agent-backed discovery for source behavior that appears to be missing specs:
+
+```
+ ought discover "auth logout"
+
+ Discovery report: 1 change(s) (1 add, 0 update, 0 remove)
+
+   [ADD] auth.ought.md
+     Token blacklisting exists in source but has no spec.
+```
+
+Report mode is the default. A focus string is treated as a hard boundary for what the agent may propose. `ought discover --path src/auth/` overrides configured source roots, and `ought discover --apply` writes new specs under the first configured spec root.
 
 ### Blame — `ought debug blame <clause>`
 
@@ -477,10 +467,11 @@ ought generate                    # regenerate stale clauses
 ought generate --force            # regenerate everything
 ought generate --check            # exit 1 if stale (CI gate)
 ought check                       # validate spec syntax only
+ought align [paths...]            # report drift in mapped specs
+ought discover [focus]            # report missing specs
+ought discover --apply            # write discovered specs
 ought inspect <clause>            # show generated test code
 ought diff                        # show pending generation changes
-ought analyze survey [path]       # discover uncovered source behaviors
-ought analyze audit               # cross-spec coherence analysis
 ought debug blame <clause>        # explain a failure with git context
 ought debug bisect <clause>       # find the breaking commit
 ought watch                       # re-run on file changes
@@ -561,8 +552,6 @@ Ought exposes an MCP server so AI assistants and IDE extensions can interact wit
 | `ought_check` | Validate spec syntax |
 | `ought_inspect` | Return generated test code for a clause |
 | `ought_status` | Spec coverage summary |
-| `ought_survey` | Discover uncovered source behaviors |
-| `ought_audit` | Cross-spec conflict and gap analysis |
 | `ought_blame` | Explain why a clause is failing |
 | `ought_bisect` | Find the breaking commit |
 
@@ -629,7 +618,7 @@ ought/
                        #   (via open-harness providers + agent loop)
     ought-run/         # runner trait + language runners
     ought-report/      # reporter + TUI
-    ought-analysis/    # survey, audit, blame, bisect
+    ought-analysis/    # blame, bisect
     ought-mcp/         # MCP server (external surface only)
     ought-server/      # web viewer
     ought-cli/         # CLI binary, ties everything together
@@ -638,6 +627,5 @@ ought/
 The workspace is split so that:
 
 - `ought-spec` has zero dependencies on LLM infrastructure and can be used standalone (the open-standard parser).
-- `ought-llm` is independently publishable as a small provider-agnostic chat-completions client; nothing about it is ought-specific.
-- `ought-agent` depends only on `ought-llm` and exposes a generic agent loop plus `ToolSet` trait, reusable for any agentic task that fits the same shape.
-- `ought-gen` builds on `ought-agent` to define the generation-specific tool primitives (`read_source`, `write_test`, `check_compiles`, …) and wraps them in a `GenerateToolSet` for the orchestrator.
+- `open-harness` owns provider-agnostic model clients, the generic agent loop, and reusable tool plumbing.
+- `ought-gen` builds on `open-harness` to define generation-specific tool primitives (`read_source`, `write_test`, `check_compiles`, …) and wraps them in a `GenerateToolSet` for the orchestrator.

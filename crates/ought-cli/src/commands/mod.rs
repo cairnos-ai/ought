@@ -8,18 +8,18 @@ use ought_gen::manifest::Manifest;
 use ought_run::runners;
 use ought_spec::SpecGraph;
 
+pub mod align;
 pub mod auth;
 pub mod bisect;
 pub mod blame;
 pub mod check;
 pub mod diff;
-pub mod extract;
+pub mod discover;
 pub mod generate;
 pub mod init;
 pub mod inspect;
 pub mod mcp;
 pub mod run;
-pub mod survey;
 pub mod view;
 pub mod watch;
 

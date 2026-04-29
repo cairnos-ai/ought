@@ -9,18 +9,15 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use ought_cli::config::Config;
-use ought_spec::{OughtMdParser, Parser, SpecGraph};
 use ought_spec::types::*;
+use ought_spec::{OughtMdParser, Parser, SpecGraph};
 
-use crate::helpers::{
-    ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test,
-};
+use crate::helpers::{ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test};
 
 /// MUST NOT execute tests during generation (that is `run`'s job)
 #[test]
 fn test_cli__generate__must_not_execute_tests_during_generation_that_is_run_s_job() {
-    let dir = std::env::temp_dir()
-        .join(format!("ought_gen_norun_{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("ought_gen_norun_{}", std::process::id()));
     std::fs::create_dir_all(dir.join("ought")).unwrap();
 
     std::fs::write(
@@ -71,8 +68,7 @@ fn test_cli__generate__must_not_execute_tests_during_generation_that_is_run_s_jo
 /// MUST regenerate test code for all clauses where the clause hash or source hash has changed
 #[test]
 fn test_cli__generate__must_regenerate_test_code_for_all_clauses_where_the_clause_hash_o() {
-    let dir = std::env::temp_dir()
-        .join(format!("ought_gen_rehash_{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("ought_gen_rehash_{}", std::process::id()));
     std::fs::create_dir_all(dir.join("ought")).unwrap();
 
     std::fs::write(
@@ -133,8 +129,7 @@ fn test_cli__generate__must_regenerate_test_code_for_all_clauses_where_the_claus
 /// MUST support `--check` flag that exits with code 1 if any generated tests are stale (for CI)
 #[test]
 fn test_cli__generate__must_support_check_flag_that_exits_with_code_1_if_any_generated_t() {
-    let dir = std::env::temp_dir()
-        .join(format!("ought_gen_check_{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("ought_gen_check_{}", std::process::id()));
     std::fs::create_dir_all(dir.join("ought")).unwrap();
 
     std::fs::write(
@@ -185,8 +180,7 @@ fn test_cli__generate__must_support_check_flag_that_exits_with_code_1_if_any_gen
 /// MUST support `--force` flag to regenerate all clauses regardless of hash
 #[test]
 fn test_cli__generate__must_support_force_flag_to_regenerate_all_clauses_regardless_of_h() {
-    let dir = std::env::temp_dir()
-        .join(format!("ought_gen_force_{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("ought_gen_force_{}", std::process::id()));
     std::fs::create_dir_all(dir.join("ought")).unwrap();
 
     std::fs::write(
@@ -239,8 +233,7 @@ fn test_cli__generate__must_support_force_flag_to_regenerate_all_clauses_regardl
 /// MUST update the manifest.toml with new hashes after generation
 #[test]
 fn test_cli__generate__must_update_the_manifest_toml_with_new_hashes_after_generation() {
-    let dir = std::env::temp_dir()
-        .join(format!("ought_gen_manifest_{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("ought_gen_manifest_{}", std::process::id()));
     std::fs::create_dir_all(dir.join("ought")).unwrap();
 
     std::fs::write(
@@ -288,8 +281,7 @@ fn test_cli__generate__must_update_the_manifest_toml_with_new_hashes_after_gener
 /// MUST write generated tests to the `ought/ought-gen/` directory
 #[test]
 fn test_cli__generate__must_write_generated_tests_to_the_ought_ought_gen_directory() {
-    let dir = std::env::temp_dir()
-        .join(format!("ought_gen_outdir_{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("ought_gen_outdir_{}", std::process::id()));
     std::fs::create_dir_all(dir.join("ought")).unwrap();
 
     std::fs::write(
@@ -336,8 +328,7 @@ fn test_cli__generate__must_write_generated_tests_to_the_ought_ought_gen_directo
 /// SHOULD show a progress indicator during LLM generation
 #[test]
 fn test_cli__generate__should_show_a_progress_indicator_during_llm_generation() {
-    let dir = std::env::temp_dir()
-        .join(format!("ought_gen_progress_{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("ought_gen_progress_{}", std::process::id()));
     std::fs::create_dir_all(dir.join("ought")).unwrap();
 
     std::fs::write(
@@ -380,8 +371,7 @@ fn test_cli__generate__should_show_a_progress_indicator_during_llm_generation() 
 /// SHOULD support targeting a specific spec file: `ought generate ought/auth.ought.md`
 #[test]
 fn test_cli__generate__should_support_targeting_a_specific_spec_file_ought_generate_ought() {
-    let dir = std::env::temp_dir()
-        .join(format!("ought_gen_target_{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("ought_gen_target_{}", std::process::id()));
     std::fs::create_dir_all(dir.join("ought")).unwrap();
 
     std::fs::write(
@@ -426,4 +416,3 @@ fn test_cli__generate__should_support_targeting_a_specific_spec_file_ought_gener
 
     let _ = std::fs::remove_dir_all(&dir);
 }
-

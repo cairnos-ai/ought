@@ -9,12 +9,10 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use ought_cli::config::Config;
-use ought_spec::{OughtMdParser, Parser, SpecGraph};
 use ought_spec::types::*;
+use ought_spec::{OughtMdParser, Parser, SpecGraph};
 
-use crate::helpers::{
-    ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test,
-};
+use crate::helpers::{ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test};
 
 /// MUST re-run affected specs when a change is detected
 #[test]
@@ -44,7 +42,9 @@ fn test_cli__watch__must_re_run_affected_specs_when_a_change_is_detected() {
     std::thread::sleep(std::time::Duration::from_millis(2000));
 
     let _ = child.kill();
-    let output = child.wait_with_output().expect("failed to collect watch output");
+    let output = child
+        .wait_with_output()
+        .expect("failed to collect watch output");
 
     let combined = format!(
         "{}{}",
@@ -114,7 +114,9 @@ fn test_cli__watch__must_watch_ought_md_files_and_source_files_for_changes() {
     std::thread::sleep(std::time::Duration::from_millis(800));
 
     let _ = child.kill();
-    let output = child.wait_with_output().expect("failed to collect watch output");
+    let output = child
+        .wait_with_output()
+        .expect("failed to collect watch output");
 
     // The watcher must have produced output, confirming it is actively watching.
     let combined = format!(
@@ -157,7 +159,9 @@ fn test_cli__watch__should_clear_the_terminal_and_reprint_results_on_each_cycle(
     std::thread::sleep(std::time::Duration::from_millis(1500));
 
     let _ = child.kill();
-    let output = child.wait_with_output().expect("failed to collect watch output");
+    let output = child
+        .wait_with_output()
+        .expect("failed to collect watch output");
 
     let stdout = String::from_utf8_lossy(&output.stdout);
     let stderr = String::from_utf8_lossy(&output.stderr);
@@ -166,9 +170,8 @@ fn test_cli__watch__should_clear_the_terminal_and_reprint_results_on_each_cycle(
     // A terminal clear is signalled by the ANSI escape sequence ESC[2J (erase
     // display) or the common ESC[H ESC[2J (move-home + erase) pattern.
     // Either form satisfies the "clear the terminal" requirement.
-    let has_clear = combined.contains("\x1b[2J")
-        || combined.contains("\x1b[H")
-        || combined.contains("\x1bc"); // full terminal reset
+    let has_clear =
+        combined.contains("\x1b[2J") || combined.contains("\x1b[H") || combined.contains("\x1bc"); // full terminal reset
 
     assert!(
         has_clear,
@@ -211,7 +214,9 @@ fn test_cli__watch__should_debounce_rapid_file_changes_at_least_500ms() {
     std::thread::sleep(std::time::Duration::from_millis(1500));
 
     let _ = child.kill();
-    let output = child.wait_with_output().expect("failed to collect watch output");
+    let output = child
+        .wait_with_output()
+        .expect("failed to collect watch output");
 
     let combined = format!(
         "{}{}",
@@ -237,4 +242,3 @@ fn test_cli__watch__should_debounce_rapid_file_changes_at_least_500ms() {
 
     let _ = std::fs::remove_dir_all(&dir);
 }
-

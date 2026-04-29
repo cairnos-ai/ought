@@ -1,5 +1,5 @@
 use super::{collect_generated_tests, load_config, load_specs, resolve_primary_runner};
-use crate::{Cli, BlameArgs};
+use crate::{BlameArgs, Cli};
 
 pub fn run(cli: &Cli, args: &BlameArgs) -> anyhow::Result<()> {
     let (config_path, config) = load_config(&cli.config)?;

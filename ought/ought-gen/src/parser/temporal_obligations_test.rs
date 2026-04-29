@@ -19,10 +19,12 @@ use ought_spec::types::*;
 /// Verifies that the `temporal` field of a `**MUST ALWAYS**` clause is
 /// `Some(Temporal::Invariant)` and not `None` or a `Deadline` variant.
 #[test]
-fn test_parser__temporal_obligations__must_always_invariant_must_assign_the_invariant_temporal_qualifier_to_the_clause() {
-
+fn test_parser__temporal_obligations__must_always_invariant_must_assign_the_invariant_temporal_qualifier_to_the_clause()
+ {
     fn parse(md: &str) -> Spec {
-        OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed")
+        OughtMdParser
+            .parse_string(md, Path::new("test.ought.md"))
+            .expect("parse failed")
     }
 
     let md = r#"# Svc
@@ -35,7 +37,10 @@ fn test_parser__temporal_obligations__must_always_invariant_must_assign_the_inva
     let clause = &spec.sections[0].clauses[0];
 
     // Temporal must be present and be the Invariant variant
-    assert!(clause.temporal.is_some(), "temporal should be Some, not None");
+    assert!(
+        clause.temporal.is_some(),
+        "temporal should be Some, not None"
+    );
     assert!(
         matches!(clause.temporal, Some(Temporal::Invariant)),
         "temporal should be Invariant, got {:?}",
@@ -55,10 +60,12 @@ fn test_parser__temporal_obligations__must_always_invariant_must_assign_the_inva
 /// Verifies that `**MUST ALWAYS**` is recognized as the single compound keyword
 /// `Keyword::MustAlways`, not treated as bare `MUST` or split into two tokens.
 #[test]
-fn test_parser__temporal_obligations__must_always_invariant_must_parse_must_always_as_a_single_compound_keyword() {
-
+fn test_parser__temporal_obligations__must_always_invariant_must_parse_must_always_as_a_single_compound_keyword()
+ {
     fn parse(md: &str) -> Spec {
-        OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed")
+        OughtMdParser
+            .parse_string(md, Path::new("test.ought.md"))
+            .expect("parse failed")
     }
 
     let md = r#"# Svc
@@ -79,7 +86,11 @@ fn test_parser__temporal_obligations__must_always_invariant_must_parse_must_alwa
 
     // The word "ALWAYS" must not bleed into the clause text body
     assert!(!clauses[0].text.to_uppercase().starts_with("ALWAYS"));
-    assert!(clauses[0].text.contains("keep connection count below the pool maximum"));
+    assert!(
+        clauses[0]
+            .text
+            .contains("keep connection count below the pool maximum")
+    );
 }
 
 // --- must_represent_invariants_distinctly_in_the_clause_ir_they_genera_test.rs ---
@@ -89,10 +100,12 @@ fn test_parser__temporal_obligations__must_always_invariant_must_parse_must_alwa
 /// `**MUST**` clauses in the IR: different `keyword`, different `temporal` field,
 /// and different stable `id`, ensuring downstream generators can tell them apart.
 #[test]
-fn test_parser__temporal_obligations__must_always_invariant_must_represent_invariants_distinctly_in_the_clause_ir_they_genera() {
-
+fn test_parser__temporal_obligations__must_always_invariant_must_represent_invariants_distinctly_in_the_clause_ir_they_genera()
+ {
     fn parse(md: &str) -> Spec {
-        OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed")
+        OughtMdParser
+            .parse_string(md, Path::new("test.ought.md"))
+            .expect("parse failed")
     }
 
     let md = r#"# Svc
@@ -142,8 +155,8 @@ fn test_parser__temporal_obligations__must_always_invariant_must_represent_invar
 /// by the parser and surfaced as an error, not silently swallowed or turned into
 /// a bare `MUST` clause.
 #[test]
-fn test_parser__temporal_obligations__must_by_deadline_must_not_accept_must_by_without_a_duration_it_is_a_parse_error() {
-
+fn test_parser__temporal_obligations__must_by_deadline_must_not_accept_must_by_without_a_duration_it_is_a_parse_error()
+ {
     // No duration: "MUST BY" ends the bold span immediately
     let md_no_duration = r#"# Svc
 
@@ -178,10 +191,12 @@ fn test_parser__temporal_obligations__must_by_deadline_must_not_accept_must_by_w
 /// accepted and round-trip correctly through the IR as their respective `DurationUnit`
 /// variants.
 #[test]
-fn test_parser__temporal_obligations__must_by_deadline_must_parse_duration_suffixes_ms_milliseconds_s_seconds_m_minutes() {
-
+fn test_parser__temporal_obligations__must_by_deadline_must_parse_duration_suffixes_ms_milliseconds_s_seconds_m_minutes()
+ {
     fn parse(md: &str) -> Spec {
-        OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed")
+        OughtMdParser
+            .parse_string(md, Path::new("test.ought.md"))
+            .expect("parse failed")
     }
 
     // --- milliseconds ---
@@ -194,10 +209,14 @@ fn test_parser__temporal_obligations__must_by_deadline_must_parse_duration_suffi
     let spec_ms = parse(md_ms);
     let clause_ms = &spec_ms.sections[0].clauses[0];
     assert_eq!(clause_ms.keyword, Keyword::MustBy);
-    let temporal_ms = clause_ms.temporal.as_ref().expect("temporal must be Some for MUST BY");
+    let temporal_ms = clause_ms
+        .temporal
+        .as_ref()
+        .expect("temporal must be Some for MUST BY");
     assert!(
         matches!(temporal_ms, Temporal::Deadline(d) if *d == Duration::from_millis(200)),
-        "expected Temporal::Deadline(200ms), got {:?}", temporal_ms
+        "expected Temporal::Deadline(200ms), got {:?}",
+        temporal_ms
     );
 
     // --- seconds ---
@@ -210,10 +229,14 @@ fn test_parser__temporal_obligations__must_by_deadline_must_parse_duration_suffi
     let spec_s = parse(md_s);
     let clause_s = &spec_s.sections[0].clauses[0];
     assert_eq!(clause_s.keyword, Keyword::MustBy);
-    let temporal_s = clause_s.temporal.as_ref().expect("temporal must be Some for MUST BY");
+    let temporal_s = clause_s
+        .temporal
+        .as_ref()
+        .expect("temporal must be Some for MUST BY");
     assert!(
         matches!(temporal_s, Temporal::Deadline(d) if *d == Duration::from_secs(5)),
-        "expected Temporal::Deadline(5s), got {:?}", temporal_s
+        "expected Temporal::Deadline(5s), got {:?}",
+        temporal_s
     );
 
     // --- minutes ---
@@ -226,10 +249,14 @@ fn test_parser__temporal_obligations__must_by_deadline_must_parse_duration_suffi
     let spec_m = parse(md_m);
     let clause_m = &spec_m.sections[0].clauses[0];
     assert_eq!(clause_m.keyword, Keyword::MustBy);
-    let temporal_m = clause_m.temporal.as_ref().expect("temporal must be Some for MUST BY");
+    let temporal_m = clause_m
+        .temporal
+        .as_ref()
+        .expect("temporal must be Some for MUST BY");
     assert!(
         matches!(temporal_m, Temporal::Deadline(d) if *d == Duration::from_secs(10 * 60)),
-        "expected Temporal::Deadline(10m), got {:?}", temporal_m
+        "expected Temporal::Deadline(10m), got {:?}",
+        temporal_m
     );
 }
 
@@ -239,10 +266,12 @@ fn test_parser__temporal_obligations__must_by_deadline_must_parse_duration_suffi
 /// Verifies that `**MUST BY 30s**` is recognized as the compound keyword
 /// `Keyword::MustBy`, not split into bare `MUST` or an unknown token.
 #[test]
-fn test_parser__temporal_obligations__must_by_deadline_must_parse_must_by_duration_as_a_compound_keyword_with_a_duration() {
-
+fn test_parser__temporal_obligations__must_by_deadline_must_parse_must_by_duration_as_a_compound_keyword_with_a_duration()
+ {
     fn parse(md: &str) -> Spec {
-        OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed")
+        OughtMdParser
+            .parse_string(md, Path::new("test.ought.md"))
+            .expect("parse failed")
     }
 
     let md = r#"# Svc
@@ -262,8 +291,18 @@ fn test_parser__temporal_obligations__must_by_deadline_must_parse_must_by_durati
     assert_ne!(clauses[0].keyword, Keyword::Must);
 
     // The duration token must not bleed into the clause text body
-    assert!(!clauses[0].text.trim_start().to_uppercase().starts_with("BY "));
-    assert!(clauses[0].text.contains("respond to every health-check request"));
+    assert!(
+        !clauses[0]
+            .text
+            .trim_start()
+            .to_uppercase()
+            .starts_with("BY ")
+    );
+    assert!(
+        clauses[0]
+            .text
+            .contains("respond to every health-check request")
+    );
 }
 
 // --- must_store_the_duration_value_and_unit_in_the_clause_ir_test.rs ---
@@ -273,10 +312,12 @@ fn test_parser__temporal_obligations__must_by_deadline_must_parse_must_by_durati
 /// faithfully preserved in `clause.temporal` as `Temporal::Deadline` with the
 /// correct `value` and `unit` fields, and that the clause is otherwise well-formed.
 #[test]
-fn test_parser__temporal_obligations__must_by_deadline_must_store_the_duration_value_and_unit_in_the_clause_ir() {
-
+fn test_parser__temporal_obligations__must_by_deadline_must_store_the_duration_value_and_unit_in_the_clause_ir()
+ {
     fn parse(md: &str) -> Spec {
-        OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed")
+        OughtMdParser
+            .parse_string(md, Path::new("test.ought.md"))
+            .expect("parse failed")
     }
 
     let md = r#"# Svc
@@ -292,10 +333,14 @@ fn test_parser__temporal_obligations__must_by_deadline_must_store_the_duration_v
     assert_eq!(clause.keyword, Keyword::MustBy);
 
     // Temporal must be present and carry a Deadline
-    let temporal = clause.temporal.as_ref().expect("temporal should be Some for MUST BY clause");
+    let temporal = clause
+        .temporal
+        .as_ref()
+        .expect("temporal should be Some for MUST BY clause");
     assert!(
         matches!(temporal, Temporal::Deadline(d) if *d == Duration::from_millis(250)),
-        "expected Temporal::Deadline(250ms), got {:?}", temporal
+        "expected Temporal::Deadline(250ms), got {:?}",
+        temporal
     );
 
     // Must NOT be an Invariant
@@ -314,4 +359,3 @@ fn test_parser__temporal_obligations__must_by_deadline_must_store_the_duration_v
 // Removed: should_warn_if_the_duration_seems_unreasonably_small_1ms_or_large_1_test
 // This test referenced DiagnosticLevel, Diagnostic, and parse_string_with_diagnostics
 // which do not exist in the current API. The parser does not implement warnings yet.
-

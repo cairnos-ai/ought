@@ -18,7 +18,9 @@ use ought_spec::types::*;
 #[test]
 fn test_parser__context_metadata__may_support_glob_patterns_in_source_and_schema_paths() {
     fn parse(md: &str) -> Spec {
-        OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed")
+        OughtMdParser
+            .parse_string(md, Path::new("test.ought.md"))
+            .expect("parse failed")
     }
 
     let md = r#"# MySpec
@@ -41,7 +43,10 @@ schema: migrations/*.sql, config/*.json
         "recursive glob in tests source not preserved"
     );
     assert!(
-        spec.metadata.schemas.iter().any(|s| s == "migrations/*.sql"),
+        spec.metadata
+            .schemas
+            .iter()
+            .any(|s| s == "migrations/*.sql"),
         "wildcard glob in schema not preserved"
     );
     assert!(
@@ -55,7 +60,9 @@ schema: migrations/*.sql, config/*.json
 #[test]
 fn test_parser__context_metadata__must_parse_context_as_free_text_context_for_the_llm() {
     fn parse(md: &str) -> Spec {
-        OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed")
+        OughtMdParser
+            .parse_string(md, Path::new("test.ought.md"))
+            .expect("parse failed")
     }
 
     let md = r#"# MySpec
@@ -81,10 +88,12 @@ context: Handles user authentication and session management for the web API
 // --- must_parse_schema_as_a_list_of_file_paths_schemas_configs_migrati_test.rs ---
 /// MUST parse `schema:` as a list of file paths (schemas, configs, migrations)
 #[test]
-fn test_parser__context_metadata__must_parse_schema_as_a_list_of_file_paths_schemas_configs_migrati(
-) {
+fn test_parser__context_metadata__must_parse_schema_as_a_list_of_file_paths_schemas_configs_migrati()
+ {
     fn parse(md: &str) -> Spec {
-        OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed")
+        OughtMdParser
+            .parse_string(md, Path::new("test.ought.md"))
+            .expect("parse failed")
     }
 
     let md = r#"# MySpec
@@ -99,15 +108,24 @@ schema: schema/auth.graphql, config/settings.json, migrations/001_init.sql
     // GraphQL schemas, JSON configs, and SQL migrations must all be accepted as schema paths
     assert_eq!(spec.metadata.schemas.len(), 3);
     assert!(
-        spec.metadata.schemas.iter().any(|s| s == "schema/auth.graphql"),
+        spec.metadata
+            .schemas
+            .iter()
+            .any(|s| s == "schema/auth.graphql"),
         "graphql schema not found"
     );
     assert!(
-        spec.metadata.schemas.iter().any(|s| s == "config/settings.json"),
+        spec.metadata
+            .schemas
+            .iter()
+            .any(|s| s == "config/settings.json"),
         "json config not found"
     );
     assert!(
-        spec.metadata.schemas.iter().any(|s| s == "migrations/001_init.sql"),
+        spec.metadata
+            .schemas
+            .iter()
+            .any(|s| s == "migrations/001_init.sql"),
         "sql migration not found"
     );
 }
@@ -115,10 +133,12 @@ schema: schema/auth.graphql, config/settings.json, migrations/001_init.sql
 // --- must_parse_source_as_a_list_of_file_paths_or_directories_source_c_test.rs ---
 /// MUST parse `source:` as a list of file paths or directories (source code hints for the LLM)
 #[test]
-fn test_parser__context_metadata__must_parse_source_as_a_list_of_file_paths_or_directories_source_c(
-) {
+fn test_parser__context_metadata__must_parse_source_as_a_list_of_file_paths_or_directories_source_c()
+ {
     fn parse(md: &str) -> Spec {
-        OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed")
+        OughtMdParser
+            .parse_string(md, Path::new("test.ought.md"))
+            .expect("parse failed")
     }
 
     let md = r#"# MySpec
@@ -137,7 +157,10 @@ source: src/handlers/, src/models/user.rs
         "directory path not found in sources"
     );
     assert!(
-        spec.metadata.sources.iter().any(|s| s == "src/models/user.rs"),
+        spec.metadata
+            .sources
+            .iter()
+            .any(|s| s == "src/models/user.rs"),
         "file path not found in sources"
     );
 }
@@ -145,10 +168,12 @@ source: src/handlers/, src/models/user.rs
 // --- must_support_multiple_values_per_metadata_key_one_per_line_or_com_test.rs ---
 /// MUST support multiple values per metadata key (one per line or comma-separated)
 #[test]
-fn test_parser__context_metadata__must_support_multiple_values_per_metadata_key_one_per_line_or_com(
-) {
+fn test_parser__context_metadata__must_support_multiple_values_per_metadata_key_one_per_line_or_com()
+ {
     fn parse(md: &str) -> Spec {
-        OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed")
+        OughtMdParser
+            .parse_string(md, Path::new("test.ought.md"))
+            .expect("parse failed")
     }
 
     // Comma-separated: all values on a single line
@@ -191,4 +216,3 @@ source: src/c/
     assert!(spec2.metadata.sources.iter().any(|s| s == "src/b/"));
     assert!(spec2.metadata.sources.iter().any(|s| s == "src/c/"));
 }
-

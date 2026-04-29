@@ -10,12 +10,10 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use ought_cli::config::Config;
-use ought_spec::{OughtMdParser, Parser, SpecGraph};
 use ought_spec::types::*;
+use ought_spec::{OughtMdParser, Parser, SpecGraph};
 
-use crate::helpers::{
-    ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test,
-};
+use crate::helpers::{ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test};
 
 /// Build a runner for a language by filling in just the `test_dir` over its
 /// preset — matches the minimal `[runner.<name>]` form documented in
@@ -30,14 +28,18 @@ fn runner_for(lang: &str) -> anyhow::Result<Box<dyn ought_run::Runner>> {
 
 /// MUST be agnostic to the programming language of the project under test
 #[test]
-fn test_ought__language_agnostic__must_be_agnostic_to_the_programming_language_of_the_project_under() {
+fn test_ought__language_agnostic__must_be_agnostic_to_the_programming_language_of_the_project_under()
+ {
     let languages = ["rust", "python", "typescript", "go"];
     for lang in languages {
-        let runner = runner_for(lang)
-            .unwrap_or_else(|e| panic!("runner_for({lang:?}) failed: {e}"));
+        let runner =
+            runner_for(lang).unwrap_or_else(|e| panic!("runner_for({lang:?}) failed: {e}"));
         let name: &str = runner.name();
         let _available: bool = runner.is_available();
-        assert_eq!(name, lang, "runner created for {lang:?} must report that same name back");
+        assert_eq!(
+            name, lang,
+            "runner created for {lang:?} must report that same name back"
+        );
     }
 
     // Unknown language: must fail to resolve a preset.
@@ -46,25 +48,36 @@ fn test_ought__language_agnostic__must_be_agnostic_to_the_programming_language_o
         ..Default::default()
     };
     let unknown = ought_run::runners::from_config("cobol", &unknown_cfg, Path::new("."));
-    assert!(unknown.is_err(), "unknown language with no preset and no command must return Err");
+    assert!(
+        unknown.is_err(),
+        "unknown language with no preset and no command must return Err"
+    );
 
-    let runners: Vec<_> = languages.iter().map(|lang| runner_for(lang).unwrap()).collect();
+    let runners: Vec<_> = languages
+        .iter()
+        .map(|lang| runner_for(lang).unwrap())
+        .collect();
     let names: std::collections::HashSet<String> =
         runners.iter().map(|r| r.name().to_string()).collect();
-    assert_eq!(names.len(), languages.len(), "all supported runner names must be distinct");
+    assert_eq!(
+        names.len(),
+        languages.len(),
+        "all supported runner names must be distinct"
+    );
 }
 
 /// MUST delegate test execution to the project's existing test harness
 #[test]
-fn test_ought__language_agnostic__must_delegate_test_execution_to_the_project_s_existing_test_harne() {
+fn test_ought__language_agnostic__must_delegate_test_execution_to_the_project_s_existing_test_harne()
+ {
     // Each preset should ultimately spawn one of these well-known harness
     // binaries — we verify the preset resolves to a command whose first
     // token matches expectations.
     let harness_map: &[(&str, &[&str])] = &[
-        ("rust",       &["cargo"]),                // `cargo nextest run ...`
-        ("python",     &["pytest"]),
+        ("rust", &["cargo"]), // `cargo nextest run ...`
+        ("python", &["pytest"]),
         ("typescript", &["npx"]),
-        ("go",         &["gotestsum", "go"]),
+        ("go", &["gotestsum", "go"]),
     ];
 
     for (lang, harness_hints) in harness_map {
@@ -84,36 +97,42 @@ fn test_ought__language_agnostic__must_delegate_test_execution_to_the_project_s_
     // Each preset's first-token binary must be distinct from the others
     // (excluding the `go` preset which is allowed to use either `gotestsum`
     // or `go` — harness_hints above captures that).
-    let unique: std::collections::HashSet<&str> = harness_map
-        .iter()
-        .map(|(_, h)| h[0])
-        .collect();
-    assert_eq!(unique.len(), harness_map.len(),
-        "each runner's primary harness binary must be distinct");
+    let unique: std::collections::HashSet<&str> = harness_map.iter().map(|(_, h)| h[0]).collect();
+    assert_eq!(
+        unique.len(),
+        harness_map.len(),
+        "each runner's primary harness binary must be distinct"
+    );
 }
 
 /// MUST ship with runners for at least Rust and one other mainstream language
 #[test]
-fn test_ought__language_agnostic__must_ship_with_runners_for_at_least_rust_and_one_other_mainstream() {
-    let rust_runner = runner_for("rust")
-        .expect("Rust runner must be included");
+fn test_ought__language_agnostic__must_ship_with_runners_for_at_least_rust_and_one_other_mainstream()
+ {
+    let rust_runner = runner_for("rust").expect("Rust runner must be included");
     assert_eq!(rust_runner.name(), "rust");
 
     let other_mainstream = ["python", "typescript", "go", "javascript"];
-    let available_others: Vec<&str> = other_mainstream.iter().copied()
+    let available_others: Vec<&str> = other_mainstream
+        .iter()
+        .copied()
         .filter(|lang| runner_for(lang).is_ok())
         .collect();
 
-    assert!(!available_others.is_empty(),
-        "at least one non-Rust mainstream runner must ship; tried {:?}", other_mainstream);
+    assert!(
+        !available_others.is_empty(),
+        "at least one non-Rust mainstream runner must ship; tried {:?}",
+        other_mainstream
+    );
 }
 
 /// MUST NOT require any language-specific SDK or library in the project under test
 #[test]
-fn test_ought__language_agnostic__must_not_require_any_language_specific_sdk_or_library_in_the_project() {
-    use ought_run::RunnerConfig;
+fn test_ought__language_agnostic__must_not_require_any_language_specific_sdk_or_library_in_the_project()
+ {
     use ought_gen::GeneratedTest;
     use ought_gen::generator::Language;
+    use ought_run::RunnerConfig;
 
     // A fully custom runner config (no preset) is accepted without ought
     // depending on ruby at build time.
@@ -125,7 +144,10 @@ fn test_ought__language_agnostic__must_not_require_any_language_specific_sdk_or_
         ..Default::default()
     };
     let resolved = ruby_cfg.resolve("ruby").expect("ruby config must resolve");
-    assert_eq!(resolved.command, "bundle exec rspec --format=junit --out={junit_path}");
+    assert_eq!(
+        resolved.command,
+        "bundle exec rspec --format=junit --out={junit_path}"
+    );
 
     let rust_test = GeneratedTest {
         clause_id: ClauseId("example::must_add".to_string()),
@@ -133,8 +155,14 @@ fn test_ought__language_agnostic__must_not_require_any_language_specific_sdk_or_
         language: Language::Rust,
         file_path: PathBuf::from("test_example__must_add.rs"),
     };
-    assert!(!rust_test.code.contains("use ought"), "generated Rust test must not require ought imports");
-    assert!(!rust_test.code.contains("extern crate ought"), "generated Rust test must not require ought crate");
+    assert!(
+        !rust_test.code.contains("use ought"),
+        "generated Rust test must not require ought imports"
+    );
+    assert!(
+        !rust_test.code.contains("extern crate ought"),
+        "generated Rust test must not require ought crate"
+    );
 
     let python_test = GeneratedTest {
         clause_id: ClauseId("example::must_add_python".to_string()),
@@ -142,7 +170,10 @@ fn test_ought__language_agnostic__must_not_require_any_language_specific_sdk_or_
         language: Language::Python,
         file_path: PathBuf::from("test_example__must_add.py"),
     };
-    assert!(!python_test.code.contains("import ought"), "generated Python test must not require ought import");
+    assert!(
+        !python_test.code.contains("import ought"),
+        "generated Python test must not require ought import"
+    );
 }
 
 /// SHOULD support custom runners via configuration
@@ -185,21 +216,33 @@ file_extensions = ["cs"]
     let config = Config::load(&cfg_path)
         .expect("ought.toml with custom [runner.*] sections must parse without error");
 
-    assert_eq!(config.runner.len(), 3,
+    assert_eq!(
+        config.runner.len(),
+        3,
         "all custom runner sections must be present after parsing; found keys: {:?}",
-        config.runner.keys().collect::<Vec<_>>());
+        config.runner.keys().collect::<Vec<_>>()
+    );
 
-    let elixir = config.runner.get("elixir").expect("runner 'elixir' must be accepted");
+    let elixir = config
+        .runner
+        .get("elixir")
+        .expect("runner 'elixir' must be accepted");
     assert_eq!(elixir.command.as_deref(), Some("mix test"));
     assert_eq!(
         elixir.test_dir.as_ref().unwrap().to_string_lossy(),
         "test/ought/"
     );
 
-    let ruby = config.runner.get("ruby").expect("runner 'ruby' must be accepted");
+    let ruby = config
+        .runner
+        .get("ruby")
+        .expect("runner 'ruby' must be accepted");
     assert_eq!(ruby.command.as_deref(), Some("bundle exec rspec"));
 
-    let dotnet = config.runner.get("dotnet").expect("runner 'dotnet' must be accepted");
+    let dotnet = config
+        .runner
+        .get("dotnet")
+        .expect("runner 'dotnet' must be accepted");
     assert_eq!(dotnet.command.as_deref(), Some("dotnet test"));
 
     let _ = fs::remove_dir_all(&tmp);

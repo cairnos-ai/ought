@@ -16,7 +16,8 @@ use ought_spec::types::*;
 // --- must_not_fail_on_standard_markdown_that_doesn_t_contain_ought_keyword_test.rs ---
 /// MUST NOT fail on standard markdown that doesn't contain ought keywords (just produce zero clauses)
 #[test]
-fn test_parser__spec_file_structure__must_not_fail_on_standard_markdown_that_doesn_t_contain_ought_keyword() {
+fn test_parser__spec_file_structure__must_not_fail_on_standard_markdown_that_doesn_t_contain_ought_keyword()
+ {
     let md = r#"# Plain Spec
 
 ## Overview
@@ -59,7 +60,8 @@ def example():
 // --- must_parse_frontmatter_style_metadata_at_the_top_of_the_file_cont_test.rs ---
 /// MUST parse frontmatter-style metadata at the top of the file: `context:`, `source:`, `schema:`, `requires:`
 #[test]
-fn test_parser__spec_file_structure__must_parse_frontmatter_style_metadata_at_the_top_of_the_file_cont() {
+fn test_parser__spec_file_structure__must_parse_frontmatter_style_metadata_at_the_top_of_the_file_cont()
+ {
     let md = r#"# Payments
 
 context: Handles payment processing and invoicing
@@ -71,7 +73,9 @@ requires: [Auth](auth.ought.md), [Users](users.ought.md#accounts)
 
 - **MUST** process payments
 "#;
-    let spec = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
 
     assert_eq!(
         spec.metadata.context.as_deref(),
@@ -99,8 +103,7 @@ requires: [Auth](auth.ought.md), [Users](users.ought.md#accounts)
         "auth.ought.md"
     );
     assert_eq!(
-        spec.metadata.requires[0].anchor,
-        None,
+        spec.metadata.requires[0].anchor, None,
         "link without fragment must have no anchor"
     );
     assert_eq!(spec.metadata.requires[1].label, "Users");
@@ -158,7 +161,8 @@ See also [the reference docs](http://example.com) for more detail.
 // --- must_preserve_all_non_clause_markdown_as_documentation_context_fo_test.rs ---
 /// MUST preserve all non-clause markdown as documentation (context for the LLM, readable for humans)
 #[test]
-fn test_parser__spec_file_structure__must_preserve_all_non_clause_markdown_as_documentation_context_fo() {
+fn test_parser__spec_file_structure__must_preserve_all_non_clause_markdown_as_documentation_context_fo()
+ {
     let md = r#"# Svc
 
 ## Security
@@ -171,7 +175,9 @@ Access control is enforced at the API boundary.
 
 - **MUST** reject unauthenticated requests
 "#;
-    let spec = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
     let section = &spec.sections[0];
 
     // The MUST clause is parsed correctly
@@ -193,7 +199,6 @@ Access control is enforced at the API boundary.
 /// MUST recognize files with the `.ought.md` extension
 #[test]
 fn test_parser__spec_file_structure__must_recognize_files_with_the_ought_md_extension() {
-
     let content = "# Ext Test\n\n## Section\n\n- **MUST** work\n";
     let path = std::env::temp_dir().join("ought_recognize_ext_test.ought.md");
     fs::write(&path, content).expect("failed to write temp .ought.md file");
@@ -232,10 +237,16 @@ fn test_parser__spec_file_structure__must_treat_bullet_points_keyword_as_individ
 - **MUST NOT** leak internal error details
 - **SHOULD** include a request-id header
 "#;
-    let spec = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
     let clauses = &spec.sections[0].clauses;
 
-    assert_eq!(clauses.len(), 3, "each bold-keyword bullet must become exactly one clause");
+    assert_eq!(
+        clauses.len(),
+        3,
+        "each bold-keyword bullet must become exactly one clause"
+    );
 
     assert_eq!(clauses[0].keyword, Keyword::Must);
     assert_eq!(clauses[0].severity, Severity::Required);
@@ -260,7 +271,9 @@ fn test_parser__spec_file_structure__must_treat_bullet_points_keyword_as_individ
 #[test]
 fn test_parser__spec_file_structure__must_treat_h1_as_the_spec_name() {
     let md = "# Payment Gateway\n\n## Rules\n\n- **MUST** work\n";
-    let spec = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
 
     assert_eq!(
         spec.name, "Payment Gateway",
@@ -295,7 +308,9 @@ fn test_parser__spec_file_structure__must_treat_h2_etc_as_nested_test_groups_sec
 
 - **MUST** charge the correct amount
 "#;
-    let spec = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
 
     // H2 headings produce top-level sections
     assert_eq!(spec.sections.len(), 2);
@@ -319,4 +334,3 @@ fn test_parser__spec_file_structure__must_treat_h2_etc_as_nested_test_groups_sec
     assert_eq!(login.subsections[0].depth, 4);
     assert_eq!(login.subsections[0].clauses.len(), 1);
 }
-

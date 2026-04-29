@@ -9,19 +9,16 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use ought_cli::config::Config;
-use ought_spec::{OughtMdParser, Parser, SpecGraph};
 use ought_spec::types::*;
+use ought_spec::{OughtMdParser, Parser, SpecGraph};
 
-use crate::helpers::{
-    ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test,
-};
+use crate::helpers::{ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test};
 
 /// MUST accept clause identifiers in the form `file::section::clause`
 /// (e.g. `auth::login::must_return_jwt`)
 #[test]
 fn test_cli__inspect__must_accept_clause_identifiers_in_the_form_file_section_clause_e() {
-    let dir = std::env::temp_dir()
-        .join(format!("ought_inspect_idform_{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("ought_inspect_idform_{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
 
     std::fs::write(
@@ -73,8 +70,7 @@ fn test_cli__inspect__must_accept_clause_identifiers_in_the_form_file_section_cl
 /// MUST print the generated test code for a given clause identifier
 #[test]
 fn test_cli__inspect__must_print_the_generated_test_code_for_a_given_clause_identifier() {
-    let dir = std::env::temp_dir()
-        .join(format!("ought_inspect_print_{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("ought_inspect_print_{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
 
     std::fs::write(
@@ -120,8 +116,8 @@ fn test_cli__inspect__must_print_the_generated_test_code_for_a_given_clause_iden
 /// SHOULD show the clause text alongside the generated code for easy comparison
 #[test]
 fn test_cli__inspect__should_show_the_clause_text_alongside_the_generated_code_for_easy_c() {
-    let dir = std::env::temp_dir()
-        .join(format!("ought_inspect_clause_text_{}", std::process::id()));
+    let dir =
+        std::env::temp_dir().join(format!("ought_inspect_clause_text_{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
 
     std::fs::write(
@@ -146,8 +142,7 @@ fn test_cli__inspect__should_show_the_clause_text_alongside_the_generated_code_f
     // Write the corresponding generated test file.
     let gen_dir = dir.join("ought/ought-gen/auth/login");
     std::fs::create_dir_all(&gen_dir).unwrap();
-    let test_code =
-        "#[test]\nfn test_auth__login__must_return_jwt() {\n    assert!(true);\n}\n";
+    let test_code = "#[test]\nfn test_auth__login__must_return_jwt() {\n    assert!(true);\n}\n";
     std::fs::write(gen_dir.join("must_return_jwt.rs"), test_code).unwrap();
 
     let bin = ought_bin();
@@ -196,8 +191,7 @@ fn test_cli__inspect__should_syntax_highlight_the_output_when_stdout_is_a_termin
     // that case so downstream tools are not polluted with ANSI escape sequences.
     // When `--color=always` is requested the output MAY contain highlighting,
     // but must still contain the test code.
-    let dir = std::env::temp_dir()
-        .join(format!("ought_inspect_hl_{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("ought_inspect_hl_{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
 
     std::fs::write(
@@ -212,8 +206,7 @@ fn test_cli__inspect__should_syntax_highlight_the_output_when_stdout_is_a_termin
 
     let gen_dir = dir.join("ought/ought-gen/auth/login");
     std::fs::create_dir_all(&gen_dir).unwrap();
-    let test_code =
-        "#[test]\nfn test_auth__login__must_return_jwt() {\n    assert!(true);\n}\n";
+    let test_code = "#[test]\nfn test_auth__login__must_return_jwt() {\n    assert!(true);\n}\n";
     std::fs::write(gen_dir.join("must_return_jwt.rs"), test_code).unwrap();
 
     let bin = ought_bin();
@@ -269,4 +262,3 @@ fn test_cli__inspect__should_syntax_highlight_the_output_when_stdout_is_a_termin
 
     let _ = std::fs::remove_dir_all(&dir);
 }
-

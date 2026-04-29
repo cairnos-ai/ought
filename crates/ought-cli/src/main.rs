@@ -52,8 +52,11 @@ enum Command {
     /// Regenerate test code from specs using the LLM.
     Generate(GenerateArgs),
 
-    /// Audit existing specs and reverse-engineer drafts for uncovered source.
-    Extract(ExtractArgs),
+    /// Report drift in existing specs with mapped source.
+    Align(AlignArgs),
+
+    /// Discover source behavior that is missing specs.
+    Discover(DiscoverArgs),
 
     /// Validate spec file syntax without generating or running.
     Check,
@@ -63,9 +66,6 @@ enum Command {
 
     /// Show diff between current and pending generated tests.
     Diff,
-
-    /// Analyze specs for coherence and coverage.
-    Analyze(AnalyzeArgs),
 
     /// Investigate failing clauses with git history.
     Debug(DebugArgs),
@@ -116,26 +116,32 @@ struct GenerateArgs {
 }
 
 #[derive(clap::Args)]
-struct ExtractArgs {
-    /// Source path(s) to extract specs from (default: [context].search_paths).
+struct AlignArgs {
+    /// Source path(s) to inspect (default: [context].search_paths).
     #[arg(num_args = 0..)]
     paths: Vec<PathBuf>,
 
-    /// Directory to write spec drafts into (default: first [specs].roots entry).
+    /// Override the generator model for this run.
     #[arg(long)]
-    out: Option<PathBuf>,
+    model: Option<String>,
 
-    /// Print generated spec(s) to stdout instead of writing files.
+    /// Number of agents to run in parallel (default: [generator].parallelism).
     #[arg(long)]
-    dry_run: bool,
+    parallelism: Option<usize>,
+}
 
-    /// Overwrite existing `.ought.md` files.
-    #[arg(long)]
-    force: bool,
+#[derive(clap::Args)]
+struct DiscoverArgs {
+    /// Optional area or behavior for the discovery agent to focus on.
+    focus: Option<String>,
 
-    /// Skip the rule-based audit phase over existing specs.
+    /// Source path(s) to inspect (default: [context].search_paths).
+    #[arg(long = "path", value_name = "PATH")]
+    paths: Vec<PathBuf>,
+
+    /// Write discovered specs under the first configured spec root.
     #[arg(long)]
-    no_audit: bool,
+    apply: bool,
 
     /// Override the generator model for this run.
     #[arg(long)]
@@ -150,12 +156,6 @@ struct ExtractArgs {
 struct InspectArgs {
     /// Clause identifier (e.g. `auth::login::must_return_jwt`).
     clause: String,
-}
-
-#[derive(clap::Args)]
-struct SurveyArgs {
-    /// Source path to survey (default: project source roots).
-    path: Option<PathBuf>,
 }
 
 #[derive(clap::Args)]
@@ -176,18 +176,6 @@ struct BisectArgs {
     /// Regenerate tests at each commit instead of using current manifest.
     #[arg(long)]
     regenerate: bool,
-}
-
-#[derive(clap::Args)]
-struct AnalyzeArgs {
-    #[command(subcommand)]
-    command: AnalyzeCommand,
-}
-
-#[derive(Subcommand)]
-enum AnalyzeCommand {
-    /// Discover source behaviors not covered by any spec.
-    Survey(SurveyArgs),
 }
 
 #[derive(clap::Args)]
@@ -291,13 +279,11 @@ fn main() -> anyhow::Result<()> {
         Command::Init => commands::init::run(),
         Command::Run(args) => commands::run::run(&cli, args),
         Command::Generate(args) => commands::generate::run(&cli, args),
-        Command::Extract(args) => commands::extract::run(&cli, args),
+        Command::Align(args) => commands::align::run(&cli, args),
+        Command::Discover(args) => commands::discover::run(&cli, args),
         Command::Check => commands::check::run(&cli),
         Command::Inspect(args) => commands::inspect::run(&cli, args),
         Command::Diff => commands::diff::run(&cli),
-        Command::Analyze(args) => match &args.command {
-            AnalyzeCommand::Survey(args) => commands::survey::run(&cli, args),
-        },
         Command::Debug(args) => match &args.command {
             DebugCommand::Blame(args) => commands::blame::run(&cli, args),
             DebugCommand::Bisect(args) => commands::bisect::run(&cli, args),
@@ -306,5 +292,69 @@ fn main() -> anyhow::Result<()> {
         Command::Watch => commands::watch::run(&cli),
         Command::View { port, no_open } => commands::view::run(&cli, *port, *no_open),
         Command::Mcp(args) => commands::mcp::run(&cli, &args.command),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use clap::CommandFactory;
+
+    fn subcommand_help(name: &str) -> String {
+        let mut cmd = Cli::command();
+        cmd.find_subcommand_mut(name)
+            .unwrap()
+            .render_long_help()
+            .to_string()
+    }
+
+    #[test]
+    fn align_help_is_report_only() {
+        let help = subcommand_help("align");
+
+        assert!(help.contains("--model"));
+        assert!(help.contains("--parallelism"));
+        assert!(!help.contains("--apply"));
+        assert!(!help.contains("--only"));
+    }
+
+    #[test]
+    fn discover_help_exposes_apply_and_provider_controls() {
+        let help = subcommand_help("discover");
+
+        assert!(help.contains("[FOCUS]"));
+        assert!(help.contains("--path"));
+        assert!(help.contains("--apply"));
+        assert!(help.contains("--model"));
+        assert!(help.contains("--parallelism"));
+    }
+
+    #[test]
+    fn discover_accepts_quoted_focus_and_explicit_paths() {
+        let cli = Cli::try_parse_from([
+            "ought",
+            "discover",
+            "auth logout behavior",
+            "--path",
+            "src/auth",
+            "--path",
+            "src/session",
+        ])
+        .unwrap();
+
+        let Command::Discover(args) = cli.command else {
+            panic!("expected discover command");
+        };
+        assert_eq!(args.focus.as_deref(), Some("auth logout behavior"));
+        assert_eq!(
+            args.paths,
+            vec![PathBuf::from("src/auth"), PathBuf::from("src/session")]
+        );
+    }
+
+    #[test]
+    fn removed_commands_are_not_valid() {
+        assert!(Cli::try_parse_from(["ought", "extract"]).is_err());
+        assert!(Cli::try_parse_from(["ought", "analyze"]).is_err());
     }
 }

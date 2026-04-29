@@ -9,16 +9,15 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use ought_cli::config::Config;
-use ought_spec::{OughtMdParser, Parser, SpecGraph};
 use ought_spec::types::*;
+use ought_spec::{OughtMdParser, Parser, SpecGraph};
 
-use crate::helpers::{
-    ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test,
-};
+use crate::helpers::{ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test};
 
 /// MUST accept behavioral specifications written in standard markdown files (`.ought.md`)
 #[test]
-fn test_ought__what_ought_does__must_accept_behavioral_specifications_written_in_standard_markdow() {
+fn test_ought__what_ought_does__must_accept_behavioral_specifications_written_in_standard_markdow()
+{
     let tmp_path = std::env::temp_dir().join(format!("test_spec_{}.ought.md", std::process::id()));
     let spec_content = "# My Spec\n\n## Section\n\n- **MUST** do something\n";
     fs::write(&tmp_path, spec_content).expect("Failed to write test .ought.md file");
@@ -31,18 +30,26 @@ fn test_ought__what_ought_does__must_accept_behavioral_specifications_written_in
 
     let contents = fs::read_to_string(&tmp_path).expect("Spec file should be readable as UTF-8");
     assert!(!contents.is_empty(), "Spec file should not be empty");
-    assert!(contents.contains('#'), "Spec file should contain markdown headings");
+    assert!(
+        contents.contains('#'),
+        "Spec file should contain markdown headings"
+    );
 
     // The parser must accept this file
     let result = OughtMdParser.parse_string(&contents, &tmp_path);
-    assert!(result.is_ok(), "Parser must accept a valid .ought.md file: {:?}", result.err());
+    assert!(
+        result.is_ok(),
+        "Parser must accept a valid .ought.md file: {:?}",
+        result.err()
+    );
 
     let _ = fs::remove_file(&tmp_path);
 }
 
 /// MUST provide a CLI (`ought`) as the primary interface for all operations
 #[test]
-fn test_ought__what_ought_does__must_provide_a_cli_ought_as_the_primary_interface_for_all_operati() {
+fn test_ought__what_ought_does__must_provide_a_cli_ought_as_the_primary_interface_for_all_operati()
+{
     let bin = ought_bin();
     let output = Command::new(&bin).arg("--help").output();
 
@@ -58,7 +65,8 @@ fn test_ought__what_ought_does__must_provide_a_cli_ought_as_the_primary_interfac
         }
         Err(e) => {
             panic!(
-                "The `ought` CLI binary must be available; invocation failed: {}", e
+                "The `ought` CLI binary must be available; invocation failed: {}",
+                e
             );
         }
     }
@@ -68,7 +76,10 @@ fn test_ought__what_ought_does__must_provide_a_cli_ought_as_the_primary_interfac
 #[test]
 fn test_ought__what_ought_does__must_execute_generated_tests_and_report_pass_fail_results_mapped() {
     #[derive(Debug, PartialEq)]
-    enum TestOutcome { Pass, Fail }
+    enum TestOutcome {
+        Pass,
+        Fail,
+    }
 
     struct ClauseResult {
         clause_id: String,
@@ -76,17 +87,36 @@ fn test_ought__what_ought_does__must_execute_generated_tests_and_report_pass_fai
     }
 
     let results = vec![
-        ClauseResult { clause_id: "my_spec::section::must_do_something".to_string(), outcome: TestOutcome::Pass },
-        ClauseResult { clause_id: "my_spec::section::must_handle_error".to_string(), outcome: TestOutcome::Fail },
+        ClauseResult {
+            clause_id: "my_spec::section::must_do_something".to_string(),
+            outcome: TestOutcome::Pass,
+        },
+        ClauseResult {
+            clause_id: "my_spec::section::must_handle_error".to_string(),
+            outcome: TestOutcome::Fail,
+        },
     ];
 
     for r in &results {
-        assert!(!r.clause_id.is_empty(), "Every test result must reference a clause ID");
-        assert!(r.clause_id.contains("::"), "Clause IDs must use '::' namespace separators, got: {}", r.clause_id);
+        assert!(
+            !r.clause_id.is_empty(),
+            "Every test result must reference a clause ID"
+        );
+        assert!(
+            r.clause_id.contains("::"),
+            "Clause IDs must use '::' namespace separators, got: {}",
+            r.clause_id
+        );
     }
 
-    let passes: Vec<_> = results.iter().filter(|r| r.outcome == TestOutcome::Pass).collect();
-    let failures: Vec<_> = results.iter().filter(|r| r.outcome == TestOutcome::Fail).collect();
+    let passes: Vec<_> = results
+        .iter()
+        .filter(|r| r.outcome == TestOutcome::Pass)
+        .collect();
+    let failures: Vec<_> = results
+        .iter()
+        .filter(|r| r.outcome == TestOutcome::Fail)
+        .collect();
 
     assert_eq!(passes.len(), 1);
     assert_eq!(failures.len(), 1);
@@ -96,7 +126,8 @@ fn test_ought__what_ought_does__must_execute_generated_tests_and_report_pass_fai
 
 /// MUST use an LLM to generate concrete, runnable test code from those specifications
 #[test]
-fn test_ought__what_ought_does__must_use_an_llm_to_generate_concrete_runnable_test_code_from_thos() {
+fn test_ought__what_ought_does__must_use_an_llm_to_generate_concrete_runnable_test_code_from_thos()
+{
     let generated_samples = vec![
         "#[test]\nfn test_example() { assert!(true); }",
         "#[test]\nfn test_another() { let x = 1; assert_eq!(x, 1); }",
@@ -104,17 +135,32 @@ fn test_ought__what_ought_does__must_use_an_llm_to_generate_concrete_runnable_te
     ];
 
     for sample in &generated_samples {
-        assert!(sample.contains("#[test]"), "Generated code must carry the #[test] attribute: {:?}", sample);
-        assert!(sample.contains("fn test_"), "Generated code must declare a test function: {:?}", sample);
-        let has_assertion = sample.contains("assert!(") || sample.contains("assert_eq!(") || sample.contains("assert_ne!(");
-        assert!(has_assertion, "Generated tests must include at least one assertion: {:?}", sample);
+        assert!(
+            sample.contains("#[test]"),
+            "Generated code must carry the #[test] attribute: {:?}",
+            sample
+        );
+        assert!(
+            sample.contains("fn test_"),
+            "Generated code must declare a test function: {:?}",
+            sample
+        );
+        let has_assertion = sample.contains("assert!(")
+            || sample.contains("assert_eq!(")
+            || sample.contains("assert_ne!(");
+        assert!(
+            has_assertion,
+            "Generated tests must include at least one assertion: {:?}",
+            sample
+        );
     }
 }
 
 /// MUST NOT require users to write any test code by hand
 #[test]
 fn test_ought__what_ought_does__must_not_require_users_to_write_any_test_code_by_hand() {
-    let tmp_dir = std::env::temp_dir().join(format!("ought_no_manual_tests_{}", std::process::id()));
+    let tmp_dir =
+        std::env::temp_dir().join(format!("ought_no_manual_tests_{}", std::process::id()));
     let _ = fs::create_dir_all(&tmp_dir);
 
     let spec_path = tmp_dir.join("feature.ought.md");
@@ -122,12 +168,24 @@ fn test_ought__what_ought_does__must_not_require_users_to_write_any_test_code_by
     fs::write(&spec_path, spec_content).expect("Should be able to write spec file");
 
     let handwritten_test = tmp_dir.join("tests.rs");
-    assert!(!handwritten_test.exists(), "Users must not be required to provide a hand-written tests.rs");
+    assert!(
+        !handwritten_test.exists(),
+        "Users must not be required to provide a hand-written tests.rs"
+    );
 
     let contents = fs::read_to_string(&spec_path).unwrap();
-    assert!(!contents.contains("#[test]"), "User-facing spec files must not contain #[test] attributes");
-    assert!(!contents.contains("fn test_"), "User-facing spec files must not contain test function definitions");
-    assert!(!contents.contains("assert!("), "User-facing spec files must not contain assertion macros");
+    assert!(
+        !contents.contains("#[test]"),
+        "User-facing spec files must not contain #[test] attributes"
+    );
+    assert!(
+        !contents.contains("fn test_"),
+        "User-facing spec files must not contain test function definitions"
+    );
+    assert!(
+        !contents.contains("assert!("),
+        "User-facing spec files must not contain assertion macros"
+    );
 
     let _ = fs::remove_dir_all(&tmp_dir);
 }
@@ -135,4 +193,3 @@ fn test_ought__what_ought_does__must_not_require_users_to_write_any_test_code_by
 // ===========================================================================
 // spec_format
 // ===========================================================================
-

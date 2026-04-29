@@ -112,12 +112,8 @@ pub(super) fn build_clauses(
                     ow_id_parts.push(&ow_summary);
                     let ow_id_str = ow_id_parts.join("::");
 
-                    let ow_hash = content_hash(
-                        Keyword::Otherwise,
-                        &nested.text,
-                        &condition,
-                        ow_pending,
-                    );
+                    let ow_hash =
+                        content_hash(Keyword::Otherwise, &nested.text, &condition, ow_pending);
 
                     otherwise_clauses.push(Clause {
                         id: ClauseId(ow_id_str),

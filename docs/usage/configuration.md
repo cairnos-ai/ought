@@ -61,7 +61,7 @@ Where on disk Ought looks for `.ought.md` files.
 
 ## `[context]`
 
-Source files included as context for LLM-driven commands (`generate`, `extract`, `analyze survey`).
+Source files used by generation, alignment, and discovery.
 
 | Key            | Default | Notes                                                          |
 | -------------- | ------- | -------------------------------------------------------------- |

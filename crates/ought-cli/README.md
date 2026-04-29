@@ -4,8 +4,8 @@ The `ought` command-line binary.
 
 Wires the rest of the workspace together: loads `ought.toml`, resolves the
 sub-configs each domain crate needs, and drives commands like `check`,
-`generate`, `run`, `watch`, `view`, `survey`, `audit`, `blame`, `bisect`,
-and `mcp`.
+`generate`, `align`, `discover`, `run`, `watch`, `view`, `blame`, `bisect`, and
+`mcp`.
 
 On-disk configuration is a CLI concern — this crate owns the aggregate
 `Config` struct and the TOML loading. Every other crate defines only the

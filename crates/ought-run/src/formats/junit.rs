@@ -16,13 +16,16 @@ use std::collections::HashMap;
 use std::time::Duration;
 
 use ought_spec::ClauseId;
-use quick_xml::events::Event;
 use quick_xml::Reader;
+use quick_xml::events::Event;
 
 use crate::formats::resolve_clause_id;
 use crate::types::{TestDetails, TestResult, TestStatus};
 
-pub fn parse(xml: &str, name_to_clause: &HashMap<String, ClauseId>) -> anyhow::Result<Vec<TestResult>> {
+pub fn parse(
+    xml: &str,
+    name_to_clause: &HashMap<String, ClauseId>,
+) -> anyhow::Result<Vec<TestResult>> {
     let mut reader = Reader::from_str(xml);
     reader.config_mut().trim_text(true);
 
@@ -240,7 +243,10 @@ mod tests {
             results[1].details.failure_message.as_deref(),
             Some("AssertionError")
         );
-        assert_eq!(results[1].details.stack_trace.as_deref(), Some("token was invalid"));
+        assert_eq!(
+            results[1].details.stack_trace.as_deref(),
+            Some("token was invalid")
+        );
         assert_eq!(results[2].status, TestStatus::Skipped);
     }
 
@@ -285,10 +291,7 @@ mod tests {
         let results = parse(xml, &map).expect("parse");
         assert_eq!(results.len(), 2);
         assert_eq!(results[0].status, TestStatus::Passed);
-        assert_eq!(
-            results[0].clause_id,
-            ClauseId("auth::login".to_string())
-        );
+        assert_eq!(results[0].clause_id, ClauseId("auth::login".to_string()));
         assert_eq!(results[1].status, TestStatus::Errored);
     }
 

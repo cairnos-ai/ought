@@ -17,12 +17,15 @@ use ought_spec::types::*;
 /// MUST generate a content hash for each clause based on keyword + text + relevant context
 #[test]
 fn test_parser__clause_ir__must_generate_a_content_hash_for_each_clause_based_on_keyword_tex() {
-
     let md = "# Svc\n\n## Rules\n\n- **MUST** do something specific\n";
 
     // Same content parsed twice produces the same hash
-    let spec1 = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
-    let spec2 = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec1 = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
+    let spec2 = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
     assert_eq!(
         spec1.sections[0].clauses[0].content_hash,
         spec2.sections[0].clauses[0].content_hash
@@ -30,8 +33,9 @@ fn test_parser__clause_ir__must_generate_a_content_hash_for_each_clause_based_on
 
     // Different keyword changes the hash
     let md_should = "# Svc\n\n## Rules\n\n- **SHOULD** do something specific\n";
-    let spec_should =
-        OughtMdParser.parse_string(md_should, Path::new("test.ought.md")).expect("parse failed");
+    let spec_should = OughtMdParser
+        .parse_string(md_should, Path::new("test.ought.md"))
+        .expect("parse failed");
     assert_ne!(
         spec1.sections[0].clauses[0].content_hash,
         spec_should.sections[0].clauses[0].content_hash
@@ -39,8 +43,9 @@ fn test_parser__clause_ir__must_generate_a_content_hash_for_each_clause_based_on
 
     // Different text changes the hash
     let md_diff = "# Svc\n\n## Rules\n\n- **MUST** do something entirely different\n";
-    let spec_diff =
-        OughtMdParser.parse_string(md_diff, Path::new("test.ought.md")).expect("parse failed");
+    let spec_diff = OughtMdParser
+        .parse_string(md_diff, Path::new("test.ought.md"))
+        .expect("parse failed");
     assert_ne!(
         spec1.sections[0].clauses[0].content_hash,
         spec_diff.sections[0].clauses[0].content_hash
@@ -49,8 +54,9 @@ fn test_parser__clause_ir__must_generate_a_content_hash_for_each_clause_based_on
     // Different condition (GIVEN context) changes the hash
     let md_cond =
         "# Svc\n\n## Rules\n\n- **GIVEN** logged in:\n  - **MUST** do something specific\n";
-    let spec_cond =
-        OughtMdParser.parse_string(md_cond, Path::new("test.ought.md")).expect("parse failed");
+    let spec_cond = OughtMdParser
+        .parse_string(md_cond, Path::new("test.ought.md"))
+        .expect("parse failed");
     assert_ne!(
         spec1.sections[0].clauses[0].content_hash,
         spec_cond.sections[0].clauses[0].content_hash
@@ -70,12 +76,15 @@ fn test_parser__clause_ir__must_generate_a_content_hash_for_each_clause_based_on
 /// (e.g. `auth::login::must_return_jwt`)
 #[test]
 fn test_parser__clause_ir__must_generate_stable_clause_identifiers_from_the_section_path_and() {
-
     let md = "# Auth\n\n## Login\n\n- **MUST** return a JWT token\n";
 
     // Parsing the same content twice produces identical identifiers
-    let spec1 = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
-    let spec2 = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec1 = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
+    let spec2 = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
     assert_eq!(
         spec1.sections[0].clauses[0].id.0,
         spec2.sections[0].clauses[0].id.0
@@ -88,10 +97,10 @@ fn test_parser__clause_ir__must_generate_stable_clause_identifiers_from_the_sect
     );
 
     // Nested section path appears in full in the identifier
-    let nested_md =
-        "# Auth\n\n## Login\n\n### OAuth\n\n- **MUST** validate token signature\n";
-    let nested_spec =
-        OughtMdParser.parse_string(nested_md, Path::new("test.ought.md")).expect("parse failed");
+    let nested_md = "# Auth\n\n## Login\n\n### OAuth\n\n- **MUST** validate token signature\n";
+    let nested_spec = OughtMdParser
+        .parse_string(nested_md, Path::new("test.ought.md"))
+        .expect("parse failed");
     let nested_id = &nested_spec.sections[0].subsections[0].clauses[0].id.0;
     assert!(
         nested_id.starts_with("auth::login::oauth::"),
@@ -100,7 +109,9 @@ fn test_parser__clause_ir__must_generate_stable_clause_identifiers_from_the_sect
 
     // Different clause text within the same section produces a different identifier
     let md2 = "# Auth\n\n## Login\n\n- **MUST** reject invalid tokens\n";
-    let spec3 = OughtMdParser.parse_string(md2, Path::new("test.ought.md")).expect("parse failed");
+    let spec3 = OughtMdParser
+        .parse_string(md2, Path::new("test.ought.md"))
+        .expect("parse failed");
     assert_ne!(
         spec1.sections[0].clauses[0].id.0,
         spec3.sections[0].clauses[0].id.0
@@ -111,10 +122,11 @@ fn test_parser__clause_ir__must_generate_stable_clause_identifiers_from_the_sect
 /// MUST include a `condition` field populated from the parent GIVEN block (null if unconditional)
 #[test]
 fn test_parser__clause_ir__must_include_a_condition_field_populated_from_the_parent_given_bl() {
-
     // Unconditional clause has None condition
     let md = "# Svc\n\n## Rules\n\n- **MUST** always do this\n";
-    let spec = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
     assert!(spec.sections[0].clauses[0].condition.is_none());
 
     // Clauses nested under GIVEN have the condition populated from GIVEN text
@@ -124,8 +136,9 @@ fn test_parser__clause_ir__must_include_a_condition_field_populated_from_the_par
         "  - **MUST** return profile data\n",
         "  - **MUST NOT** expose other users' data\n"
     );
-    let spec_given =
-        OughtMdParser.parse_string(md_given, Path::new("test.ought.md")).expect("parse failed");
+    let spec_given = OughtMdParser
+        .parse_string(md_given, Path::new("test.ought.md"))
+        .expect("parse failed");
     let clauses = &spec_given.sections[0].clauses;
 
     // GIVEN itself is not emitted as a clause — nested items become clauses
@@ -146,17 +159,19 @@ fn test_parser__clause_ir__must_include_a_condition_field_populated_from_the_par
 /// MUST BY (qualifier: deadline, duration: value+unit)
 #[test]
 fn test_parser__clause_ir__must_include_a_temporal_field_for_must_always_qualifier_invariant() {
-
     // Plain MUST has no temporal field
     let md = "# Svc\n\n## Rules\n\n- **MUST** validate input\n";
-    let spec = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
     assert!(spec.sections[0].clauses[0].temporal.is_none());
 
     // MUST ALWAYS → Temporal::Invariant
     let md_always =
         "# Svc\n\n## Invariants\n\n- **MUST ALWAYS** keep connections below pool maximum\n";
-    let spec_always =
-        OughtMdParser.parse_string(md_always, Path::new("test.ought.md")).expect("parse failed");
+    let spec_always = OughtMdParser
+        .parse_string(md_always, Path::new("test.ought.md"))
+        .expect("parse failed");
     let clause_always = &spec_always.sections[0].clauses[0];
     assert_eq!(clause_always.keyword, Keyword::MustAlways);
     assert_eq!(clause_always.severity, Severity::Required);
@@ -167,7 +182,9 @@ fn test_parser__clause_ir__must_include_a_temporal_field_for_must_always_qualifi
 
     // MUST BY <N>ms → Temporal::Deadline(Duration::from_millis(N))
     let md_ms = "# Svc\n\n## Perf\n\n- **MUST BY 200ms** return a response\n";
-    let spec_ms = OughtMdParser.parse_string(md_ms, Path::new("test.ought.md")).expect("parse failed");
+    let spec_ms = OughtMdParser
+        .parse_string(md_ms, Path::new("test.ought.md"))
+        .expect("parse failed");
     let clause_ms = &spec_ms.sections[0].clauses[0];
     assert_eq!(clause_ms.keyword, Keyword::MustBy);
     assert_eq!(clause_ms.severity, Severity::Required);
@@ -178,7 +195,9 @@ fn test_parser__clause_ir__must_include_a_temporal_field_for_must_always_qualifi
 
     // MUST BY <N>s → Temporal::Deadline(Duration::from_secs(N))
     let md_s = "# Svc\n\n## Perf\n\n- **MUST BY 5s** complete handshake\n";
-    let spec_s = OughtMdParser.parse_string(md_s, Path::new("test.ought.md")).expect("parse failed");
+    let spec_s = OughtMdParser
+        .parse_string(md_s, Path::new("test.ought.md"))
+        .expect("parse failed");
     assert!(
         matches!(spec_s.sections[0].clauses[0].temporal, Some(Temporal::Deadline(d)) if d == Duration::from_secs(5)),
         "MUST BY 5s should produce Deadline(5s)"
@@ -186,7 +205,9 @@ fn test_parser__clause_ir__must_include_a_temporal_field_for_must_always_qualifi
 
     // MUST BY <N>m → Temporal::Deadline(Duration::from_secs(N * 60))
     let md_m = "# Svc\n\n## Perf\n\n- **MUST BY 30m** finish batch job\n";
-    let spec_m = OughtMdParser.parse_string(md_m, Path::new("test.ought.md")).expect("parse failed");
+    let spec_m = OughtMdParser
+        .parse_string(md_m, Path::new("test.ought.md"))
+        .expect("parse failed");
     assert!(
         matches!(spec_m.sections[0].clauses[0].temporal, Some(Temporal::Deadline(d)) if d == Duration::from_secs(30 * 60)),
         "MUST BY 30m should produce Deadline(30min)"
@@ -197,10 +218,11 @@ fn test_parser__clause_ir__must_include_a_temporal_field_for_must_always_qualifi
 /// MUST include an `otherwise` field containing the ordered list of fallback clauses (empty if none)
 #[test]
 fn test_parser__clause_ir__must_include_an_otherwise_field_containing_the_ordered_list_of_fa() {
-
     // Clause without OTHERWISE has an empty otherwise vec
     let md = "# Svc\n\n## Perf\n\n- **MUST** respond within 200ms\n";
-    let spec = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
     assert!(spec.sections[0].clauses[0].otherwise.is_empty());
 
     // Clause with OTHERWISE chain carries an ordered list of fallback clauses
@@ -210,8 +232,9 @@ fn test_parser__clause_ir__must_include_an_otherwise_field_containing_the_ordere
         "  - **OTHERWISE** return a cached response\n",
         "  - **OTHERWISE** return 504 Gateway Timeout\n"
     );
-    let spec_chain =
-        OughtMdParser.parse_string(md_chain, Path::new("test.ought.md")).expect("parse failed");
+    let spec_chain = OughtMdParser
+        .parse_string(md_chain, Path::new("test.ought.md"))
+        .expect("parse failed");
     let clause = &spec_chain.sections[0].clauses[0];
 
     assert_eq!(clause.keyword, Keyword::Must);
@@ -241,9 +264,10 @@ fn test_parser__clause_ir__must_include_an_otherwise_field_containing_the_ordere
 /// source location (file, line), parent section path, and a stable identifier
 #[test]
 fn test_parser__clause_ir__must_produce_a_clause_ir_struct_containing_keyword_severity_claus() {
-
     let md = "# Auth\n\n## Login\n\n- **MUST** return a JWT token\n";
-    let spec = OughtMdParser.parse_string(md, Path::new("auth.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("auth.ought.md"))
+        .expect("parse failed");
     let clause = &spec.sections[0].clauses[0];
 
     // keyword
@@ -256,7 +280,10 @@ fn test_parser__clause_ir__must_produce_a_clause_ir_struct_containing_keyword_se
     assert!(clause.text.contains("return a JWT token"));
 
     // source location: file
-    assert_eq!(clause.source_location.file.to_str().unwrap(), "auth.ought.md");
+    assert_eq!(
+        clause.source_location.file.to_str().unwrap(),
+        "auth.ought.md"
+    );
 
     // source location: line (must be a real line in the file)
     assert!(clause.source_location.line > 0);
@@ -272,14 +299,15 @@ fn test_parser__clause_ir__must_produce_a_clause_ir_struct_containing_keyword_se
 /// SHOULD include any code blocks immediately following a clause as "hints" attached to that clause
 #[test]
 fn test_parser__clause_ir__should_include_any_code_blocks_immediately_following_a_clause_as_hi() {
-
     // Code block immediately after a clause becomes a hint on that clause
     let md = concat!(
         "# Svc\n\n## API\n\n",
         "- **MUST** return valid JSON\n\n",
         "```json\n{\"status\": \"ok\"}\n```\n"
     );
-    let spec = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
     let clause = &spec.sections[0].clauses[0];
     assert_eq!(clause.hints.len(), 1);
     assert!(
@@ -289,8 +317,9 @@ fn test_parser__clause_ir__should_include_any_code_blocks_immediately_following_
 
     // Clause with no following code block has empty hints
     let md_no_hint = "# Svc\n\n## API\n\n- **MUST** return valid JSON\n";
-    let spec_no_hint =
-        OughtMdParser.parse_string(md_no_hint, Path::new("test.ought.md")).expect("parse failed");
+    let spec_no_hint = OughtMdParser
+        .parse_string(md_no_hint, Path::new("test.ought.md"))
+        .expect("parse failed");
     assert!(spec_no_hint.sections[0].clauses[0].hints.is_empty());
 
     // Code block appearing before any clause (as prose) is NOT attached as a hint
@@ -300,8 +329,9 @@ fn test_parser__clause_ir__should_include_any_code_blocks_immediately_following_
         "```json\n{\"example\": true}\n```\n\n",
         "- **MUST** return valid JSON\n"
     );
-    let spec_prose =
-        OughtMdParser.parse_string(md_prose_code, Path::new("test.ought.md")).expect("parse failed");
+    let spec_prose = OughtMdParser
+        .parse_string(md_prose_code, Path::new("test.ought.md"))
+        .expect("parse failed");
     assert!(
         spec_prose.sections[0].clauses[0].hints.is_empty(),
         "code block before clause should not become a hint"
@@ -317,7 +347,6 @@ fn test_parser__clause_ir__should_include_any_code_blocks_immediately_following_
 /// SHOULD include surrounding prose/markdown in the clause's context field for the LLM
 #[test]
 fn test_parser__clause_ir__should_include_surrounding_prose_markdown_in_the_clause_s_context_f() {
-
     // Prose surrounding clauses is preserved in the section's prose field (LLM context)
     let md = concat!(
         "# Svc\n\n## Auth\n\n",
@@ -326,7 +355,9 @@ fn test_parser__clause_ir__should_include_surrounding_prose_markdown_in_the_clau
         "- **MUST** validate token signature\n\n",
         "Additional notes about expiry edge cases.\n"
     );
-    let spec = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
     let section = &spec.sections[0];
 
     // Section prose is non-empty and contains the surrounding text
@@ -346,8 +377,8 @@ fn test_parser__clause_ir__should_include_surrounding_prose_markdown_in_the_clau
 
     // A section containing only clauses and no surrounding text has empty prose
     let md_no_prose = "# Svc\n\n## Rules\n\n- **MUST** do something\n";
-    let spec_no_prose =
-        OughtMdParser.parse_string(md_no_prose, Path::new("test.ought.md")).expect("parse failed");
+    let spec_no_prose = OughtMdParser
+        .parse_string(md_no_prose, Path::new("test.ought.md"))
+        .expect("parse failed");
     assert!(spec_no_prose.sections[0].prose.is_empty());
 }
-

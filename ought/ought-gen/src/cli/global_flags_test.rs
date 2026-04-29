@@ -9,22 +9,19 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use ought_cli::config::Config;
-use ought_spec::{OughtMdParser, Parser, SpecGraph};
 use ought_spec::types::*;
+use ought_spec::{OughtMdParser, Parser, SpecGraph};
 
-use crate::helpers::{
-    ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test,
-};
+use crate::helpers::{ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test};
 
 /// MUST ALWAYS return a valid exit code (0, 1, or 2) — never crash without an exit code.
 /// Invariant — verified across a wide fuzz-style range of invocations.
 #[test]
-fn test_cli__global_flags__must_always_return_a_valid_exit_code_0_1_or_2_never_crash_without_an_exi(
-) {
+fn test_cli__global_flags__must_always_return_a_valid_exit_code_0_1_or_2_never_crash_without_an_exi()
+ {
     let bin = ought_bin();
 
-    let proj = std::env::temp_dir()
-        .join(format!("ought_exitcode_inv_{}", std::process::id()));
+    let proj = std::env::temp_dir().join(format!("ought_exitcode_inv_{}", std::process::id()));
     std::fs::create_dir_all(&proj).unwrap();
 
     // Pre-initialise so commands that need a project have one.
@@ -92,13 +89,12 @@ fn test_cli__global_flags__must_always_return_a_valid_exit_code_0_1_or_2_never_c
 /// MUST ALWAYS write diagnostic messages to stderr, never stdout (stdout is reserved for
 /// structured output and results). Invariant — verified across a range of invocations.
 #[test]
-fn test_cli__global_flags__must_always_write_diagnostic_messages_to_stderr_never_stdout_stdout_is_r(
-) {
+fn test_cli__global_flags__must_always_write_diagnostic_messages_to_stderr_never_stdout_stdout_is_r()
+ {
     let bin = ought_bin();
 
     // Set up a valid project so most commands have something real to work with.
-    let proj = std::env::temp_dir()
-        .join(format!("ought_stderr_inv_{}", std::process::id()));
+    let proj = std::env::temp_dir().join(format!("ought_stderr_inv_{}", std::process::id()));
     std::fs::create_dir_all(&proj).unwrap();
     let init = std::process::Command::new(&bin)
         .arg("init")
@@ -116,13 +112,7 @@ fn test_cli__global_flags__must_always_write_diagnostic_messages_to_stderr_never
 
     // Diagnostic keyword patterns that must never appear on stdout.
     // These are prefixes written by the application itself (not embedded in JSON payloads).
-    let diagnostic_patterns: &[&str] = &[
-        "error: ",
-        "Error: ",
-        "warning: ",
-        "Warning: ",
-        "fatal: ",
-    ];
+    let diagnostic_patterns: &[&str] = &["error: ", "Error: ", "warning: ", "Warning: ", "fatal: "];
 
     // Probe a range of non-JSON invocations; for each, stdout must not contain raw diagnostics.
     let probes: &[(&[&str], &str)] = &[
@@ -207,9 +197,7 @@ fn test_cli__global_flags__must_support_color_auto_always_never_for_terminal_col
             .stdout(std::process::Stdio::piped())
             .stderr(std::process::Stdio::piped())
             .output()
-            .unwrap_or_else(|e| {
-                panic!("failed to run `ought --color {color_value} init`: {e}")
-            });
+            .unwrap_or_else(|e| panic!("failed to run `ought --color {color_value} init`: {e}"));
 
         assert_ne!(
             out.status.code(),
@@ -222,8 +210,8 @@ fn test_cli__global_flags__must_support_color_auto_always_never_for_terminal_col
     }
 
     // An invalid value must be rejected with exit code 2.
-    let dir_invalid = std::env::temp_dir()
-        .join(format!("ought_color_invalid_{}", std::process::id()));
+    let dir_invalid =
+        std::env::temp_dir().join(format!("ought_color_invalid_{}", std::process::id()));
     std::fs::create_dir_all(&dir_invalid).unwrap();
     let bad = std::process::Command::new(&bin)
         .args(["--color", "rainbow", "init"])
@@ -244,8 +232,7 @@ fn test_cli__global_flags__must_support_color_auto_always_never_for_terminal_col
 /// MUST support `--config <path>` to specify an alternate ought.toml location
 #[test]
 fn test_cli__global_flags__must_support_config_path_to_specify_an_alternate_ought_toml_locat() {
-    let base = std::env::temp_dir()
-        .join(format!("ought_cfg_flag_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("ought_cfg_flag_{}", std::process::id()));
     let specs_dir = base.join("specs");
     let alt_config = base.join("alt_ought.toml");
     std::fs::create_dir_all(&specs_dir).unwrap();
@@ -309,8 +296,7 @@ fn test_cli__global_flags__must_support_config_path_to_specify_an_alternate_ough
 /// MUST support `--json` flag that outputs structured JSON for programmatic consumption
 #[test]
 fn test_cli__global_flags__must_support_json_flag_that_outputs_structured_json_for_programma() {
-    let dir = std::env::temp_dir()
-        .join(format!("ought_json_flag_{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("ought_json_flag_{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
 
     let bin = ought_bin();
@@ -356,16 +342,11 @@ fn test_cli__global_flags__must_support_json_flag_that_outputs_structured_json_f
             &trimmed[..trimmed.len().min(200)]
         );
         // Verify that all opening brackets have matching closing brackets.
-        let opens: usize = trimmed
-            .chars()
-            .filter(|&c| c == '{' || c == '[')
-            .count();
-        let closes: usize = trimmed
-            .chars()
-            .filter(|&c| c == '}' || c == ']')
-            .count();
+        let opens: usize = trimmed.chars().filter(|&c| c == '{' || c == '[').count();
+        let closes: usize = trimmed.chars().filter(|&c| c == '}' || c == ']').count();
         assert_eq!(
-            opens, closes,
+            opens,
+            closes,
             "--json output must have balanced braces; stdout: {}",
             &trimmed[..trimmed.len().min(200)]
         );
@@ -377,8 +358,7 @@ fn test_cli__global_flags__must_support_json_flag_that_outputs_structured_json_f
 /// MUST support `--junit <path>` flag that writes JUnit XML results to the given file
 #[test]
 fn test_cli__global_flags__must_support_junit_path_flag_that_writes_junit_xml_results_to_the() {
-    let dir = std::env::temp_dir()
-        .join(format!("ought_junit_flag_{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("ought_junit_flag_{}", std::process::id()));
     let junit_path = dir.join("results.xml");
     std::fs::create_dir_all(&dir).unwrap();
 
@@ -421,8 +401,8 @@ fn test_cli__global_flags__must_support_junit_path_flag_that_writes_junit_xml_re
         junit_path.display()
     );
 
-    let xml_content = std::fs::read_to_string(&junit_path)
-        .expect("--junit output file must be readable");
+    let xml_content =
+        std::fs::read_to_string(&junit_path).expect("--junit output file must be readable");
     assert!(
         xml_content.trim().starts_with('<'),
         "--junit file must contain XML; first 200 chars: {}",
@@ -437,10 +417,8 @@ fn test_cli__global_flags__must_support_junit_path_flag_that_writes_junit_xml_re
 fn test_cli__global_flags__must_support_quiet_flag_that_suppresses_all_output_except_errors() {
     let bin = ought_bin();
 
-    let dir_loud = std::env::temp_dir()
-        .join(format!("ought_quiet_loud_{}", std::process::id()));
-    let dir_quiet = std::env::temp_dir()
-        .join(format!("ought_quiet_silent_{}", std::process::id()));
+    let dir_loud = std::env::temp_dir().join(format!("ought_quiet_loud_{}", std::process::id()));
+    let dir_quiet = std::env::temp_dir().join(format!("ought_quiet_silent_{}", std::process::id()));
     std::fs::create_dir_all(&dir_loud).unwrap();
     std::fs::create_dir_all(&dir_quiet).unwrap();
 
@@ -490,10 +468,10 @@ fn test_cli__global_flags__should_support_verbose_flag_for_debug_level_output() 
     let bin = ought_bin();
 
     // Set up two identical projects so we can compare output side-by-side.
-    let dir_normal = std::env::temp_dir()
-        .join(format!("ought_verbose_normal_{}", std::process::id()));
-    let dir_verbose = std::env::temp_dir()
-        .join(format!("ought_verbose_verbose_{}", std::process::id()));
+    let dir_normal =
+        std::env::temp_dir().join(format!("ought_verbose_normal_{}", std::process::id()));
+    let dir_verbose =
+        std::env::temp_dir().join(format!("ought_verbose_verbose_{}", std::process::id()));
     std::fs::create_dir_all(&dir_normal).unwrap();
     std::fs::create_dir_all(&dir_verbose).unwrap();
 
@@ -552,4 +530,3 @@ fn test_cli__global_flags__should_support_verbose_flag_for_debug_level_output() 
     let _ = std::fs::remove_dir_all(&dir_normal);
     let _ = std::fs::remove_dir_all(&dir_verbose);
 }
-

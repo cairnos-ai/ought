@@ -9,18 +9,16 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use ought_cli::config::Config;
-use ought_spec::{OughtMdParser, Parser, SpecGraph};
 use ought_spec::types::*;
+use ought_spec::{OughtMdParser, Parser, SpecGraph};
 
-use crate::helpers::{
-    ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test,
-};
+use crate::helpers::{ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test};
 
 /// MUST map test results back to the original spec clauses (not just test function names)
 #[test]
 fn test_ought__reporting__must_map_test_results_back_to_the_original_spec_clauses_not_just() {
     use ought_report::json;
-    use ought_run::{RunResult, TestResult, TestStatus, TestDetails};
+    use ought_run::{RunResult, TestDetails, TestResult, TestStatus};
 
     let clause_id = "auth::login::must_return_jwt_on_success";
     let clause = Clause {
@@ -32,7 +30,10 @@ fn test_ought__reporting__must_map_test_results_back_to_the_original_spec_clause
         otherwise: vec![],
         temporal: None,
         hints: vec![],
-        source_location: SourceLocation { file: PathBuf::from("auth.ought.md"), line: 5 },
+        source_location: SourceLocation {
+            file: PathBuf::from("auth.ought.md"),
+            line: 5,
+        },
         content_hash: "abc".to_string(),
         pending: false,
     };
@@ -55,23 +56,33 @@ fn test_ought__reporting__must_map_test_results_back_to_the_original_spec_clause
         duration: std::time::Duration::from_millis(12),
         details: TestDetails::default(),
     };
-    let run = RunResult { results: vec![result], total_duration: std::time::Duration::from_millis(12) };
+    let run = RunResult {
+        results: vec![result],
+        total_duration: std::time::Duration::from_millis(12),
+    };
 
     let json_out = json::report(&run, &[spec]).unwrap();
 
-    assert!(json_out.contains(clause_id),
-        "JSON report must embed the original spec clause ID '{}'", clause_id);
-    assert!(json_out.contains("\"clause_id\""),
-        "JSON report must have an explicit 'clause_id' field");
-    assert!(!json_out.contains("test_auth_login_must_return_jwt_on_success"),
-        "report must use the spec clause ID, not a generated test function name");
+    assert!(
+        json_out.contains(clause_id),
+        "JSON report must embed the original spec clause ID '{}'",
+        clause_id
+    );
+    assert!(
+        json_out.contains("\"clause_id\""),
+        "JSON report must have an explicit 'clause_id' field"
+    );
+    assert!(
+        !json_out.contains("test_auth_login_must_return_jwt_on_success"),
+        "report must use the spec clause ID, not a generated test function name"
+    );
 }
 
 /// MUST distinguish failure severity -- MUST failures are errors, SHOULD failures are warnings
 #[test]
 fn test_ought__reporting__must_distinguish_failure_severity_must_failures_are_errors_should() {
     use ought_report::json;
-    use ought_run::{RunResult, TestResult, TestStatus, TestDetails};
+    use ought_run::{RunResult, TestDetails, TestResult, TestStatus};
 
     assert_eq!(Keyword::Must.severity(), Severity::Required);
     assert_eq!(Keyword::MustNot.severity(), Severity::Required);
@@ -81,8 +92,10 @@ fn test_ought__reporting__must_distinguish_failure_severity_must_failures_are_er
     assert_eq!(Keyword::ShouldNot.severity(), Severity::Recommended);
 
     // In the derived Ord, Required has the lowest discriminant (most severe first).
-    assert!(Severity::Required < Severity::Recommended,
-        "Required (MUST) severity must have a lower discriminant than Recommended (SHOULD), reflecting higher severity");
+    assert!(
+        Severity::Required < Severity::Recommended,
+        "Required (MUST) severity must have a lower discriminant than Recommended (SHOULD), reflecting higher severity"
+    );
 
     let must_id = "report::severity::must_clause";
     let should_id = "report::severity::should_clause";
@@ -97,7 +110,10 @@ fn test_ought__reporting__must_distinguish_failure_severity_must_failures_are_er
             otherwise: vec![],
             temporal: None,
             hints: vec![],
-            source_location: SourceLocation { file: PathBuf::from("s.ought.md"), line: 1 },
+            source_location: SourceLocation {
+                file: PathBuf::from("s.ought.md"),
+                line: 1,
+            },
             content_hash: "x".to_string(),
             pending: false,
         }
@@ -140,11 +156,20 @@ fn test_ought__reporting__must_distinguish_failure_severity_must_failures_are_er
 
     let json_out = json::report(&run, &[spec]).unwrap();
 
-    assert!(json_out.contains("\"required\""), "Failed MUST clause must appear with severity 'required'");
-    assert!(json_out.contains("\"recommended\""), "Failed SHOULD clause must appear with severity 'recommended'");
+    assert!(
+        json_out.contains("\"required\""),
+        "Failed MUST clause must appear with severity 'required'"
+    );
+    assert!(
+        json_out.contains("\"recommended\""),
+        "Failed SHOULD clause must appear with severity 'recommended'"
+    );
     // Both clauses have status "failed" - the count may be > 2 because the summary
     // also contains a "failed" field. Verify at least 2 occurrences.
-    assert!(json_out.matches("\"failed\"").count() >= 2, "Both clauses should appear with status 'failed'");
+    assert!(
+        json_out.matches("\"failed\"").count() >= 2,
+        "Both clauses should appear with status 'failed'"
+    );
 }
 
 /// MUST produce visually attractive terminal output that makes specs and their status easy to scan
@@ -155,7 +180,7 @@ fn test_ought__reporting__must_produce_visually_attractive_terminal_output_that_
     use ought_report::json;
     use ought_report::terminal;
     use ought_report::types::{ColorChoice, ReportOptions};
-    use ought_run::{RunResult, TestResult, TestStatus, TestDetails};
+    use ought_run::{RunResult, TestDetails, TestResult, TestStatus};
 
     fn make_clause(id: &str, kw: Keyword, text: &str) -> Clause {
         Clause {
@@ -167,7 +192,10 @@ fn test_ought__reporting__must_produce_visually_attractive_terminal_output_that_
             otherwise: vec![],
             temporal: None,
             hints: vec![],
-            source_location: SourceLocation { file: PathBuf::from("t.ought.md"), line: 1 },
+            source_location: SourceLocation {
+                file: PathBuf::from("t.ought.md"),
+                line: 1,
+            },
             content_hash: "x".to_string(),
             pending: false,
         }
@@ -187,7 +215,11 @@ fn test_ought__reporting__must_produce_visually_attractive_terminal_output_that_
             clauses: vec![
                 make_clause(passed_id, Keyword::Must, "return 200 on success"),
                 make_clause(failed_id, Keyword::Should, "include X-Request-Id header"),
-                make_clause(errored_id, Keyword::MustNot, "leak secrets in response body"),
+                make_clause(
+                    errored_id,
+                    Keyword::MustNot,
+                    "leak secrets in response body",
+                ),
             ],
             subsections: vec![],
         }],
@@ -207,7 +239,10 @@ fn test_ought__reporting__must_produce_visually_attractive_terminal_output_that_
                 status: TestStatus::Failed,
                 message: Some("header absent".to_string()),
                 duration: std::time::Duration::from_millis(3),
-                details: TestDetails { failure_message: Some("header absent".to_string()), ..Default::default() },
+                details: TestDetails {
+                    failure_message: Some("header absent".to_string()),
+                    ..Default::default()
+                },
             },
             TestResult {
                 clause_id: ClauseId(errored_id.to_string()),
@@ -220,7 +255,10 @@ fn test_ought__reporting__must_produce_visually_attractive_terminal_output_that_
         total_duration: std::time::Duration::from_millis(12),
     };
 
-    let options = ReportOptions { color: ColorChoice::Never, ..Default::default() };
+    let options = ReportOptions {
+        color: ColorChoice::Never,
+        ..Default::default()
+    };
     assert!(
         terminal::report(&run, &[spec.clone()], &options).is_ok(),
         "terminal::report must complete without error on valid input"
@@ -239,15 +277,23 @@ fn test_ought__reporting__must_produce_visually_attractive_terminal_output_that_
     // Verify MUST coverage < 100% when a MUST clause errored.
     // Extract the must_coverage_pct value via simple string matching.
     let pct_marker = "\"must_coverage_pct\":";
-    let pct_pos = json_out.find(pct_marker).expect("must_coverage_pct must appear in JSON output");
+    let pct_pos = json_out
+        .find(pct_marker)
+        .expect("must_coverage_pct must appear in JSON output");
     let after = &json_out[pct_pos + pct_marker.len()..];
-    let end = after.find(|c: char| c != ' ' && c != '.' && !c.is_ascii_digit()).unwrap_or(after.len());
+    let end = after
+        .find(|c: char| c != ' ' && c != '.' && !c.is_ascii_digit())
+        .unwrap_or(after.len());
     let pct_str = after[..end].trim();
-    let pct: f64 = pct_str.parse().unwrap_or_else(|_| panic!("could not parse must_coverage_pct from: {pct_str}"));
-    assert!(pct < 100.0, "MUST coverage must be < 100% when a MUST clause errored; got {pct}");
+    let pct: f64 = pct_str
+        .parse()
+        .unwrap_or_else(|_| panic!("could not parse must_coverage_pct from: {pct_str}"));
+    assert!(
+        pct < 100.0,
+        "MUST coverage must be < 100% when a MUST clause errored; got {pct}"
+    );
 }
 
 // ===========================================================================
 // llm_powered_analysis
 // ===========================================================================
-

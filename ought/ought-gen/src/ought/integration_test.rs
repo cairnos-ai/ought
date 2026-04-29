@@ -9,12 +9,10 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use ought_cli::config::Config;
-use ought_spec::{OughtMdParser, Parser, SpecGraph};
 use ought_spec::types::*;
+use ought_spec::{OughtMdParser, Parser, SpecGraph};
 
-use crate::helpers::{
-    ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test,
-};
+use crate::helpers::{ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test};
 
 /// MUST provide an MCP server so AI assistants and IDE extensions can interact programmatically
 ///
@@ -37,30 +35,48 @@ fn test_ought__integration__should_be_installable_via_cargo_homebrew_and_as_a_st
         .output()
         .expect("`ought` binary must run as a standalone executable");
 
-    assert!(help_out.status.success(),
+    assert!(
+        help_out.status.success(),
         "`ought --help` must exit 0; stderr: {}",
-        String::from_utf8_lossy(&help_out.stderr));
+        String::from_utf8_lossy(&help_out.stderr)
+    );
     let help_str = format!(
         "{}{}",
         String::from_utf8_lossy(&help_out.stdout),
         String::from_utf8_lossy(&help_out.stderr),
     );
-    assert!(!help_str.trim().is_empty(),
-        "`ought --help` must produce usage output");
+    assert!(
+        !help_str.trim().is_empty(),
+        "`ought --help` must produce usage output"
+    );
 
-    let manifest_dir = PathBuf::from(std::env::var("CARGO_MANIFEST_DIR")
-        .expect("CARGO_MANIFEST_DIR must be set"));
-    let workspace_root = manifest_dir.ancestors()
+    let manifest_dir =
+        PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR must be set"));
+    let workspace_root = manifest_dir
+        .ancestors()
         .find(|p| p.join("Cargo.lock").exists())
         .unwrap_or_else(|| manifest_dir.as_path())
         .to_path_buf();
 
-    let cli_toml_path = workspace_root.join("crates").join("ought-cli").join("Cargo.toml");
-    assert!(cli_toml_path.exists(), "crates/ought-cli/Cargo.toml must exist");
+    let cli_toml_path = workspace_root
+        .join("crates")
+        .join("ought-cli")
+        .join("Cargo.toml");
+    assert!(
+        cli_toml_path.exists(),
+        "crates/ought-cli/Cargo.toml must exist"
+    );
 
-    let cli_toml = fs::read_to_string(&cli_toml_path).expect("ought-cli/Cargo.toml must be readable");
-    assert!(cli_toml.contains("name = \"ought\""), "ought-cli/Cargo.toml must set `name = \"ought\"`");
-    assert!(cli_toml.contains("[[bin]]"), "ought-cli/Cargo.toml must declare a [[bin]] target");
+    let cli_toml =
+        fs::read_to_string(&cli_toml_path).expect("ought-cli/Cargo.toml must be readable");
+    assert!(
+        cli_toml.contains("name = \"ought\""),
+        "ought-cli/Cargo.toml must set `name = \"ought\"`"
+    );
+    assert!(
+        cli_toml.contains("[[bin]]"),
+        "ought-cli/Cargo.toml must declare a [[bin]] target"
+    );
 }
 
 /// SHOULD provide a GitHub Action for PR-level reporting
@@ -69,9 +85,10 @@ fn test_ought__integration__should_be_installable_via_cargo_homebrew_and_as_a_st
 #[test]
 #[ignore]
 fn test_ought__integration__should_provide_a_github_action_for_pr_level_reporting() {
-    let manifest_dir = PathBuf::from(std::env::var("CARGO_MANIFEST_DIR")
-        .expect("CARGO_MANIFEST_DIR must be set"));
-    let workspace_root = manifest_dir.ancestors()
+    let manifest_dir =
+        PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR must be set"));
+    let workspace_root = manifest_dir
+        .ancestors()
         .find(|p| p.join("Cargo.lock").exists())
         .unwrap_or_else(|| manifest_dir.as_path())
         .to_path_buf();
@@ -79,20 +96,33 @@ fn test_ought__integration__should_provide_a_github_action_for_pr_level_reportin
     let candidates = [
         workspace_root.join("action.yml"),
         workspace_root.join("action.yaml"),
-        workspace_root.join(".github").join("actions").join("ought").join("action.yml"),
-        workspace_root.join(".github").join("actions").join("ought").join("action.yaml"),
+        workspace_root
+            .join(".github")
+            .join("actions")
+            .join("ought")
+            .join("action.yml"),
+        workspace_root
+            .join(".github")
+            .join("actions")
+            .join("ought")
+            .join("action.yaml"),
     ];
 
     let action_exists = candidates.iter().any(|p| p.exists());
 
-    assert!(action_exists,
-        "A GitHub Action definition (action.yml) must exist at the repository root or under .github/actions/ought/");
+    assert!(
+        action_exists,
+        "A GitHub Action definition (action.yml) must exist at the repository root or under .github/actions/ought/"
+    );
 
     for path in candidates.iter().filter(|p| p.exists()) {
         let contents = fs::read_to_string(path)
             .unwrap_or_else(|_| panic!("action file at {} must be readable", path.display()));
-        assert!(contents.contains("runs:"),
-            "action file at {} must contain a `runs:` key", path.display());
+        assert!(
+            contents.contains("runs:"),
+            "action file at {} must contain a `runs:` key",
+            path.display()
+        );
     }
 }
 
@@ -111,12 +141,20 @@ fn test_ought__integration__must_be_easy_to_integrate_into_ci_pipelines_run_with
     match run_help {
         Ok(out) => {
             let run_stderr = String::from_utf8_lossy(&out.stderr);
-            assert_ne!(out.status.code(), Some(2),
-                "`ought run` must be a recognised subcommand; stderr: {run_stderr}");
-            assert!(!run_stderr.contains("unrecognized subcommand"),
-                "`ought run` must be a recognised subcommand; stderr: {run_stderr}");
+            assert_ne!(
+                out.status.code(),
+                Some(2),
+                "`ought run` must be a recognised subcommand; stderr: {run_stderr}"
+            );
+            assert!(
+                !run_stderr.contains("unrecognized subcommand"),
+                "`ought run` must be a recognised subcommand; stderr: {run_stderr}"
+            );
         }
-        Err(e) => panic!("`ought` binary must be available in CI environments; failed: {}", e),
+        Err(e) => panic!(
+            "`ought` binary must be available in CI environments; failed: {}",
+            e
+        ),
     }
 
     let check_help = Command::new(&bin)
@@ -128,10 +166,14 @@ fn test_ought__integration__must_be_easy_to_integrate_into_ci_pipelines_run_with
 
     if let Ok(out) = check_help {
         let check_stderr = String::from_utf8_lossy(&out.stderr);
-        assert_ne!(out.status.code(), Some(2),
-            "`ought check` must be a recognised subcommand; stderr: {check_stderr}");
-        assert!(!check_stderr.contains("unrecognized subcommand"),
-            "`ought check` must exist as a distinct subcommand; stderr: {check_stderr}");
+        assert_ne!(
+            out.status.code(),
+            Some(2),
+            "`ought check` must be a recognised subcommand; stderr: {check_stderr}"
+        );
+        assert!(
+            !check_stderr.contains("unrecognized subcommand"),
+            "`ought check` must exist as a distinct subcommand; stderr: {check_stderr}"
+        );
     }
 }
-

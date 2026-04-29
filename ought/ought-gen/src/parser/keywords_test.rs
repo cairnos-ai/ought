@@ -18,7 +18,6 @@ use ought_spec::types::*;
 /// SHOULD/SHOULD NOT = recommended, MAY = optional, WONT = negative-confirmation
 #[test]
 fn test_parser__keywords__must_assign_severity_levels_must_must_not_must_always_must_by_req() {
-
     let md = r#"# Svc
 
 ## All Keywords
@@ -32,32 +31,57 @@ fn test_parser__keywords__must_assign_severity_levels_must_must_not_must_always_
 - **MAY** use optional feature
 - **WONT** implement out-of-scope thing
 "#;
-    let spec = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
     let clauses = &spec.sections[0].clauses;
     assert_eq!(clauses.len(), 8);
 
     // Required group
-    assert_eq!(clauses[0].severity, Severity::Required,   "MUST → Required");
-    assert_eq!(clauses[1].severity, Severity::Required,   "MUST NOT → Required");
-    assert_eq!(clauses[2].severity, Severity::Required,   "MUST ALWAYS → Required");
-    assert_eq!(clauses[3].severity, Severity::Required,   "MUST BY → Required");
+    assert_eq!(clauses[0].severity, Severity::Required, "MUST → Required");
+    assert_eq!(
+        clauses[1].severity,
+        Severity::Required,
+        "MUST NOT → Required"
+    );
+    assert_eq!(
+        clauses[2].severity,
+        Severity::Required,
+        "MUST ALWAYS → Required"
+    );
+    assert_eq!(
+        clauses[3].severity,
+        Severity::Required,
+        "MUST BY → Required"
+    );
 
     // Recommended group
-    assert_eq!(clauses[4].severity, Severity::Recommended, "SHOULD → Recommended");
-    assert_eq!(clauses[5].severity, Severity::Recommended, "SHOULD NOT → Recommended");
+    assert_eq!(
+        clauses[4].severity,
+        Severity::Recommended,
+        "SHOULD → Recommended"
+    );
+    assert_eq!(
+        clauses[5].severity,
+        Severity::Recommended,
+        "SHOULD NOT → Recommended"
+    );
 
     // Optional
-    assert_eq!(clauses[6].severity, Severity::Optional,   "MAY → Optional");
+    assert_eq!(clauses[6].severity, Severity::Optional, "MAY → Optional");
 
     // Negative confirmation
-    assert_eq!(clauses[7].severity, Severity::NegativeConfirmation, "WONT → NegativeConfirmation");
+    assert_eq!(
+        clauses[7].severity,
+        Severity::NegativeConfirmation,
+        "WONT → NegativeConfirmation"
+    );
 }
 
 // --- must_not_treat_bare_non_bold_keyword_occurrences_as_clauses_e_g_you_m_test.rs ---
 /// MUST NOT treat bare (non-bold) keyword occurrences as clauses (e.g. "you must restart" in prose)
 #[test]
 fn test_parser__keywords__must_not_treat_bare_non_bold_keyword_occurrences_as_clauses_e_g_you_m() {
-
     let md = r#"# Svc
 
 ## Overview
@@ -69,7 +93,9 @@ Deployments wont need downtime. Given the above, otherwise consider alternatives
 - A plain list item that says you must restart after upgrade
 - Another item: should not be mistaken for a clause
 "#;
-    let spec = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
     assert!(
         spec.sections[0].clauses.is_empty(),
         "bare keywords in paragraphs and unbolded list items must not produce any clauses"
@@ -85,9 +111,15 @@ This service must handle all requests as described above.
 
 - **MUST** actually validate the token
 "#;
-    let spec2 = OughtMdParser.parse_string(md_mixed, Path::new("test.ought.md")).expect("parse failed");
+    let spec2 = OughtMdParser
+        .parse_string(md_mixed, Path::new("test.ought.md"))
+        .expect("parse failed");
     let clauses = &spec2.sections[0].clauses;
-    assert_eq!(clauses.len(), 1, "only the bold keyword item must become a clause");
+    assert_eq!(
+        clauses.len(),
+        1,
+        "only the bold keyword item must become a clause"
+    );
     assert_eq!(clauses[0].keyword, Keyword::Must);
     assert!(clauses[0].text.contains("validate the token"));
 }
@@ -96,7 +128,6 @@ This service must handle all requests as described above.
 /// MUST parse keywords case-insensitively but require them to appear in bold (`**MUST**`, `**GIVEN**`, etc.)
 #[test]
 fn test_parser__keywords__must_parse_keywords_case_insensitively_but_require_them_to_appear() {
-
     // All casing variants in bold — all must be recognised
     let md_bold = r#"# Svc
 
@@ -110,9 +141,15 @@ fn test_parser__keywords__must_parse_keywords_case_insensitively_but_require_the
 - **may** allow lowercase optional
 - **wont** refuse lowercase
 "#;
-    let spec = OughtMdParser.parse_string(md_bold, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md_bold, Path::new("test.ought.md"))
+        .expect("parse failed");
     let clauses = &spec.sections[0].clauses;
-    assert_eq!(clauses.len(), 7, "all bold keyword variants must be parsed regardless of case");
+    assert_eq!(
+        clauses.len(),
+        7,
+        "all bold keyword variants must be parsed regardless of case"
+    );
     assert_eq!(clauses[0].keyword, Keyword::Must);
     assert_eq!(clauses[1].keyword, Keyword::Must);
     assert_eq!(clauses[2].keyword, Keyword::Must);
@@ -129,7 +166,9 @@ fn test_parser__keywords__must_parse_keywords_case_insensitively_but_require_the
 You must restart the service after upgrading.
 The system should validate inputs.
 "#;
-    let spec2 = OughtMdParser.parse_string(md_bare, Path::new("test.ought.md")).expect("parse failed");
+    let spec2 = OughtMdParser
+        .parse_string(md_bare, Path::new("test.ought.md"))
+        .expect("parse failed");
     assert!(
         spec2.sections[0].clauses.is_empty(),
         "bare (non-bold) keywords in prose must not produce clauses"
@@ -140,7 +179,6 @@ The system should validate inputs.
 /// MUST recognize RFC 2119 keywords: MUST, MUST NOT, SHOULD, SHOULD NOT, MAY
 #[test]
 fn test_parser__keywords__must_recognize_rfc_2119_keywords_must_must_not_should_should_not() {
-
     let md = r#"# Svc
 
 ## Rules
@@ -151,7 +189,9 @@ fn test_parser__keywords__must_recognize_rfc_2119_keywords_must_must_not_should_
 - **SHOULD NOT** cache sensitive tokens
 - **MAY** support remember-me sessions
 "#;
-    let spec = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
     let clauses = &spec.sections[0].clauses;
     assert_eq!(clauses.len(), 5);
     assert_eq!(clauses[0].keyword, Keyword::Must);
@@ -170,7 +210,6 @@ fn test_parser__keywords__must_recognize_rfc_2119_keywords_must_must_not_should_
 /// MUST recognize temporal compound keywords: MUST ALWAYS, MUST BY
 #[test]
 fn test_parser__keywords__must_recognize_temporal_compound_keywords_must_always_must_by() {
-
     let md = r#"# Svc
 
 ## Temporal
@@ -180,7 +219,9 @@ fn test_parser__keywords__must_recognize_temporal_compound_keywords_must_always_
 - **MUST BY 10s** complete the checkout flow
 - **MUST BY 2m** finish a background import job
 "#;
-    let spec = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
     let clauses = &spec.sections[0].clauses;
     assert_eq!(clauses.len(), 4);
 
@@ -213,7 +254,6 @@ fn test_parser__keywords__must_recognize_temporal_compound_keywords_must_always_
 /// MUST recognize the GIVEN keyword as a conditional block opener (from deontic logic)
 #[test]
 fn test_parser__keywords__must_recognize_the_given_keyword_as_a_conditional_block_opener_fr() {
-
     let md = r#"# Svc
 
 ## Access
@@ -222,23 +262,29 @@ fn test_parser__keywords__must_recognize_the_given_keyword_as_a_conditional_bloc
   - **MUST** allow deletion of any record
   - **MUST NOT** expose other tenants' data
 "#;
-    let spec = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
     let clauses = &spec.sections[0].clauses;
     // GIVEN groups its children; they become top-level clauses with the condition set
     assert_eq!(clauses.len(), 2);
     assert_eq!(clauses[0].keyword, Keyword::Must);
-    let condition = clauses[0].condition.as_deref().expect("condition must be present");
+    let condition = clauses[0]
+        .condition
+        .as_deref()
+        .expect("condition must be present");
     assert!(condition.contains("admin role"));
     assert_eq!(clauses[1].keyword, Keyword::MustNot);
-    assert_eq!(clauses[1].condition, clauses[0].condition,
-        "all children of the same GIVEN block share the same condition");
+    assert_eq!(
+        clauses[1].condition, clauses[0].condition,
+        "all children of the same GIVEN block share the same condition"
+    );
 }
 
 // --- must_recognize_the_otherwise_keyword_as_a_contrary_to_duty_fallba_test.rs ---
 /// MUST recognize the OTHERWISE keyword as a contrary-to-duty fallback (from deontic logic)
 #[test]
 fn test_parser__keywords__must_recognize_the_otherwise_keyword_as_a_contrary_to_duty_fallba() {
-
     let md = r#"# Svc
 
 ## Resilience
@@ -247,7 +293,9 @@ fn test_parser__keywords__must_recognize_the_otherwise_keyword_as_a_contrary_to_
   - **OTHERWISE** return a stale cached response
   - **OTHERWISE** return HTTP 503 with Retry-After header
 "#;
-    let spec = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
     let clauses = &spec.sections[0].clauses;
     assert_eq!(clauses.len(), 1);
     assert_eq!(clauses[0].keyword, Keyword::Must);
@@ -263,7 +311,6 @@ fn test_parser__keywords__must_recognize_the_otherwise_keyword_as_a_contrary_to_
 /// MUST recognize the WONT keyword as an ought extension (not in RFC 2119)
 #[test]
 fn test_parser__keywords__must_recognize_the_wont_keyword_as_an_ought_extension_not_in_rfc() {
-
     let md = r#"# Svc
 
 ## Scope
@@ -271,7 +318,9 @@ fn test_parser__keywords__must_recognize_the_wont_keyword_as_an_ought_extension_
 - **WONT** support OAuth 1.0
 - **WONT** implement SOAP endpoints
 "#;
-    let spec = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
     let clauses = &spec.sections[0].clauses;
     assert_eq!(clauses.len(), 2);
     assert_eq!(clauses[0].keyword, Keyword::Wont);
@@ -279,4 +328,3 @@ fn test_parser__keywords__must_recognize_the_wont_keyword_as_an_ought_extension_
     assert_eq!(clauses[1].keyword, Keyword::Wont);
     assert!(clauses[1].text.contains("SOAP"));
 }
-

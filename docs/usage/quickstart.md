@@ -4,7 +4,7 @@ description: Write your first spec, generate tests, and run them.
 order: 3
 ---
 
-This walkthrough takes a small project from zero to a passing `ought run` in four steps. If you're retrofitting Ought onto an existing codebase, [`ought extract`](/products/ought/docs/cli-reference#ought-extract) does steps 1–2 for you.
+This walkthrough takes a small project from zero to a passing `ought run` in four steps. If you're retrofitting Ought onto an existing codebase, [`ought discover`](/products/ought/docs/cli-reference#ought-discover) can suggest missing specs first.
 
 ## 1. Initialize
 

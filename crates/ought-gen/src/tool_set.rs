@@ -13,8 +13,8 @@ use std::sync::{Arc, Mutex};
 use async_trait::async_trait;
 use serde_json::{Value, json};
 
-use oharness_tools::{ToolOutcome, ToolSet, ToolSpec};
 use oharness_tools::context::ToolContext;
+use oharness_tools::{ToolOutcome, ToolSet, ToolSpec};
 
 use crate::agent::AgentAssignment;
 use crate::manifest::Manifest;
@@ -203,9 +203,7 @@ impl ToolSet for GenerateToolSet {
                                 }
                                 WriteTestResult::Err {
                                     clause_id, error, ..
-                                } => u
-                                    .write_errors
-                                    .push((clause_id.clone(), error.clone())),
+                                } => u.write_errors.push((clause_id.clone(), error.clone())),
                             }
                         }
                         drop(u);
@@ -295,20 +293,18 @@ fn tool_specs() -> Vec<ToolSpec> {
     vec![
         ToolSpec {
             name: "get_assignment".into(),
-            description:
-                "Return the agent's assignment: the clauses to generate tests for, plus \
+            description: "Return the agent's assignment: the clauses to generate tests for, plus \
                  metadata about the project and target language."
-                    .into(),
+                .into(),
             input_schema: json!({ "type": "object", "properties": {} }),
         },
         ToolSpec {
             name: "read_source".into(),
-            description:
-                "Read a source file relative to the project root. Use this to understand \
+            description: "Read a source file relative to the project root. Use this to understand \
                  the code under test before generating assertions against it. Reads are \
                  capped at a few tens of KB; if `truncated: true` comes back, call again \
                  with `start_line` / `end_line` to read a specific window."
-                    .into(),
+                .into(),
             input_schema: json!({
                 "type": "object",
                 "properties": {
@@ -327,10 +323,9 @@ fn tool_specs() -> Vec<ToolSpec> {
         },
         ToolSpec {
             name: "list_source_files".into(),
-            description:
-                "List source files matching a glob pattern (e.g. \"**/*.rs\") under the \
+            description: "List source files matching a glob pattern (e.g. \"**/*.rs\") under the \
                  project root."
-                    .into(),
+                .into(),
             input_schema: json!({
                 "type": "object",
                 "properties": {
@@ -356,9 +351,8 @@ fn tool_specs() -> Vec<ToolSpec> {
         },
         ToolSpec {
             name: "write_tests_batch".into(),
-            description:
-                "Write multiple tests in one call. Returns per-test success/failure."
-                    .into(),
+            description: "Write multiple tests in one call. Returns per-test success/failure."
+                .into(),
             input_schema: json!({
                 "type": "object",
                 "properties": {
@@ -379,10 +373,9 @@ fn tool_specs() -> Vec<ToolSpec> {
         },
         ToolSpec {
             name: "check_compiles".into(),
-            description:
-                "Compile-check the test files for the given clause ids. Use this after \
+            description: "Compile-check the test files for the given clause ids. Use this after \
                  writing to catch syntax errors before reporting completion."
-                    .into(),
+                .into(),
             input_schema: json!({
                 "type": "object",
                 "properties": {
@@ -393,10 +386,9 @@ fn tool_specs() -> Vec<ToolSpec> {
         },
         ToolSpec {
             name: "report_progress".into(),
-            description:
-                "Emit a progress line to the human user. Optional but encouraged for \
+            description: "Emit a progress line to the human user. Optional but encouraged for \
                  long-running batches."
-                    .into(),
+                .into(),
             input_schema: json!({
                 "type": "object",
                 "properties": {

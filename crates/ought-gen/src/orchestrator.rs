@@ -21,7 +21,7 @@
 //! - No tool-result eviction / context-budget guard
 //!   (`ought-agent::evict_old_tool_results`, `ContextExhausted`). The
 //!   run terminates with `Termination::Failed { RunErrorCategory::Llm }`
-//!   when the provider 400s for oversize context. For long extraction /
+//!   when the provider 400s for oversize context. For long alignment /
 //!   generation runs, lower `max_turns` or shrink `read_source_limit_bytes`.
 //! - No `CompletionRequest.max_tokens` / `temperature` plumbing — the
 //!   ReactLoop builds requests with neither set, so each turn uses the
@@ -116,7 +116,7 @@ impl Orchestrator {
             match joined {
                 Ok(report) => reports.push(report),
                 Err(e) => reports.push(AgentReport {
-                    errors: vec![format!("agent task panicked: {}", e)],
+                    errors: vec![crate::error_detail::error_detail("agent task panicked", &e)],
                     status: AgentRunStatus::Errored,
                     ..AgentReport::default()
                 }),
@@ -176,7 +176,7 @@ async fn run_one_assignment(
             return AgentReport {
                 assignment_id,
                 status: AgentRunStatus::Errored,
-                errors: vec![format!("agent build: {}", e)],
+                errors: vec![crate::error_detail::error_detail("agent build", &e)],
                 ..AgentReport::default()
             };
         }
@@ -202,9 +202,10 @@ async fn run_one_assignment(
             report.usage_cache_read_tokens = outcome.usage.tokens_cache_read as u32;
             report.usage_cache_creation_tokens = outcome.usage.tokens_cache_create as u32;
             if matches!(report.status, AgentRunStatus::Errored)
-                && let Termination::Failed { error, .. } = &outcome.termination
+                && let Some(error) =
+                    crate::error_detail::termination_error_detail(&outcome.termination)
             {
-                report.errors.push(error.message.clone());
+                report.errors.push(error);
             }
             if verbose {
                 eprintln!(
@@ -218,7 +219,9 @@ async fn run_one_assignment(
         }
         Err(e) => {
             report.status = AgentRunStatus::Errored;
-            report.errors.push(format!("agent loop failed: {}", e));
+            report
+                .errors
+                .push(crate::error_detail::error_detail("agent loop failed", &e));
             if verbose {
                 eprintln!("  [agent {}] errored: {}", assignment_id, e);
             }

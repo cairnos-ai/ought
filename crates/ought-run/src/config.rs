@@ -120,29 +120,27 @@ impl RunnerConfig {
             RunnerConfig::default()
         };
 
-        let command = self
-            .command
-            .clone()
-            .or(base.command)
-            .ok_or_else(|| anyhow::anyhow!("runner {section_name:?}: `command` is required (or set `preset`)"))?;
+        let command = self.command.clone().or(base.command).ok_or_else(|| {
+            anyhow::anyhow!("runner {section_name:?}: `command` is required (or set `preset`)")
+        })?;
 
-        let test_dir = self
-            .test_dir
-            .clone()
-            .or(base.test_dir)
-            .ok_or_else(|| anyhow::anyhow!("runner {section_name:?}: `test_dir` is required"))?;
+        let test_dir =
+            self.test_dir.clone().or(base.test_dir).ok_or_else(|| {
+                anyhow::anyhow!("runner {section_name:?}: `test_dir` is required")
+            })?;
 
-        let format = self
-            .format
-            .or(base.format)
-            .ok_or_else(|| anyhow::anyhow!("runner {section_name:?}: `format` is required (or set `preset`)"))?;
+        let format = self.format.or(base.format).ok_or_else(|| {
+            anyhow::anyhow!("runner {section_name:?}: `format` is required (or set `preset`)")
+        })?;
 
         let file_extensions = self
             .file_extensions
             .clone()
             .or(base.file_extensions)
             .ok_or_else(|| {
-                anyhow::anyhow!("runner {section_name:?}: `file_extensions` is required (or set `preset`)")
+                anyhow::anyhow!(
+                    "runner {section_name:?}: `file_extensions` is required (or set `preset`)"
+                )
             })?;
 
         let output_path = self.output_path.clone().or(base.output_path);
@@ -194,7 +192,10 @@ mod tests {
             ..Default::default()
         };
         let resolved = cfg.resolve("python").expect("resolve");
-        assert_eq!(resolved.command, "my-pytest-wrapper --junit-xml={junit_path} {test_dir}");
+        assert_eq!(
+            resolved.command,
+            "my-pytest-wrapper --junit-xml={junit_path} {test_dir}"
+        );
         // Format still comes from preset.
         assert_eq!(resolved.format, OutputFormat::JunitXml);
     }

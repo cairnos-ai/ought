@@ -78,15 +78,13 @@ pub fn run(cli: &Cli, args: &RunArgs) -> anyhow::Result<()> {
         if !is_failure {
             return false;
         }
-        let info = clause_info
-            .get(r.clause_id.0.as_str())
-            .or_else(|| {
-                let needle = r.clause_id.0.as_str();
-                clause_info
-                    .iter()
-                    .find(|(k, _)| needle.ends_with(k.as_str()) || k.ends_with(needle))
-                    .map(|(_, v)| v)
-            });
+        let info = clause_info.get(r.clause_id.0.as_str()).or_else(|| {
+            let needle = r.clause_id.0.as_str();
+            clause_info
+                .iter()
+                .find(|(k, _)| needle.ends_with(k.as_str()) || k.ends_with(needle))
+                .map(|(_, v)| v)
+        });
 
         let severity = info
             .map(|i| i.severity)

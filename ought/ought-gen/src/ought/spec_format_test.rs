@@ -9,12 +9,10 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use ought_cli::config::Config;
-use ought_spec::{OughtMdParser, Parser, SpecGraph};
 use ought_spec::types::*;
+use ought_spec::{OughtMdParser, Parser, SpecGraph};
 
-use crate::helpers::{
-    ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test,
-};
+use crate::helpers::{ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test};
 
 /// MUST support RFC 2119 keywords (MUST, MUST NOT, SHOULD, SHOULD NOT, MAY) as deontic operators.
 #[test]
@@ -30,7 +28,9 @@ fn test_ought__spec_format__must_support_rfc_2119_keywords_must_must_not_should_
 - **MAY** support optional audit trails
 "#;
 
-    let spec = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
     let clauses = &spec.sections[0].clauses;
 
     assert_eq!(clauses.len(), 5);
@@ -76,15 +76,26 @@ Some *introductory* prose with `inline code` and **bold** text.
 "#;
 
     let result = OughtMdParser.parse_string(md, Path::new("spec_format.ought.md"));
-    assert!(result.is_ok(), "CommonMark spec should parse without errors: {:?}", result.err());
+    assert!(
+        result.is_ok(),
+        "CommonMark spec should parse without errors: {:?}",
+        result.err()
+    );
     let spec = result.unwrap();
 
     assert_eq!(spec.name, "Spec Format");
     assert_eq!(spec.sections.len(), 1);
     assert_eq!(spec.sections[0].title, "Rules");
-    assert!(!spec.sections[0].prose.is_empty(), "CommonMark prose should be captured");
+    assert!(
+        !spec.sections[0].prose.is_empty(),
+        "CommonMark prose should be captured"
+    );
     assert_eq!(spec.sections[0].clauses.len(), 1);
-    assert!(spec.sections[0].clauses[0].text.contains("render correctly"));
+    assert!(
+        spec.sections[0].clauses[0]
+            .text
+            .contains("render correctly")
+    );
     assert_eq!(spec.sections[0].clauses[0].hints.len(), 1);
 }
 
@@ -99,7 +110,9 @@ fn test_ought__spec_format__must_support_the_wont_keyword_for_deliberately_absen
 - **WONT** provide a SOAP API
 "#;
 
-    let spec = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
     let clauses = &spec.sections[0].clauses;
 
     assert_eq!(clauses.len(), 2);
@@ -126,10 +139,16 @@ fn test_ought__spec_format__must_support_given_blocks_for_conditional_obligation
   - **MAY** return extended metadata
 "#;
 
-    let spec = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
     let clauses = &spec.sections[0].clauses;
 
-    assert_eq!(clauses.len(), 3, "GIVEN should not appear as its own clause");
+    assert_eq!(
+        clauses.len(),
+        3,
+        "GIVEN should not appear as its own clause"
+    );
     assert!(
         clauses.iter().all(|c| c.keyword != Keyword::Given),
         "Keyword::Given should not be emitted as a top-level clause"
@@ -137,8 +156,11 @@ fn test_ought__spec_format__must_support_given_blocks_for_conditional_obligation
 
     let expected_condition = "the user is authenticated:";
     for clause in clauses {
-        assert_eq!(clause.condition.as_deref(), Some(expected_condition),
-            "All clauses inside GIVEN must carry the condition");
+        assert_eq!(
+            clause.condition.as_deref(),
+            Some(expected_condition),
+            "All clauses inside GIVEN must carry the condition"
+        );
     }
 
     assert_eq!(clauses[0].keyword, Keyword::Must);
@@ -158,14 +180,24 @@ fn test_ought__spec_format__must_support_otherwise_chains_for_contrary_to_duty_f
   - **OTHERWISE** return 503 Service Unavailable
 "#;
 
-    let spec = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
     let clauses = &spec.sections[0].clauses;
 
-    assert_eq!(clauses.len(), 1, "OTHERWISE items must not appear as top-level clauses");
+    assert_eq!(
+        clauses.len(),
+        1,
+        "OTHERWISE items must not appear as top-level clauses"
+    );
 
     let primary = &clauses[0];
     assert_eq!(primary.keyword, Keyword::Must);
-    assert_eq!(primary.otherwise.len(), 2, "Two OTHERWISE fallbacks expected");
+    assert_eq!(
+        primary.otherwise.len(),
+        2,
+        "Two OTHERWISE fallbacks expected"
+    );
 
     assert_eq!(primary.otherwise[0].keyword, Keyword::Otherwise);
     assert!(primary.otherwise[0].text.contains("cached response"));
@@ -187,7 +219,9 @@ fn test_ought__spec_format__must_support_must_always_for_invariants_properties_t
 - **MUST ALWAYS** produce a valid UTF-8 response body
 "#;
 
-    let spec = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
     let clauses = &spec.sections[0].clauses;
 
     assert_eq!(clauses.len(), 2);
@@ -197,7 +231,8 @@ fn test_ought__spec_format__must_support_must_always_for_invariants_properties_t
         assert_eq!(clause.severity, Severity::Required);
         assert!(
             matches!(clause.temporal, Some(Temporal::Invariant)),
-            "MUST ALWAYS must set temporal to Invariant, got {:?}", clause.temporal
+            "MUST ALWAYS must set temporal to Invariant, got {:?}",
+            clause.temporal
         );
     }
 
@@ -219,7 +254,9 @@ fn test_ought__spec_format__must_support_must_by_for_deadline_obligations_operat
 - **MUST BY 30m** finish the nightly batch export
 "#;
 
-    let spec = OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("test.ought.md"))
+        .expect("parse failed");
     let clauses = &spec.sections[0].clauses;
 
     assert_eq!(clauses.len(), 3);
@@ -231,19 +268,22 @@ fn test_ought__spec_format__must_support_must_by_for_deadline_obligations_operat
 
     assert!(
         matches!(clauses[0].temporal, Some(Temporal::Deadline(d)) if d == Duration::from_millis(100)),
-        "Expected 100ms deadline, got {:?}", clauses[0].temporal
+        "Expected 100ms deadline, got {:?}",
+        clauses[0].temporal
     );
     assert!(clauses[0].text.contains("search results"));
 
     assert!(
         matches!(clauses[1].temporal, Some(Temporal::Deadline(d)) if d == Duration::from_secs(5)),
-        "Expected 5s deadline, got {:?}", clauses[1].temporal
+        "Expected 5s deadline, got {:?}",
+        clauses[1].temporal
     );
     assert!(clauses[1].text.contains("authentication handshake"));
 
     assert!(
         matches!(clauses[2].temporal, Some(Temporal::Deadline(d)) if d == Duration::from_secs(30 * 60)),
-        "Expected 30m deadline, got {:?}", clauses[2].temporal
+        "Expected 30m deadline, got {:?}",
+        clauses[2].temporal
     );
     assert!(clauses[2].text.contains("batch export"));
 }
@@ -260,7 +300,9 @@ requires: [Auth](auth.ought.md), [Billing](billing.ought.md#invoices), [Core](co
 - **MUST** integrate with referenced specs
 "#;
 
-    let spec = OughtMdParser.parse_string(md, Path::new("spec_format.ought.md")).expect("parse failed");
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("spec_format.ought.md"))
+        .expect("parse failed");
     let refs = &spec.metadata.requires;
 
     assert_eq!(refs.len(), 3, "Three cross-file references expected");
@@ -313,12 +355,19 @@ requires: [Other](other.ought.md)
 "#;
 
     let result = OughtMdParser.parse_string(md, Path::new("standalone.ought.md"));
-    assert!(result.is_ok(), "Standalone parser must succeed: {:?}", result.err());
+    assert!(
+        result.is_ok(),
+        "Standalone parser must succeed: {:?}",
+        result.err()
+    );
 
     let spec = result.unwrap();
 
     assert_eq!(spec.name, "Standalone Spec");
-    assert_eq!(spec.metadata.context.as_deref(), Some("Verifies the parser works with no external dependencies"));
+    assert_eq!(
+        spec.metadata.context.as_deref(),
+        Some("Verifies the parser works with no external dependencies")
+    );
     assert_eq!(spec.metadata.requires.len(), 1);
     assert_eq!(spec.sections.len(), 4);
 
@@ -344,22 +393,29 @@ requires: [Other](other.ought.md)
     assert!(matches!(temporal[0].temporal, Some(Temporal::Invariant)));
     assert!(matches!(temporal[1].temporal, Some(Temporal::Deadline(_))));
 
-    let all_clauses: Vec<_> = spec.sections.iter()
+    let all_clauses: Vec<_> = spec
+        .sections
+        .iter()
         .flat_map(|s| s.clauses.iter())
         .collect();
     let ids: Vec<_> = all_clauses.iter().map(|c| &c.id.0).collect();
     let unique_ids: std::collections::HashSet<_> = ids.iter().collect();
     assert_eq!(ids.len(), unique_ids.len(), "All clause IDs must be unique");
-    assert!(all_clauses.iter().all(|c| !c.id.0.is_empty()), "No clause may have an empty ID");
+    assert!(
+        all_clauses.iter().all(|c| !c.id.0.is_empty()),
+        "No clause may have an empty ID"
+    );
 
     for clause in &all_clauses {
         let expected = clause.keyword.severity();
-        assert_eq!(clause.severity, expected,
-            "Severity mismatch for {:?}: expected {:?}", clause.keyword, expected);
+        assert_eq!(
+            clause.severity, expected,
+            "Severity mismatch for {:?}: expected {:?}",
+            clause.keyword, expected
+        );
     }
 }
 
 // ===========================================================================
 // implementation
 // ===========================================================================
-

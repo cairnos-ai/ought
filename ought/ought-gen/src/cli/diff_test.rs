@@ -9,18 +9,15 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use ought_cli::config::Config;
-use ought_spec::{OughtMdParser, Parser, SpecGraph};
 use ought_spec::types::*;
+use ought_spec::{OughtMdParser, Parser, SpecGraph};
 
-use crate::helpers::{
-    ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test,
-};
+use crate::helpers::{ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test};
 
 /// MUST show the diff between current generated tests and what would be generated now
 #[test]
 fn test_cli__diff__must_show_the_diff_between_current_generated_tests_and_what_would() {
-    let dir = std::env::temp_dir()
-        .join(format!("ought_diff_show_{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("ought_diff_show_{}", std::process::id()));
     std::fs::create_dir_all(dir.join("ought")).unwrap();
 
     std::fs::write(
@@ -106,8 +103,7 @@ fn test_cli__diff__must_show_the_diff_between_current_generated_tests_and_what_w
 /// SHOULD group diffs by spec file
 #[test]
 fn test_cli__diff__should_group_diffs_by_spec_file() {
-    let dir = std::env::temp_dir()
-        .join(format!("ought_diff_group_{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("ought_diff_group_{}", std::process::id()));
     std::fs::create_dir_all(dir.join("ought")).unwrap();
 
     std::fs::write(
@@ -191,7 +187,9 @@ fn test_cli__diff__should_group_diffs_by_spec_file() {
     // by checking that the first occurrence of each spec name is separated by some
     // output rather than appearing on the same line.
     let auth_pos = stdout.find("auth").expect("auth must appear in output");
-    let pay_pos = stdout.find("payments").expect("payments must appear in output");
+    let pay_pos = stdout
+        .find("payments")
+        .expect("payments must appear in output");
     assert!(
         auth_pos != pay_pos,
         "auth and payments diff groups must appear at distinct positions in the output"
@@ -203,8 +201,7 @@ fn test_cli__diff__should_group_diffs_by_spec_file() {
 /// SHOULD use a familiar unified diff format
 #[test]
 fn test_cli__diff__should_use_a_familiar_unified_diff_format() {
-    let dir = std::env::temp_dir()
-        .join(format!("ought_diff_format_{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("ought_diff_format_{}", std::process::id()));
     std::fs::create_dir_all(dir.join("ought")).unwrap();
 
     std::fs::write(
@@ -268,4 +265,3 @@ fn test_cli__diff__should_use_a_familiar_unified_diff_format() {
 
     let _ = std::fs::remove_dir_all(&dir);
 }
-

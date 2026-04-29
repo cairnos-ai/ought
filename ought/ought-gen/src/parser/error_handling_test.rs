@@ -16,7 +16,8 @@ use ought_spec::types::*;
 // --- must_continue_parsing_after_non_fatal_errors_collect_all_errors_d_test.rs ---
 /// MUST continue parsing after non-fatal errors (collect all errors, don't stop at the first)
 #[test]
-fn test_parser__error_handling__must_continue_parsing_after_non_fatal_errors_collect_all_errors_d() {
+fn test_parser__error_handling__must_continue_parsing_after_non_fatal_errors_collect_all_errors_d()
+{
     // Several keyword typos are interspersed with valid clauses. The parser must
     // not abort at the first unrecognized item — every valid clause that appears
     // later in the document must still be returned.
@@ -82,7 +83,10 @@ fn test_parser__error_handling__must_not_crash_on_malformed_markdown_degrade_gra
     let result = OughtMdParser.parse_string("", Path::new("empty.ought.md"));
     assert!(result.is_ok(), "empty input must parse without error");
     let spec = result.unwrap();
-    assert_eq!(spec.name, "Untitled", "empty doc must default to 'Untitled'");
+    assert_eq!(
+        spec.name, "Untitled",
+        "empty doc must default to 'Untitled'"
+    );
     assert!(spec.sections.is_empty(), "empty doc must have no sections");
 
     // Whitespace-only input.
@@ -101,7 +105,10 @@ fn test_parser__error_handling__must_not_crash_on_malformed_markdown_degrade_gra
     );
     assert!(result.is_ok(), "missing H1 must not crash the parser");
     let spec = result.unwrap();
-    assert!(!spec.sections.is_empty(), "section must be parsed even without H1");
+    assert!(
+        !spec.sections.is_empty(),
+        "section must be parsed even without H1"
+    );
     assert_eq!(
         spec.sections[0].clauses.len(),
         1,
@@ -144,8 +151,14 @@ fn test_parser__error_handling__must_not_crash_on_malformed_markdown_degrade_gra
     let _ = OughtMdParser.parse_string(&deep, Path::new("deep_nesting.ought.md"));
 
     // Section heading with no body.
-    let result = OughtMdParser.parse_string("# Svc\n\n## Empty Section\n\n## Next\n\n- **MUST** clause\n", Path::new("empty_sec.ought.md"));
-    assert!(result.is_ok(), "empty section followed by valid section must not fail");
+    let result = OughtMdParser.parse_string(
+        "# Svc\n\n## Empty Section\n\n## Next\n\n- **MUST** clause\n",
+        Path::new("empty_sec.ought.md"),
+    );
+    assert!(
+        result.is_ok(),
+        "empty section followed by valid section must not fail"
+    );
     let spec = result.unwrap();
     assert_eq!(
         spec.sections.iter().map(|s| s.clauses.len()).sum::<usize>(),
@@ -157,7 +170,8 @@ fn test_parser__error_handling__must_not_crash_on_malformed_markdown_degrade_gra
 // --- must_report_parse_errors_with_the_file_path_line_number_and_a_cle_test.rs ---
 /// MUST report parse errors with the file path, line number, and a clear message
 #[test]
-fn test_parser__error_handling__must_report_parse_errors_with_the_file_path_line_number_and_a_cle() {
+fn test_parser__error_handling__must_report_parse_errors_with_the_file_path_line_number_and_a_cle()
+{
     // Directly construct a ParseError and verify all three required fields are present
     // and surfaced by the Display implementation.
     let path = PathBuf::from("spec/auth.ought.md");
@@ -169,7 +183,10 @@ fn test_parser__error_handling__must_report_parse_errors_with_the_file_path_line
 
     assert_eq!(err.file, path, "error must carry the source file path");
     assert_eq!(err.line, 23, "error must carry the 1-based line number");
-    assert!(!err.message.is_empty(), "error must include a non-empty human-readable message");
+    assert!(
+        !err.message.is_empty(),
+        "error must include a non-empty human-readable message"
+    );
 
     // Display must render all three components so callers can show "file:line: msg"
     let display = format!("{}", err);
@@ -190,7 +207,10 @@ fn test_parser__error_handling__must_report_parse_errors_with_the_file_path_line
     // report "failed to read foo.ought.md" without extra bookkeeping.
     let missing = Path::new("/nonexistent/spec.ought.md");
     let result = OughtMdParser.parse_file(missing);
-    assert!(result.is_err(), "parse_file must return Err for a missing file");
+    assert!(
+        result.is_err(),
+        "parse_file must return Err for a missing file"
+    );
     let errors = result.unwrap_err();
     assert!(!errors.is_empty(), "errors Vec must be non-empty");
     assert_eq!(
@@ -220,7 +240,8 @@ fn test_parser__error_handling__should_warn_on_likely_typos_e_g_muts_close_to_a_
 - **SHOLD** typo for SHOULD — must not become a clause
 - **SHOUD** another SHOULD variant — must not become a clause
 ";
-    let spec = OughtMdParser.parse_string(md, Path::new("typos.ought.md"))
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("typos.ought.md"))
         .expect("keyword typos must not crash the parser");
 
     let clauses = &spec.sections[0].clauses;
@@ -235,7 +256,9 @@ fn test_parser__error_handling__should_warn_on_likely_typos_e_g_muts_close_to_a_
         "**SHOLD** must not produce a clause — it is not a recognised keyword"
     );
     assert!(
-        !clauses.iter().any(|c| c.text.contains("another SHOULD variant")),
+        !clauses
+            .iter()
+            .any(|c| c.text.contains("another SHOULD variant")),
         "**SHOUD** must not produce a clause — it is not a recognised keyword"
     );
 
@@ -259,4 +282,3 @@ fn test_parser__error_handling__should_warn_on_likely_typos_e_g_muts_close_to_a_
     // These could be surfaced via a `warnings: Vec<ParseWarning>` field on a
     // `ParseResult` wrapper or alongside `ParseError` in a `ParseDiagnostic` enum.
 }
-

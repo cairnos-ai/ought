@@ -83,28 +83,6 @@ fn tool_descriptors() -> Value {
                 }
             },
             {
-                "name": "ought_survey",
-                "description": "Analyze source for uncovered behaviors",
-                "inputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "paths": {
-                            "type": "array",
-                            "items": { "type": "string" },
-                            "description": "Source paths to survey"
-                        }
-                    }
-                }
-            },
-            {
-                "name": "ought_audit",
-                "description": "Cross-spec conflict and gap analysis",
-                "inputSchema": {
-                    "type": "object",
-                    "properties": {}
-                }
-            },
-            {
                 "name": "ought_blame",
                 "description": "Explain why a clause is failing",
                 "inputSchema": {
@@ -180,7 +158,11 @@ impl McpServer {
         spec_roots: Vec<PathBuf>,
         runners: HashMap<String, RunnerConfig>,
     ) -> Self {
-        Self { project_root, spec_roots, runners }
+        Self {
+            project_root,
+            spec_roots,
+            runners,
+        }
     }
 
     /// Start serving on the given transport. Blocks until shutdown.
@@ -206,10 +188,8 @@ impl McpServer {
             self.spec_roots.clone(),
             self.runners.clone(),
         );
-        let resource_handler = ResourceHandler::new(
-            self.project_root.clone(),
-            self.spec_roots.clone(),
-        );
+        let resource_handler =
+            ResourceHandler::new(self.project_root.clone(), self.spec_roots.clone());
 
         while let Some(line) = lines.next_line().await? {
             let line = line.trim().to_string();
@@ -222,9 +202,7 @@ impl McpServer {
             let response_str = serde_json::to_string(&response)
                 .unwrap_or_else(|_| r#"{"jsonrpc":"2.0","id":null,"error":{"code":-32603,"message":"internal serialization error"}}"#.to_string());
 
-            stdout
-                .write_all(response_str.as_bytes())
-                .await?;
+            stdout.write_all(response_str.as_bytes()).await?;
             stdout.write_all(b"\n").await?;
             stdout.flush().await?;
         }
@@ -259,9 +237,7 @@ impl McpServer {
             "tools/list" => Self::handle_tools_list(id),
             "resources/list" => Self::handle_resources_list(id),
             "tools/call" => Self::handle_tool_call(id, &params, tool_handler),
-            "resources/read" => {
-                Self::handle_resource_read(id, &params, resource_handler)
-            }
+            "resources/read" => Self::handle_resource_read(id, &params, resource_handler),
             "notifications/initialized" => {
                 // Client notification, no response needed (but we return one for simplicity)
                 serde_json::json!(null)
@@ -322,16 +298,10 @@ impl McpServer {
             "ought_check" => handler.ought_check(args),
             "ought_inspect" => handler.ought_inspect(args),
             "ought_status" => handler.ought_status(args),
-            "ought_survey" => handler.ought_survey(args),
-            "ought_audit" => handler.ought_audit(args),
             "ought_blame" => handler.ought_blame(args),
             "ought_bisect" => handler.ought_bisect(args),
             _ => {
-                return jsonrpc_error(
-                    id,
-                    -32602,
-                    &format!("Unknown tool: {}", tool_name),
-                );
+                return jsonrpc_error(id, -32602, &format!("Unknown tool: {}", tool_name));
             }
         };
 
@@ -347,11 +317,7 @@ impl McpServer {
         }
     }
 
-    fn handle_resource_read(
-        id: Value,
-        params: &Value,
-        handler: &ResourceHandler,
-    ) -> Value {
+    fn handle_resource_read(id: Value, params: &Value, handler: &ResourceHandler) -> Value {
         let uri = match params.get("uri").and_then(|u| u.as_str()) {
             Some(u) => u,
             None => {
@@ -370,11 +336,7 @@ impl McpServer {
         } else if uri == "ought://manifest" {
             handler.manifest()
         } else {
-            return jsonrpc_error(
-                id,
-                -32602,
-                &format!("Unknown resource URI: {}", uri),
-            );
+            return jsonrpc_error(id, -32602, &format!("Unknown resource URI: {}", uri));
         };
 
         match result {
