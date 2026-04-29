@@ -109,6 +109,9 @@ async fn run_one_assignment(
     let agent = match Agent::builder()
         .with_llm(llm)
         .with_tools(tools_for_agent)
+        .with_event_sink(Arc::new(crate::terminal_events::TerminalEventSink::new(
+            assignment_id.clone(),
+        )))
         .with_loop(Box::new(ReactLoop::new().with_system_prompt(system)))
         .with_max_turns(max_turns)
         .build()

@@ -8,6 +8,7 @@ pub mod extract_tools;
 pub mod generator;
 pub mod manifest;
 pub mod orchestrator;
+mod terminal_events;
 pub mod tool_set;
 pub mod tools;
 
