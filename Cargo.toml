@@ -34,13 +34,12 @@ ought-server = { path = "crates/ought-server", version = "0.2.1" }
 # The CLI package is named `ought` (binary + thin library for its `Config`).
 ought = { path = "crates/ought-cli", version = "0.2.1" }
 
-# Sibling open-harness repo — the LLM + agent framework ought-gen builds on.
-# Path-only until open-harness is published; pin cuts across ought's workspace.
-oharness-core = { path = "../open-harness/crates/oharness-core" }
-oharness-llm = { path = "../open-harness/crates/oharness-llm" }
-oharness-providers = { path = "../open-harness/crates/oharness-providers", default-features = false, features = ["anthropic", "openai", "openai-codex", "openrouter", "ollama"] }
-oharness-tools = { path = "../open-harness/crates/oharness-tools", default-features = false }
-oharness-loop = { path = "../open-harness/crates/oharness-loop", default-features = false, features = ["react"] }
+# open-harness provides the LLM provider and agent loop primitives.
+oharness-core = "0.1.0"
+oharness-llm = "0.1.0"
+oharness-providers = { version = "0.1.0", default-features = false, features = ["anthropic", "openai", "openai-codex", "openrouter", "ollama"] }
+oharness-tools = { version = "0.1.0", default-features = false }
+oharness-loop = { version = "0.1.0", default-features = false, features = ["react"] }
 
 anyhow = "1"
 thiserror = "2"
