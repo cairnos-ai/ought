@@ -9,20 +9,18 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use ought_cli::config::Config;
-use ought_spec::{OughtMdParser, Parser, SpecGraph};
 use ought_spec::types::*;
+use ought_spec::{OughtMdParser, Parser, SpecGraph};
 
-use crate::helpers::{
-    ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test,
-};
+use crate::helpers::{ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test};
 
 /// MAY prompt the user interactively for generator provider and model preferences.
 /// When stdin is not a terminal (piped from /dev/null), the command must not hang
 /// indefinitely; it must terminate with a defined exit code.
 #[test]
 fn test_cli__init__may_prompt_the_user_interactively_for_generator_provider_and_mod() {
-    let dir = std::env::temp_dir()
-        .join(format!("ought_init_noninteractive_{}", std::process::id()));
+    let dir =
+        std::env::temp_dir().join(format!("ought_init_noninteractive_{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
 
     let bin = ought_bin();
@@ -119,8 +117,7 @@ fn test_cli__init__must_detect_the_project_language_from_existing_config_files_c
 /// MUST NOT overwrite an existing `ought.toml`.
 #[test]
 fn test_cli__init__must_not_overwrite_an_existing_ought_toml() {
-    let dir = std::env::temp_dir()
-        .join(format!("ought_init_no_overwrite_{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("ought_init_no_overwrite_{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
 
     let original_content =
@@ -155,8 +152,7 @@ fn test_cli__init__must_not_overwrite_an_existing_ought_toml() {
 /// when run in a project directory.
 #[test]
 fn test_cli__init__must_scaffold_an_ought_toml_an_ought_directory_and_an_example_spe() {
-    let dir = std::env::temp_dir()
-        .join(format!("ought_init_scaffold_{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("ought_init_scaffold_{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
 
     let bin = ought_bin();
@@ -186,12 +182,7 @@ fn test_cli__init__must_scaffold_an_ought_toml_an_ought_directory_and_an_example
     let spec_files: Vec<_> = std::fs::read_dir(dir.join("ought"))
         .expect("ought/ must be readable")
         .filter_map(|e| e.ok())
-        .filter(|e| {
-            e.path()
-                .extension()
-                .map(|x| x == "md")
-                .unwrap_or(false)
-        })
+        .filter(|e| e.path().extension().map(|x| x == "md").unwrap_or(false))
         .collect();
 
     assert!(
@@ -201,4 +192,3 @@ fn test_cli__init__must_scaffold_an_ought_toml_an_ought_directory_and_an_example
 
     let _ = std::fs::remove_dir_all(&dir);
 }
-

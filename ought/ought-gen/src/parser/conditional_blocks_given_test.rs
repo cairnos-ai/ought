@@ -16,10 +16,12 @@ use ought_spec::types::*;
 // --- must_attach_the_given_condition_text_to_all_clauses_nested_within_test.rs ---
 /// MUST attach the GIVEN condition text to all clauses nested within it
 #[test]
-fn test_parser__conditional_blocks_given__must_attach_the_given_condition_text_to_all_clauses_nested_within() {
-
+fn test_parser__conditional_blocks_given__must_attach_the_given_condition_text_to_all_clauses_nested_within()
+ {
     fn parse(md: &str) -> Spec {
-        OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed")
+        OughtMdParser
+            .parse_string(md, Path::new("test.ought.md"))
+            .expect("parse failed")
     }
 
     let md = r#"# Svc
@@ -33,7 +35,11 @@ fn test_parser__conditional_blocks_given__must_attach_the_given_condition_text_t
 "#;
     let spec = parse(md);
     let clauses = &spec.sections[0].clauses;
-    assert_eq!(clauses.len(), 3, "all three nested clauses should be emitted");
+    assert_eq!(
+        clauses.len(),
+        3,
+        "all three nested clauses should be emitted"
+    );
     for clause in clauses {
         assert_eq!(
             clause.condition.as_deref(),
@@ -47,10 +53,12 @@ fn test_parser__conditional_blocks_given__must_attach_the_given_condition_text_t
 // --- must_not_treat_given_itself_as_a_testable_clause_it_is_a_grouping_con_test.rs ---
 /// MUST NOT treat GIVEN itself as a testable clause — it is a grouping construct with a precondition
 #[test]
-fn test_parser__conditional_blocks_given__must_not_treat_given_itself_as_a_testable_clause_it_is_a_grouping_con() {
-
+fn test_parser__conditional_blocks_given__must_not_treat_given_itself_as_a_testable_clause_it_is_a_grouping_con()
+ {
     fn parse(md: &str) -> Spec {
-        OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed")
+        OughtMdParser
+            .parse_string(md, Path::new("test.ought.md"))
+            .expect("parse failed")
     }
 
     let md = r#"# Svc
@@ -64,7 +72,8 @@ fn test_parser__conditional_blocks_given__must_not_treat_given_itself_as_a_testa
     let clauses = &spec.sections[0].clauses;
 
     // GIVEN itself must not appear as a clause
-    let given_clauses: Vec<_> = clauses.iter()
+    let given_clauses: Vec<_> = clauses
+        .iter()
         .filter(|c| c.keyword == Keyword::Given)
         .collect();
     assert!(
@@ -81,10 +90,12 @@ fn test_parser__conditional_blocks_given__must_not_treat_given_itself_as_a_testa
 // --- must_parse_given_as_a_block_level_keyword_that_contains_nested_cl_test.rs ---
 /// MUST parse `**GIVEN**` as a block-level keyword that contains nested clauses
 #[test]
-fn test_parser__conditional_blocks_given__must_parse_given_as_a_block_level_keyword_that_contains_nested_cl() {
-
+fn test_parser__conditional_blocks_given__must_parse_given_as_a_block_level_keyword_that_contains_nested_cl()
+ {
     fn parse(md: &str) -> Spec {
-        OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed")
+        OughtMdParser
+            .parse_string(md, Path::new("test.ought.md"))
+            .expect("parse failed")
     }
 
     let md = r#"# Svc
@@ -108,10 +119,12 @@ fn test_parser__conditional_blocks_given__must_parse_given_as_a_block_level_keyw
 // --- must_require_nested_clauses_to_be_indented_under_the_given_bullet_test.rs ---
 /// MUST require nested clauses to be indented under the GIVEN bullet (standard markdown nesting)
 #[test]
-fn test_parser__conditional_blocks_given__must_require_nested_clauses_to_be_indented_under_the_given_bullet() {
-
+fn test_parser__conditional_blocks_given__must_require_nested_clauses_to_be_indented_under_the_given_bullet()
+ {
     fn parse(md: &str) -> Spec {
-        OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed")
+        OughtMdParser
+            .parse_string(md, Path::new("test.ought.md"))
+            .expect("parse failed")
     }
 
     // The MUST is at the same indentation level as the GIVEN — not nested under it.
@@ -126,7 +139,9 @@ fn test_parser__conditional_blocks_given__must_require_nested_clauses_to_be_inde
     let spec = parse(md);
     let clauses = &spec.sections[0].clauses;
     // The MUST is a sibling of GIVEN, not a child — it gets no condition
-    let must_clause = clauses.iter().find(|c| c.keyword == Keyword::Must)
+    let must_clause = clauses
+        .iter()
+        .find(|c| c.keyword == Keyword::Must)
         .expect("expected a MUST clause");
     assert!(
         must_clause.condition.is_none(),
@@ -137,10 +152,12 @@ fn test_parser__conditional_blocks_given__must_require_nested_clauses_to_be_inde
 // --- must_support_given_blocks_containing_any_keyword_must_should_may_test.rs ---
 /// MUST support GIVEN blocks containing any keyword (MUST, SHOULD, MAY, WONT, OTHERWISE, etc.)
 #[test]
-fn test_parser__conditional_blocks_given__must_support_given_blocks_containing_any_keyword_must_should_may() {
-
+fn test_parser__conditional_blocks_given__must_support_given_blocks_containing_any_keyword_must_should_may()
+ {
     fn parse(md: &str) -> Spec {
-        OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed")
+        OughtMdParser
+            .parse_string(md, Path::new("test.ought.md"))
+            .expect("parse failed")
     }
 
     let md = r#"# Svc
@@ -160,19 +177,26 @@ fn test_parser__conditional_blocks_given__must_support_given_blocks_containing_a
     assert_eq!(clauses.len(), 6);
 
     let keywords: Vec<Keyword> = clauses.iter().map(|c| c.keyword).collect();
-    assert!(keywords.contains(&Keyword::Must),      "MUST inside GIVEN");
-    assert!(keywords.contains(&Keyword::MustNot),   "MUST NOT inside GIVEN");
-    assert!(keywords.contains(&Keyword::Should),    "SHOULD inside GIVEN");
-    assert!(keywords.contains(&Keyword::ShouldNot), "SHOULD NOT inside GIVEN");
-    assert!(keywords.contains(&Keyword::May),       "MAY inside GIVEN");
-    assert!(keywords.contains(&Keyword::Wont),      "WONT inside GIVEN");
+    assert!(keywords.contains(&Keyword::Must), "MUST inside GIVEN");
+    assert!(
+        keywords.contains(&Keyword::MustNot),
+        "MUST NOT inside GIVEN"
+    );
+    assert!(keywords.contains(&Keyword::Should), "SHOULD inside GIVEN");
+    assert!(
+        keywords.contains(&Keyword::ShouldNot),
+        "SHOULD NOT inside GIVEN"
+    );
+    assert!(keywords.contains(&Keyword::May), "MAY inside GIVEN");
+    assert!(keywords.contains(&Keyword::Wont), "WONT inside GIVEN");
 
     // All inherit the condition
     for clause in clauses {
         assert_eq!(
             clause.condition.as_deref(),
             Some("the feature flag is enabled:"),
-            "clause '{}' missing condition", clause.text
+            "clause '{}' missing condition",
+            clause.text
         );
     }
 }
@@ -181,9 +205,10 @@ fn test_parser__conditional_blocks_given__must_support_given_blocks_containing_a
 /// MUST support multiple GIVEN blocks within a section
 #[test]
 fn test_parser__conditional_blocks_given__must_support_multiple_given_blocks_within_a_section() {
-
     fn parse(md: &str) -> Spec {
-        OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed")
+        OughtMdParser
+            .parse_string(md, Path::new("test.ought.md"))
+            .expect("parse failed")
     }
 
     let md = r#"# Svc
@@ -199,16 +224,22 @@ fn test_parser__conditional_blocks_given__must_support_multiple_given_blocks_wit
 "#;
     let spec = parse(md);
     let clauses = &spec.sections[0].clauses;
-    assert_eq!(clauses.len(), 4, "two GIVEN blocks with two children each = four clauses");
+    assert_eq!(
+        clauses.len(),
+        4,
+        "two GIVEN blocks with two children each = four clauses"
+    );
 
-    let admin_clauses: Vec<_> = clauses.iter()
+    let admin_clauses: Vec<_> = clauses
+        .iter()
         .filter(|c| c.condition.as_deref() == Some("the user is an admin:"))
         .collect();
     assert_eq!(admin_clauses.len(), 2);
     assert!(admin_clauses.iter().any(|c| c.keyword == Keyword::Must));
     assert!(admin_clauses.iter().any(|c| c.keyword == Keyword::May));
 
-    let guest_clauses: Vec<_> = clauses.iter()
+    let guest_clauses: Vec<_> = clauses
+        .iter()
         .filter(|c| c.condition.as_deref() == Some("the user is a guest:"))
         .collect();
     assert_eq!(guest_clauses.len(), 2);
@@ -219,10 +250,12 @@ fn test_parser__conditional_blocks_given__must_support_multiple_given_blocks_wit
 // --- should_support_nested_given_blocks_conditions_that_narrow_further_test.rs ---
 /// SHOULD support nested GIVEN blocks (conditions that narrow further)
 #[test]
-fn test_parser__conditional_blocks_given__should_support_nested_given_blocks_conditions_that_narrow_further() {
-
+fn test_parser__conditional_blocks_given__should_support_nested_given_blocks_conditions_that_narrow_further()
+ {
     fn parse(md: &str) -> Spec {
-        OughtMdParser.parse_string(md, Path::new("test.ought.md")).expect("parse failed")
+        OughtMdParser
+            .parse_string(md, Path::new("test.ought.md"))
+            .expect("parse failed")
     }
 
     let md = r#"# Svc
@@ -245,4 +278,3 @@ fn test_parser__conditional_blocks_given__should_support_nested_given_blocks_con
         "clause nested inside two GIVENs must carry a condition"
     );
 }
-

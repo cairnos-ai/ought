@@ -90,7 +90,10 @@ mod tests {
             // Must have all the fields that a resolve() without user overrides needs.
             assert!(p.command.is_some(), "{name} missing command");
             assert!(p.format.is_some(), "{name} missing format");
-            assert!(p.file_extensions.is_some(), "{name} missing file_extensions");
+            assert!(
+                p.file_extensions.is_some(),
+                "{name} missing file_extensions"
+            );
         }
     }
 

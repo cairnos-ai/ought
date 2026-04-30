@@ -166,10 +166,16 @@ pub fn report(results: &RunResult, specs: &[Spec]) -> anyhow::Result<String> {
                     keyword: keyword_str(*keyword).to_string(),
                     severity: severity_str(*keyword).to_string(),
                     status: status_str(tr.status).to_string(),
-                    message: tr.message.clone().or_else(|| tr.details.failure_message.clone()),
+                    message: tr
+                        .message
+                        .clone()
+                        .or_else(|| tr.details.failure_message.clone()),
                     duration_ms: tr.duration.as_secs_f64() * 1000.0,
                     iterations: tr.details.iterations,
-                    measured_duration_ms: tr.details.measured_duration.map(|d| d.as_secs_f64() * 1000.0),
+                    measured_duration_ms: tr
+                        .details
+                        .measured_duration
+                        .map(|d| d.as_secs_f64() * 1000.0),
                     pending: false,
                 });
             }

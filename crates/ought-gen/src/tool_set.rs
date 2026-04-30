@@ -1,4 +1,4 @@
-//! [`ought_agent::ToolSet`] implementation that exposes the
+//! [`oharness_tools::ToolSet`] implementation that exposes the
 //! `ought_gen::tools` primitives to an in-process agent loop.
 //!
 //! Wraps the same primitives the MCP server uses, so behavior is
@@ -13,8 +13,8 @@ use std::sync::{Arc, Mutex};
 use async_trait::async_trait;
 use serde_json::{Value, json};
 
-use ought_agent::{ToolOutcome, ToolSet};
-use ought_llm::ToolSpec;
+use oharness_tools::context::ToolContext;
+use oharness_tools::{ToolOutcome, ToolSet, ToolSpec};
 
 use crate::agent::AgentAssignment;
 use crate::manifest::Manifest;
@@ -82,7 +82,7 @@ impl ToolSet for GenerateToolSet {
         &self.specs
     }
 
-    async fn execute(&self, name: &str, input: Value) -> ToolOutcome {
+    async fn execute(&self, name: &str, input: Value, _ctx: &ToolContext) -> ToolOutcome {
         match name {
             "get_assignment" => {
                 let out = tools::get_assignment(&self.assignment);
@@ -92,7 +92,7 @@ impl ToolSet for GenerateToolSet {
             "read_source" => {
                 let path = match input.get("path").and_then(|v| v.as_str()) {
                     Some(p) => p.to_string(),
-                    None => return ToolOutcome::err("missing required argument: path"),
+                    None => return err("missing required argument: path"),
                 };
                 let start_line = input
                     .get("start_line")
@@ -110,8 +110,8 @@ impl ToolSet for GenerateToolSet {
                 .await
                 {
                     Ok(Ok(out)) => serde_outcome(&out),
-                    Ok(Err(e)) => ToolOutcome::err(e.to_string()),
-                    Err(e) => ToolOutcome::err(format!("read_source task panicked: {}", e)),
+                    Ok(Err(e)) => err(e.to_string()),
+                    Err(e) => err(format!("read_source task panicked: {}", e)),
                 }
             }
 
@@ -128,18 +128,18 @@ impl ToolSet for GenerateToolSet {
                 .await;
                 match out {
                     Ok(o) => serde_outcome(&o),
-                    Err(e) => ToolOutcome::err(format!("list task panicked: {}", e)),
+                    Err(e) => err(format!("list task panicked: {}", e)),
                 }
             }
 
             "write_test" => {
                 let clause_id = match input.get("clause_id").and_then(|v| v.as_str()) {
                     Some(s) => s.to_string(),
-                    None => return ToolOutcome::err("missing required argument: clause_id"),
+                    None => return err("missing required argument: clause_id"),
                 };
                 let code = match input.get("code").and_then(|v| v.as_str()) {
                     Some(s) => s.to_string(),
-                    None => return ToolOutcome::err("missing required argument: code"),
+                    None => return err("missing required argument: code"),
                 };
                 let assignment = self.assignment.clone();
                 let manifest = self.manifest.clone();
@@ -162,26 +162,26 @@ impl ToolSet for GenerateToolSet {
                             .unwrap()
                             .write_errors
                             .push((clause_id, msg.clone()));
-                        ToolOutcome::err(msg)
+                        err(msg)
                     }
-                    Err(e) => ToolOutcome::err(format!("write_test task panicked: {}", e)),
+                    Err(e) => err(format!("write_test task panicked: {}", e)),
                 }
             }
 
             "write_tests_batch" => {
                 let tests_arr = match input.get("tests").and_then(|v| v.as_array()) {
                     Some(a) => a.clone(),
-                    None => return ToolOutcome::err("missing required argument: tests (array)"),
+                    None => return err("missing required argument: tests (array)"),
                 };
                 let mut pairs: Vec<(String, String)> = Vec::with_capacity(tests_arr.len());
                 for t in &tests_arr {
                     let cid = match t.get("clause_id").and_then(|v| v.as_str()) {
                         Some(s) => s.to_string(),
-                        None => return ToolOutcome::err("each test must have clause_id"),
+                        None => return err("each test must have clause_id"),
                     };
                     let code = match t.get("code").and_then(|v| v.as_str()) {
                         Some(s) => s.to_string(),
-                        None => return ToolOutcome::err("each test must have code"),
+                        None => return err("each test must have code"),
                     };
                     pairs.push((cid, code));
                 }
@@ -203,15 +203,13 @@ impl ToolSet for GenerateToolSet {
                                 }
                                 WriteTestResult::Err {
                                     clause_id, error, ..
-                                } => u
-                                    .write_errors
-                                    .push((clause_id.clone(), error.clone())),
+                                } => u.write_errors.push((clause_id.clone(), error.clone())),
                             }
                         }
                         drop(u);
                         serde_outcome(&out)
                     }
-                    Err(e) => ToolOutcome::err(format!("batch write task panicked: {}", e)),
+                    Err(e) => err(format!("batch write task panicked: {}", e)),
                 }
             }
 
@@ -222,7 +220,7 @@ impl ToolSet for GenerateToolSet {
                         .filter_map(|v| v.as_str().map(str::to_string))
                         .collect(),
                     None => {
-                        return ToolOutcome::err("missing required argument: clause_ids (array)");
+                        return err("missing required argument: clause_ids (array)");
                     }
                 };
                 let test_dir = PathBuf::from(&self.assignment.test_dir);
@@ -245,7 +243,7 @@ impl ToolSet for GenerateToolSet {
                             .count();
                         serde_outcome(&out)
                     }
-                    Err(e) => ToolOutcome::err(format!("check_compiles task panicked: {}", e)),
+                    Err(e) => err(format!("check_compiles task panicked: {}", e)),
                 }
             }
 
@@ -264,19 +262,30 @@ impl ToolSet for GenerateToolSet {
                     .and_then(|v| v.as_u64())
                     .unwrap_or(0);
                 tools::report_progress(&self.assignment.id, status, message, completed, total);
-                ToolOutcome::ok(json!({ "acknowledged": true }).to_string())
+                ok(json!({ "acknowledged": true }).to_string())
             }
 
-            other => ToolOutcome::err(format!("unknown tool: {}", other)),
+            other => err(format!("unknown tool: {}", other)),
         }
     }
 }
 
 fn serde_outcome<T: serde::Serialize>(value: &T) -> ToolOutcome {
     match serde_json::to_string(value) {
-        Ok(s) => ToolOutcome::ok(s),
-        Err(e) => ToolOutcome::err(format!("serialization error: {}", e)),
+        Ok(s) => ok(s),
+        Err(e) => err(format!("serialization error: {}", e)),
     }
+}
+
+/// Shim: `ought_agent::ToolOutcome::ok` → `oharness_tools::ToolOutcome::success_text`.
+fn ok(s: impl Into<String>) -> ToolOutcome {
+    ToolOutcome::success_text(s)
+}
+
+/// Shim: `ought_agent::ToolOutcome::err` → `oharness_tools::ToolOutcome::error(_, true)`.
+/// All ought-gen tool failures are recoverable — the model retries.
+fn err(s: impl Into<String>) -> ToolOutcome {
+    ToolOutcome::error(s, true)
 }
 
 /// JSON-Schema-shaped tool definitions sent to the model.
@@ -284,20 +293,18 @@ fn tool_specs() -> Vec<ToolSpec> {
     vec![
         ToolSpec {
             name: "get_assignment".into(),
-            description:
-                "Return the agent's assignment: the clauses to generate tests for, plus \
+            description: "Return the agent's assignment: the clauses to generate tests for, plus \
                  metadata about the project and target language."
-                    .into(),
+                .into(),
             input_schema: json!({ "type": "object", "properties": {} }),
         },
         ToolSpec {
             name: "read_source".into(),
-            description:
-                "Read a source file relative to the project root. Use this to understand \
+            description: "Read a source file relative to the project root. Use this to understand \
                  the code under test before generating assertions against it. Reads are \
                  capped at a few tens of KB; if `truncated: true` comes back, call again \
                  with `start_line` / `end_line` to read a specific window."
-                    .into(),
+                .into(),
             input_schema: json!({
                 "type": "object",
                 "properties": {
@@ -316,10 +323,9 @@ fn tool_specs() -> Vec<ToolSpec> {
         },
         ToolSpec {
             name: "list_source_files".into(),
-            description:
-                "List source files matching a glob pattern (e.g. \"**/*.rs\") under the \
+            description: "List source files matching a glob pattern (e.g. \"**/*.rs\") under the \
                  project root."
-                    .into(),
+                .into(),
             input_schema: json!({
                 "type": "object",
                 "properties": {
@@ -345,9 +351,8 @@ fn tool_specs() -> Vec<ToolSpec> {
         },
         ToolSpec {
             name: "write_tests_batch".into(),
-            description:
-                "Write multiple tests in one call. Returns per-test success/failure."
-                    .into(),
+            description: "Write multiple tests in one call. Returns per-test success/failure."
+                .into(),
             input_schema: json!({
                 "type": "object",
                 "properties": {
@@ -368,10 +373,9 @@ fn tool_specs() -> Vec<ToolSpec> {
         },
         ToolSpec {
             name: "check_compiles".into(),
-            description:
-                "Compile-check the test files for the given clause ids. Use this after \
+            description: "Compile-check the test files for the given clause ids. Use this after \
                  writing to catch syntax errors before reporting completion."
-                    .into(),
+                .into(),
             input_schema: json!({
                 "type": "object",
                 "properties": {
@@ -382,10 +386,9 @@ fn tool_specs() -> Vec<ToolSpec> {
         },
         ToolSpec {
             name: "report_progress".into(),
-            description:
-                "Emit a progress line to the human user. Optional but encouraged for \
+            description: "Emit a progress line to the human user. Optional but encouraged for \
                  long-running batches."
-                    .into(),
+                .into(),
             input_schema: json!({
                 "type": "object",
                 "properties": {

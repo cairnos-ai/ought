@@ -15,7 +15,7 @@ use crate::types::{Keyword, Metadata, ParseError, Section, Spec, SpecRef, Tempor
 
 use super::clauses::build_clauses;
 use super::ids::{line_number_at_offset, slugify};
-use super::keywords::{parse_keyword, ParsedKeyword};
+use super::keywords::{ParsedKeyword, parse_keyword};
 use super::metadata::{parse_requires_line, split_metadata_values};
 
 /// Entry point for parsing a spec from an in-memory string. The path is used
@@ -71,7 +71,7 @@ struct ParseState {
     // Item stack: each Start(Item) pushes a frame; End(Item) pops it
     item_stack: Vec<ItemFrame>,
 
-    list_depth: usize, // 0 = not in list, 1 = top-level list, 2 = nested, etc.
+    list_depth: usize,     // 0 = not in list, 1 = top-level list, 2 = nested, etc.
     metadata_region: bool, // between H1 and first H2
     prose_buf: String,
     just_finished_clause: bool, // to capture following code blocks as hints
@@ -414,7 +414,9 @@ impl ParseState {
                             self.errors.push(ParseError {
                                 file: self.file.clone(),
                                 line,
-                                message: "MUST BY requires a duration (e.g. MUST BY 200ms, MUST BY 5s)".to_string(),
+                                message:
+                                    "MUST BY requires a duration (e.g. MUST BY 200ms, MUST BY 5s)"
+                                        .to_string(),
                             });
                             // Don't produce a clause for this — it's a parse error
                         }
@@ -459,24 +461,24 @@ impl ParseState {
                         if kw == Keyword::MustBy && dur.is_none() {
                             // error already recorded above
                         } else {
-                        let item = PendingItem {
-                            keyword: kw,
-                            pending,
-                            text,
-                            temporal,
-                            line,
-                            nested_items,
-                            hints: Vec::new(),
-                        };
+                            let item = PendingItem {
+                                keyword: kw,
+                                pending,
+                                text,
+                                temporal,
+                                line,
+                                nested_items,
+                                hints: Vec::new(),
+                            };
 
-                        // Determine nesting: if item_stack is empty, this is a top-level item.
-                        // If item_stack is non-empty, this is nested under the parent frame.
-                        if let Some(parent_frame) = self.item_stack.last_mut() {
-                            parent_frame.nested_items.push(item);
-                        } else {
-                            // Top-level item
-                            self.depth1_items.push(item);
-                        }
+                            // Determine nesting: if item_stack is empty, this is a top-level item.
+                            // If item_stack is non-empty, this is nested under the parent frame.
+                            if let Some(parent_frame) = self.item_stack.last_mut() {
+                                parent_frame.nested_items.push(item);
+                            } else {
+                                // Top-level item
+                                self.depth1_items.push(item);
+                            }
                         }
                         self.just_finished_clause = true;
                     } else {
@@ -519,9 +521,7 @@ impl ParseState {
                 }
             }
 
-            Event::Start(Tag::Paragraph)
-                if self.metadata_region && !self.in_list_item() =>
-            {
+            Event::Start(Tag::Paragraph) if self.metadata_region && !self.in_list_item() => {
                 self.in_metadata_paragraph = true;
                 self.metadata_paragraph_text.clear();
             }
@@ -659,14 +659,15 @@ impl ParseState {
     fn flush_prose(&mut self) {
         let prose = std::mem::take(&mut self.prose_buf).trim().to_string();
         if !prose.is_empty()
-            && let Some((_, section)) = self.section_stack.last_mut() {
-                if section.prose.is_empty() {
-                    section.prose = prose;
-                } else {
-                    section.prose.push('\n');
-                    section.prose.push_str(&prose);
-                }
+            && let Some((_, section)) = self.section_stack.last_mut()
+        {
+            if section.prose.is_empty() {
+                section.prose = prose;
+            } else {
+                section.prose.push('\n');
+                section.prose.push_str(&prose);
             }
+        }
     }
 
     fn flush_pending_items(&mut self) {
@@ -699,9 +700,10 @@ impl ParseState {
 
     fn attach_hint_to_last_clause(&mut self, code: String) {
         if let Some((_, section)) = self.section_stack.last_mut()
-            && let Some(clause) = section.clauses.last_mut() {
-                clause.hints.push(code);
-            }
+            && let Some(clause) = section.clauses.last_mut()
+        {
+            clause.hints.push(code);
+        }
     }
 
     fn flush_section_stack(&mut self) {

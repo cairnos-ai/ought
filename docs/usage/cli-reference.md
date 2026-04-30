@@ -70,19 +70,28 @@ Show the diff between the current generated tests and what would be produced by 
 ought diff
 ```
 
-## ought extract
+## ought align
 
-Reverse-engineer `.ought.md` spec drafts from your existing source. Audits whatever specs you already have (rule-based, no LLM), then dispatches LLM agents to draft new specs for uncovered source areas.
+Use LLM agents to check existing specs with `source:` mappings for drift against source code and generated tests. This command is report-only and does not write files.
 
 ```sh
-ought extract                           # extract from configured [context].search_paths
-ought extract src/auth/ src/billing/    # limit to specific source paths
-ought extract --dry-run                 # print drafts to stdout instead of writing files
-ought extract --out specs/drafts/       # write drafts somewhere other than the first [specs].roots entry
-ought extract --force                   # overwrite existing .ought.md files
-ought extract --no-audit                # skip the audit phase over existing specs
-ought extract --model claude-opus-4-7   # override the configured generator model
-ought extract --parallelism 4           # cap concurrent agents
+ought align                             # report drift in mapped specs
+ought align src/auth/ src/billing/      # limit to mapped specs under source paths
+ought align --model claude-opus-4-7     # override the configured generator model
+ought align --parallelism 4             # cap concurrent agents
+```
+
+## ought discover
+
+Use LLM agents to find source behavior that appears to be missing specs. Existing specs are included as context so suggestions match the current spec style and avoid duplicating covered behavior. Pass an optional quoted focus string to constrain discovery to one area.
+
+```sh
+ought discover                          # report possible missing specs
+ought discover "auth logout"            # focus discovery on one area
+ought discover --path src/auth/         # limit source roots
+ought discover --apply                  # write discovered specs
+ought discover --model claude-opus-4-7  # override the configured generator model
+ought discover --parallelism 4          # cap concurrent agents
 ```
 
 ## ought watch
@@ -101,19 +110,6 @@ Launch the visual spec viewer in the browser.
 ought view                              # serves on :3333, opens the browser
 ought view --port 8080
 ought view --no-open
-```
-
-## ought analyze
-
-Spec-level analysis commands.
-
-### ought analyze survey
-
-Find behaviors in your source code that are not covered by any spec clause.
-
-```sh
-ought analyze survey
-ought analyze survey src/auth/
 ```
 
 ## ought debug

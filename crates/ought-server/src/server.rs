@@ -46,10 +46,7 @@ async fn static_handler(uri: axum::http::Uri) -> impl IntoResponse {
             // SPA fallback: serve index.html for client-side routing
             match Assets::get("index.html") {
                 Some(content) => (
-                    [(
-                        axum::http::header::CONTENT_TYPE,
-                        "text/html".to_string(),
-                    )],
+                    [(axum::http::header::CONTENT_TYPE, "text/html".to_string())],
                     content.data.to_vec(),
                 )
                     .into_response(),

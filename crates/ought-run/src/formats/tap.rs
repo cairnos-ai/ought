@@ -135,9 +135,6 @@ ok 3 - test_auth__login__may_cache # SKIP pending
         let map = HashMap::new();
         let results = parse(tap, &map);
         assert_eq!(results.len(), 2);
-        assert_eq!(
-            results[0].clause_id,
-            ClauseId("x::y".to_string())
-        );
+        assert_eq!(results[0].clause_id, ClauseId("x::y".to_string()));
     }
 }

@@ -22,8 +22,6 @@ requires: [cli](../cli/cli.ought.md), [parser](../engine/parser.ought.md), [runn
 - **MUST** expose `ought_check` — validate spec syntax
 - **MUST** expose `ought_inspect` — return generated test code for a clause
 - **MUST** expose `ought_status` — return spec coverage summary (clause counts by severity and status)
-- **MUST** expose `ought_survey` — analyze source for uncovered behaviors
-- **MUST** expose `ought_audit` — cross-spec conflict and gap analysis
 - **MUST** expose `ought_blame` — explain why a clause is failing
 - **MUST** return structured JSON responses from all tools (not terminal-formatted text)
 - **SHOULD** expose `ought_bisect` — find the breaking commit for a clause
@@ -43,7 +41,7 @@ requires: [cli](../cli/cli.ought.md), [parser](../engine/parser.ought.md), [runn
 - **MUST** return MCP-compliant error responses with error codes and messages
 - **MUST NOT** crash the server on a single tool invocation failure
 - **MUST ALWAYS** return valid JSON-RPC responses, even for internal errors
-- **MUST ALWAYS** remain responsive to new requests while processing long-running tools (survey, audit, bisect)
+- **MUST ALWAYS** remain responsive to new requests while processing long-running tools (blame, bisect)
 - **SHOULD** include actionable error details (e.g. "`claude` CLI not found — install it with `brew install claude`" not just "generation failed")
 - **SHOULD** send progress notifications to the client when a tool invocation exceeds 60 seconds
   - **OTHERWISE** the client may assume the request has timed out

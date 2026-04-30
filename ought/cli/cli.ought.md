@@ -37,6 +37,26 @@ source: src/cli/
 - **SHOULD** show a progress indicator during LLM generation
 - **SHOULD** support targeting a specific spec file: `ought generate ought/auth.ought.md`
 
+## Align
+
+- **MUST** use the configured LLM provider and agent harness to report drift in existing specs with `source:` mappings
+- **MUST** classify alignment findings as update or remove
+- **MUST** use configured context search paths when no explicit paths are given
+- **MUST** report without writing files by default
+- **MUST NOT** write spec files during alignment
+- **MUST NOT** delete spec files or clauses during alignment
+
+## Discover
+
+- **MUST** use the configured LLM provider and agent harness to report source behavior that appears to be missing specs
+- **MUST** use existing specs as context when proposing new specs
+- **MUST** use configured context search paths when no explicit paths are given
+- **MUST** accept an optional focus string and instruct the agent not to propose specs outside that focus
+- **MUST** report without writing files by default
+- **MUST** support `--apply` to write new specs under the first configured spec root
+- **MUST** support `--path <path>` to override configured source roots for discovery
+- **MUST NOT** update or remove existing specs during discovery
+
 ## Check
 
 - **MUST** validate the syntax of all spec files without generating or running anything

@@ -17,5 +17,5 @@ cross boundaries live here.
 ## Notable public API
 
 - `ContextConfig` — project source-context settings (`search_paths`, `exclude`,
-  `max_files`). Consumed by the CLI (watch, survey) and available to any
+  `max_files`). Consumed by the CLI (watch, align) and available to any
   future subsystem that reasons about project source layout.

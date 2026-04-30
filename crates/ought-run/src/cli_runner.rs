@@ -66,8 +66,7 @@ impl CliRunner {
         if let Some(cmd) = &self.config.available_check {
             return Some(cmd.clone());
         }
-        shlex::split(&self.config.command)
-            .and_then(|parts| parts.into_iter().next())
+        shlex::split(&self.config.command).and_then(|parts| parts.into_iter().next())
     }
 }
 
@@ -116,7 +115,10 @@ impl Runner for CliRunner {
         // Build name→ClauseId map up front.
         let mut name_to_clause: HashMap<String, ClauseId> = HashMap::new();
         for test in tests {
-            name_to_clause.insert(clause_id_to_test_name(&test.clause_id), test.clause_id.clone());
+            name_to_clause.insert(
+                clause_id_to_test_name(&test.clause_id),
+                test.clause_id.clone(),
+            );
         }
 
         // Write generated test files to the test directory.
@@ -161,9 +163,9 @@ impl Runner for CliRunner {
         let parts = shlex::split(&expanded).ok_or_else(|| {
             anyhow::anyhow!("failed to parse runner command {:?}", self.config.command)
         })?;
-        let (program, args) = parts.split_first().ok_or_else(|| {
-            anyhow::anyhow!("runner command {:?} is empty", self.config.command)
-        })?;
+        let (program, args) = parts
+            .split_first()
+            .ok_or_else(|| anyhow::anyhow!("runner command {:?} is empty", self.config.command))?;
 
         let mut cmd = Command::new(program);
         cmd.args(args);
@@ -268,9 +270,8 @@ fn allocate_tempfiles(
         return Ok((None, None, None));
     }
 
-    let token_mentioned = |tok: &str| -> bool {
-        command.contains(tok) || env.values().any(|v| v.contains(tok))
-    };
+    let token_mentioned =
+        |tok: &str| -> bool { command.contains(tok) || env.values().any(|v| v.contains(tok)) };
 
     let junit = if matches!(format, OutputFormat::JunitXml) && token_mentioned("{junit_path}") {
         Some(tempfile::Builder::new().suffix(".xml").tempfile()?)

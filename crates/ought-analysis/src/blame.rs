@@ -14,10 +14,7 @@ pub fn blame(
     results: &RunResult,
 ) -> anyhow::Result<BlameResult> {
     // 1. Find the clause in the test results.
-    let test_result = results
-        .results
-        .iter()
-        .find(|r| r.clause_id == *clause_id);
+    let test_result = results.results.iter().find(|r| r.clause_id == *clause_id);
 
     // If the clause isn't found in results at all.
     let test_result = match test_result {
@@ -32,7 +29,9 @@ pub fn blame(
                     "Clause {} was not found in the test results. It may not have a generated test yet.",
                     clause_id
                 ),
-                suggested_fix: Some("Run `ought generate` to create tests for this clause".to_string()),
+                suggested_fix: Some(
+                    "Run `ought generate` to create tests for this clause".to_string(),
+                ),
             });
         }
     };
@@ -91,16 +90,22 @@ pub fn blame(
     };
 
     if let Some(ref diff) = recent_diff
-        && !diff.is_empty() {
-            narrative.push_str(&format!("\nRecent changes to related source files:\n{}\n", diff));
-        }
+        && !diff.is_empty()
+    {
+        narrative.push_str(&format!(
+            "\nRecent changes to related source files:\n{}\n",
+            diff
+        ));
+    }
 
     // 4. Build suggested fix.
-    let suggested_fix = likely_commit.as_ref().map(|commit| format!(
+    let suggested_fix = likely_commit.as_ref().map(|commit| {
+        format!(
             "Investigate commit {} ({}) for changes that may have broken this clause",
             &commit.hash[..7.min(commit.hash.len())],
             commit.message
-        ));
+        )
+    });
 
     Ok(BlameResult {
         clause_id: clause_id.clone(),
@@ -186,11 +191,7 @@ fn get_recent_diff(source_files: &[String], depth: usize) -> Option<String> {
     if source_files.is_empty() {
         // If no source files specified, diff all files.
         let output = std::process::Command::new("git")
-            .args([
-                "diff",
-                &format!("HEAD~{}..HEAD", depth),
-                "--stat",
-            ])
+            .args(["diff", &format!("HEAD~{}..HEAD", depth), "--stat"])
             .output()
             .ok()?;
 

@@ -1,6 +1,6 @@
 [package]
 name = "ought-analysis"
-description = "LLM-powered analysis: survey, audit, blame, bisect"
+description = "Failure diagnostics for ought"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

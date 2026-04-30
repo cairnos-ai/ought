@@ -20,7 +20,10 @@ pub struct ResourceHandler {
 
 impl ResourceHandler {
     pub fn new(project_root: PathBuf, spec_roots: Vec<PathBuf>) -> Self {
-        Self { project_root, spec_roots }
+        Self {
+            project_root,
+            spec_roots,
+        }
     }
 
     /// Load the spec graph from the configured roots.

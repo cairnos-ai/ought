@@ -153,10 +153,7 @@ test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
         let results = parse(output, &map);
         assert_eq!(results.len(), 2);
         assert!(results.iter().all(|r| r.status == TestStatus::Passed));
-        assert_eq!(
-            results[0].clause_id,
-            ClauseId("auth::login".to_string())
-        );
+        assert_eq!(results[0].clause_id, ClauseId("auth::login".to_string()));
     }
 
     #[test]

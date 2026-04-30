@@ -258,10 +258,7 @@ fn detect_cycles(specs: &[Spec], edges: &[(usize, usize)]) -> Vec<ParseError> {
                 errors.push(ParseError {
                     file: specs[node].source_path.clone(),
                     line: 0,
-                    message: format!(
-                        "circular dependency detected: {}",
-                        cycle_names.join(" -> ")
-                    ),
+                    message: format!("circular dependency detected: {}", cycle_names.join(" -> ")),
                 });
             } else if visited[neighbor] == 0 {
                 dfs(neighbor, adjacency, visited, path, specs, errors);
@@ -313,7 +310,10 @@ mod tests {
     }
 
     fn names(specs: &[&Spec]) -> Vec<String> {
-        specs.iter().map(|s| s.source_path.display().to_string()).collect()
+        specs
+            .iter()
+            .map(|s| s.source_path.display().to_string())
+            .collect()
     }
 
     #[test]
@@ -371,7 +371,9 @@ mod tests {
         ])
         .expect_err("cycle must be rejected");
         assert!(
-            errors.iter().any(|e| e.message.contains("circular dependency")),
+            errors
+                .iter()
+                .any(|e| e.message.contains("circular dependency")),
             "expected circular-dependency error; got {errors:?}"
         );
     }
@@ -381,7 +383,9 @@ mod tests {
         let errors = SpecGraph::from_specs(vec![spec("a.ought.md", &["a.ought.md"])])
             .expect_err("self-loop must be rejected");
         assert!(
-            errors.iter().any(|e| e.message.contains("circular dependency")),
+            errors
+                .iter()
+                .any(|e| e.message.contains("circular dependency")),
             "expected circular-dependency error; got {errors:?}"
         );
     }
@@ -401,11 +405,8 @@ mod tests {
     #[test]
     fn unrelated_specs_have_no_ordering_constraint() {
         // Two disconnected specs — both appear in the order, either first.
-        let graph = SpecGraph::from_specs(vec![
-            spec("a.ought.md", &[]),
-            spec("b.ought.md", &[]),
-        ])
-        .unwrap();
+        let graph =
+            SpecGraph::from_specs(vec![spec("a.ought.md", &[]), spec("b.ought.md", &[])]).unwrap();
         let order = names(&graph.topological_order());
         assert_eq!(order.len(), 2);
         assert!(order.contains(&"a.ought.md".to_string()));

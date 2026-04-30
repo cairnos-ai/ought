@@ -141,7 +141,13 @@ pub fn get_assignment(assignment: &AgentAssignment) -> AgentAssignment {
 ///
 /// Convenience wrapper over [`read_source_with`] for the common case.
 pub fn read_source(project_root: &Path, path: &str) -> anyhow::Result<ReadSourceOutput> {
-    read_source_with(project_root, path, None, None, DEFAULT_READ_SOURCE_LIMIT_BYTES)
+    read_source_with(
+        project_root,
+        path,
+        None,
+        None,
+        DEFAULT_READ_SOURCE_LIMIT_BYTES,
+    )
 }
 
 /// Read a source file with optional 1-based line range and an explicit
@@ -216,7 +222,11 @@ pub fn read_source_with(
         last_line_returned = start;
     }
 
-    let returned_start = if start_line.is_some() { Some(start + 1) } else { None };
+    let returned_start = if start_line.is_some() {
+        Some(start + 1)
+    } else {
+        None
+    };
     let returned_end = if start_line.is_some() || truncated {
         Some(last_line_returned + 1)
     } else {
@@ -619,7 +629,9 @@ fn collect_files_matching(root: &Path, pattern: &str, results: &mut Vec<PathBuf>
 
 fn simple_glob_match(pattern: &str, path: &str) -> bool {
     if let Some(ext_pattern) = pattern.strip_prefix("**/") {
-        if ext_pattern.starts_with('*') && let Some(ext) = ext_pattern.strip_prefix('*') {
+        if ext_pattern.starts_with('*')
+            && let Some(ext) = ext_pattern.strip_prefix('*')
+        {
             return path.ends_with(ext);
         }
         return path.ends_with(ext_pattern);
@@ -634,7 +646,9 @@ fn simple_glob_match(pattern: &str, path: &str) -> bool {
     if let Some((prefix, suffix)) = pattern.split_once("**") {
         let suffix = suffix.strip_prefix('/').unwrap_or(suffix);
         if let Some(rest) = path.strip_prefix(prefix) {
-            if suffix.starts_with('*') && let Some(ext) = suffix.strip_prefix('*') {
+            if suffix.starts_with('*')
+                && let Some(ext) = suffix.strip_prefix('*')
+            {
                 return rest.ends_with(ext);
             }
             return rest.ends_with(suffix);
@@ -684,7 +698,11 @@ mod tests {
 
     #[test]
     fn derive_test_file_path_python_three_segments() {
-        let p = derive_test_file_path(Path::new("/tmp/td"), "parser::clause_ir::must_foo", "python");
+        let p = derive_test_file_path(
+            Path::new("/tmp/td"),
+            "parser::clause_ir::must_foo",
+            "python",
+        );
         assert_eq!(p, PathBuf::from("/tmp/td/parser/clause_ir_test.py"));
     }
 
@@ -697,7 +715,10 @@ mod tests {
     #[test]
     fn extract_fn_name_finds_test() {
         let code = "/// doc\n#[test]\nfn test_foo__bar__baz() {\n    assert!(true);\n}\n";
-        assert_eq!(extract_test_fn_name(code).as_deref(), Some("test_foo__bar__baz"));
+        assert_eq!(
+            extract_test_fn_name(code).as_deref(),
+            Some("test_foo__bar__baz")
+        );
     }
 
     #[test]
@@ -728,7 +749,11 @@ mod tests {
         let outside = root.parent().unwrap().join("outside.txt");
         std::fs::write(&outside, "secret").unwrap();
         let result = read_source(root, "../outside.txt");
-        assert!(result.is_err(), "expected traversal block, got {:?}", result);
+        assert!(
+            result.is_err(),
+            "expected traversal block, got {:?}",
+            result
+        );
         let _ = std::fs::remove_file(&outside);
     }
 

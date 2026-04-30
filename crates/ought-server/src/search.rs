@@ -155,7 +155,9 @@ fn add_clause(clause: &Clause, spec_name: &str, section_path: &str, out: &mut Ve
     let keyword = format!("{:?}", clause.keyword);
     let temporal = clause.temporal.as_ref().map(|t| match t {
         ought_spec::Temporal::Invariant => json!({ "kind": "invariant" }),
-        ought_spec::Temporal::Deadline(dur) => json!({ "kind": "deadline", "duration": format!("{:?}", dur) }),
+        ought_spec::Temporal::Deadline(dur) => {
+            json!({ "kind": "deadline", "duration": format!("{:?}", dur) })
+        }
     });
 
     // Build the searchable text from all fields.
@@ -223,10 +225,11 @@ fn build_highlight(text: &str, query_tokens: &[String]) -> String {
     let mut merged: Vec<(usize, usize)> = Vec::new();
     for m in matches {
         if let Some(last) = merged.last_mut()
-            && m.0 <= last.1 {
-                last.1 = last.1.max(m.1);
-                continue;
-            }
+            && m.0 <= last.1
+        {
+            last.1 = last.1.max(m.1);
+            continue;
+        }
         merged.push(m);
     }
 

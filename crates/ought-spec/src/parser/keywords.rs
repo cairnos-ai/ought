@@ -233,7 +233,10 @@ mod tests {
                     "unexpected message: {msg}"
                 );
             }
-            other => panic!("expected Invalid, got {other:?}", other = variant_name(&other)),
+            other => panic!(
+                "expected Invalid, got {other:?}",
+                other = variant_name(&other)
+            ),
         }
     }
 
@@ -243,7 +246,10 @@ mod tests {
             ParsedKeyword::Invalid(msg) => {
                 assert!(msg.contains("FOOBAR"), "unexpected message: {msg}");
             }
-            other => panic!("expected Invalid, got {other:?}", other = variant_name(&other)),
+            other => panic!(
+                "expected Invalid, got {other:?}",
+                other = variant_name(&other)
+            ),
         }
     }
 
@@ -253,12 +259,12 @@ mod tests {
         // is nonsense here.
         match parse_keyword("PENDING GIVEN") {
             ParsedKeyword::Invalid(msg) => {
-                assert!(
-                    msg.contains("GIVEN"),
-                    "unexpected message: {msg}"
-                );
+                assert!(msg.contains("GIVEN"), "unexpected message: {msg}");
             }
-            other => panic!("expected Invalid, got {other:?}", other = variant_name(&other)),
+            other => panic!(
+                "expected Invalid, got {other:?}",
+                other = variant_name(&other)
+            ),
         }
     }
 

@@ -76,10 +76,7 @@ mod tests {
     #[test]
     fn resolve_strips_module_path() {
         let mut map = HashMap::new();
-        map.insert(
-            "test_x__y".to_string(),
-            ClauseId("x::y".to_string()),
-        );
+        map.insert("test_x__y".to_string(), ClauseId("x::y".to_string()));
         assert_eq!(
             resolve_clause_id("mod_a::submod::test_x__y", &map),
             ClauseId("x::y".to_string())

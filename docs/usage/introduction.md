@@ -22,7 +22,7 @@ Intent → test → result → intent. The loop closes automatically.
 
 ## Two starting points
 
-Greenfield projects describe intent first, then `ought generate` writes the tests. Existing codebases run `ought extract` to draft specs from current behavior, then iterate.
+Greenfield projects describe intent first, then `ought generate` writes the tests. Existing codebases run `ought discover` to find missing specs, and `ought align` to report drift in specs that already map to code.
 
 ## Where to go next
 

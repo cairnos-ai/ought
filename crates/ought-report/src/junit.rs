@@ -140,9 +140,7 @@ pub fn report(results: &RunResult, specs: &[Spec], path: &Path) -> anyhow::Resul
                     "        <property name=\"clause_id\" value=\"{}\" />\n",
                     xml_escape(clause_id),
                 ));
-                xml.push_str(
-                    "        <property name=\"pending\" value=\"true\" />\n",
-                );
+                xml.push_str("        <property name=\"pending\" value=\"true\" />\n");
                 xml.push_str("      </properties>\n");
                 xml.push_str("      <skipped message=\"pending\" />\n");
                 xml.push_str("    </testcase>\n");
@@ -189,10 +187,7 @@ pub fn report(results: &RunResult, specs: &[Spec], path: &Path) -> anyhow::Resul
                         ));
                     }
                     ought_run::TestStatus::Errored => {
-                        let msg = tr
-                            .message
-                            .as_deref()
-                            .unwrap_or("test errored");
+                        let msg = tr.message.as_deref().unwrap_or("test errored");
                         xml.push_str(&format!(
                             "      <error message=\"{}\">{}</error>\n",
                             xml_escape(msg),

@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use serde::{Deserialize, Serialize};
 
 /// Where the project's source code lives and how it should be included as
-/// context for LLM-driven commands (generate, survey, etc.).
+/// context for LLM-driven commands (generate, align, etc.).
 ///
 /// This is cross-cutting because multiple subsystems care about the project's
 /// source layout (generation for prompt context, the CLI's watch command for

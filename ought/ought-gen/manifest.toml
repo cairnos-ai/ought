@@ -10,26 +10,8 @@ source_hash = ""
 generated_at = "2026-03-30T21:58:00.486779Z"
 model = "claude-sonnet-4-6"
 
-["analysis::survey::must_use_the_llm_to_identify_public_behaviors_apis_and_logic_bran"]
-clause_hash = "e0c1275d72321d8d"
-source_hash = ""
-generated_at = "2026-03-30T00:00:00Z"
-model = "claude-sonnet-4-6"
-
-["analysis::survey::should_group_suggestions_by_the_spec_file_they_would_belong_to"]
-clause_hash = "efb4af0ae4e88b1b"
-source_hash = ""
-generated_at = "2026-03-30T00:00:00Z"
-model = "claude-sonnet-4-6"
-
 ["cli::watch::should_clear_the_terminal_and_reprint_results_on_each_cycle"]
 clause_hash = "b488b504f7d63418"
-source_hash = ""
-generated_at = "2026-03-30T00:00:00Z"
-model = "claude-sonnet-4-6"
-
-["analysis::audit::should_suggest_resolutions_for_each_finding"]
-clause_hash = "68643db02b4892d6"
 source_hash = ""
 generated_at = "2026-03-30T00:00:00Z"
 model = "claude-sonnet-4-6"
@@ -152,12 +134,6 @@ model = "claude-sonnet-4-6"
 clause_hash = "2d29d5d67f2f1aaa"
 source_hash = ""
 generated_at = "2026-03-30T21:51:28.158327Z"
-model = "claude-sonnet-4-6"
-
-["analysis::survey::must_suggest_concrete_clause_text_with_appropriate_keyword_for_ea"]
-clause_hash = "e9b7832bda55c0c6"
-source_hash = ""
-generated_at = "2026-03-30T00:00:00Z"
 model = "claude-sonnet-4-6"
 
 ["parser::temporal_obligations::must_by_deadline::must_not_accept_must_by_without_a_duration_it_is_a_parse_error"]
@@ -346,12 +322,6 @@ source_hash = ""
 generated_at = "2026-03-30T22:38:51.728729Z"
 model = "claude-sonnet-4-6"
 
-["analysis::audit::must_use_the_llm_to_identify_gaps_areas_where_related_clauses_exi"]
-clause_hash = "1cae7c086b39ad7a"
-source_hash = ""
-generated_at = "2026-03-30T00:00:00Z"
-model = "claude-sonnet-4-6"
-
 ["cli::global_flags::must_support_config_path_to_specify_an_alternate_ought_toml_locat"]
 clause_hash = "875152814515a6ad"
 source_hash = ""
@@ -424,12 +394,6 @@ source_hash = ""
 generated_at = "2026-03-30T22:29:02.819779Z"
 model = "claude-sonnet-4-6"
 
-["analysis::survey::must_output_a_list_of_uncovered_behaviors_with_file_and_line_refe"]
-clause_hash = "5da435947aefbad3"
-source_hash = ""
-generated_at = "2026-03-30T00:00:00Z"
-model = "claude-sonnet-4-6"
-
 ["generator::otherwise_chain_generation::should_generate_a_single_integration_style_test_that_walks_the_full"]
 clause_hash = "1ec84d84717d5a3c"
 source_hash = ""
@@ -494,12 +458,6 @@ model = "claude-sonnet-4-6"
 clause_hash = "5eaf90bf922eab80"
 source_hash = ""
 generated_at = "2026-03-30T22:56:03.428900Z"
-model = "claude-sonnet-4-6"
-
-["mcp_server::tools::must_expose_ought_survey_analyze_source_for_uncovered_behaviors"]
-clause_hash = "ccf196fcd67b6ae1"
-source_hash = ""
-generated_at = "2026-03-30T22:06:31.954130Z"
 model = "claude-sonnet-4-6"
 
 ["generator::otherwise_chain_generation::must_not_generate_otherwise_tests_that_depend_on_real_infrastructure"]
@@ -628,20 +586,8 @@ source_hash = ""
 generated_at = "2026-03-30T22:44:22.443391Z"
 model = "claude-sonnet-4-6"
 
-["analysis::audit::must_read_all_spec_files_and_their_cross_references"]
-clause_hash = "9a6077ab03341fb8"
-source_hash = ""
-generated_at = "2026-03-30T00:00:00Z"
-model = "claude-sonnet-4-6"
-
 ["cli::init::must_detect_the_project_language_from_existing_config_files_cargo"]
 clause_hash = "9319aea6b5e78eaf"
-source_hash = ""
-generated_at = "2026-03-30T00:00:00Z"
-model = "claude-sonnet-4-6"
-
-["analysis::audit::must_reference_the_specific_clauses_involved_in_each_finding_file"]
-clause_hash = "b204418c93ac94a2"
 source_hash = ""
 generated_at = "2026-03-30T00:00:00Z"
 model = "claude-sonnet-4-6"
@@ -682,12 +628,6 @@ source_hash = ""
 generated_at = "2026-03-30T00:00:00Z"
 model = "claude-sonnet-4-6"
 
-["analysis::audit::should_detect_must_obligations_that_lack_otherwise_fallbacks_where"]
-clause_hash = "67a8077bbe646cb2"
-source_hash = ""
-generated_at = "2026-03-30T00:00:00Z"
-model = "claude-sonnet-4-6"
-
 ["parser::context_metadata::must_support_multiple_values_per_metadata_key_one_per_line_or_com"]
 clause_hash = "fbe77f1e7c9c0284"
 source_hash = ""
@@ -708,12 +648,6 @@ model = "claude-sonnet-4-6"
 
 ["analysis::blame::should_suggest_a_fix_when_the_cause_is_clear"]
 clause_hash = "9252981abc47079c"
-source_hash = ""
-generated_at = "2026-03-30T00:00:00Z"
-model = "claude-sonnet-4-6"
-
-["analysis::audit::should_detect_given_blocks_with_overlapping_conditions_that_impose"]
-clause_hash = "39ab3eaa58200ec2"
 source_hash = ""
 generated_at = "2026-03-30T00:00:00Z"
 model = "claude-sonnet-4-6"
@@ -752,12 +686,6 @@ model = "claude-sonnet-4-6"
 clause_hash = "d00a9308f02f185c"
 source_hash = ""
 generated_at = "2026-03-30T22:44:22.443284Z"
-model = "claude-sonnet-4-6"
-
-["analysis::survey::should_rank_uncovered_behaviors_by_risk_public_api_internal_helper"]
-clause_hash = "96e6460fd7e73a3a"
-source_hash = ""
-generated_at = "2026-03-30T00:00:00Z"
 model = "claude-sonnet-4-6"
 
 ["analysis::blame::must_output_the_timeline_last_passing_run_first_failure_relevant"]
@@ -826,18 +754,6 @@ source_hash = ""
 generated_at = "2026-03-30T22:06:31.953875Z"
 model = "claude-sonnet-4-6"
 
-["mcp_server::tools::must_expose_ought_audit_cross_spec_conflict_and_gap_analysis"]
-clause_hash = "4d05c8b988e740ce"
-source_hash = ""
-generated_at = "2026-03-30T22:06:31.954240Z"
-model = "claude-sonnet-4-6"
-
-["analysis::audit::must_detect_must_always_invariant_conflicts_e_g_two_invariants_th"]
-clause_hash = "39417855924a1686"
-source_hash = ""
-generated_at = "2026-03-30T00:00:00Z"
-model = "claude-sonnet-4-6"
-
 ["analysis::bisect::should_use_the_generated_test_from_the_current_manifest_not_regener"]
 clause_hash = "dd52d06f25f50c84"
 source_hash = ""
@@ -872,12 +788,6 @@ model = "claude-sonnet-4-6"
 clause_hash = "82723d02ef75a932"
 source_hash = ""
 generated_at = "2026-03-30T21:43:53.687203Z"
-model = "claude-sonnet-4-6"
-
-["analysis::survey::must_read_all_existing_spec_files_to_know_what_is_already_covered"]
-clause_hash = "49457b2319b8f62e"
-source_hash = ""
-generated_at = "2026-03-30T00:00:00Z"
 model = "claude-sonnet-4-6"
 
 ["parser::clause_ir::must_include_a_condition_field_populated_from_the_parent_given_bl"]
@@ -1030,28 +940,10 @@ source_hash = ""
 generated_at = "2026-03-30T21:43:53.687073Z"
 model = "claude-sonnet-4-6"
 
-["analysis::survey::must_read_source_files_from_the_given_path_or_project_source_root"]
-clause_hash = "c3880ab3110ae170"
-source_hash = ""
-generated_at = "2026-03-30T00:00:00Z"
-model = "claude-sonnet-4-6"
-
 ["parser::contrary_to_duty_chains_otherwise::must_preserve_the_ordering_of_otherwise_clauses_they_form_a_degra"]
 clause_hash = "1c546aad3ef5589b"
 source_hash = ""
 generated_at = "2026-03-30T20:24:50.896132Z"
-model = "claude-sonnet-4-6"
-
-["analysis::survey::should_offer_to_append_suggested_clauses_to_the_relevant_spec_file"]
-clause_hash = "94a4e9645e12f77e"
-source_hash = ""
-generated_at = "2026-03-30T00:00:00Z"
-model = "claude-sonnet-4-6"
-
-["analysis::audit::may_assign_a_confidence_score_to_each_finding"]
-clause_hash = "7c84e03c3eb423ad"
-source_hash = ""
-generated_at = "2026-03-30T00:00:00Z"
 model = "claude-sonnet-4-6"
 
 ["reporter::progress_during_generation::may_show_estimated_time_remaining_based_on_per_clause_generation"]
@@ -1100,12 +992,6 @@ model = "claude-sonnet-4-6"
 clause_hash = "6bb34d8a16b17995"
 source_hash = ""
 generated_at = "2026-03-30T20:15:15.595993Z"
-model = "claude-sonnet-4-6"
-
-["analysis::audit::must_categorize_findings_as_contradiction_gap_ambiguity_or_redund"]
-clause_hash = "b6fca9029a9cb7e4"
-source_hash = ""
-generated_at = "2026-03-30T00:00:00Z"
 model = "claude-sonnet-4-6"
 
 ["generator::temporal_obligation_generation::must_by_deadline_tests::must_instruct_the_llm_to_measure_wall_clock_time_arou"]
@@ -1378,12 +1264,6 @@ source_hash = ""
 generated_at = "2026-03-30T21:27:22.420332Z"
 model = "claude-sonnet-4-6"
 
-["analysis::audit::must_use_the_llm_to_identify_contradictions_between_clauses_acros"]
-clause_hash = "19d67f720faa6942"
-source_hash = ""
-generated_at = "2026-03-30T00:00:00Z"
-model = "claude-sonnet-4-6"
-
 ["analysis::blame::must_not_require_a_running_llm_if_the_clause_has_never_passed_just_re"]
 clause_hash = "1dad0778c4deefa8"
 source_hash = ""
@@ -1588,12 +1468,6 @@ source_hash = ""
 generated_at = "2026-03-30T19:51:58.071872Z"
 model = "claude-sonnet-4-6"
 
-["analysis::audit::should_read_relevant_source_code_to_ground_the_analysis_in_implemen"]
-clause_hash = "61ae1dcd3593f395"
-source_hash = ""
-generated_at = "2026-03-30T00:00:00Z"
-model = "claude-sonnet-4-6"
-
 ["parser::conditional_blocks_given::must_require_nested_clauses_to_be_indented_under_the_given_bullet"]
 clause_hash = "d50d243d47acab5c"
 source_hash = ""
@@ -1710,12 +1584,6 @@ model = "claude-sonnet-4-6"
 
 ["cli::check::must_validate_the_syntax_of_all_spec_files_without_generating_or"]
 clause_hash = "67d146632a52c8f1"
-source_hash = ""
-generated_at = "2026-03-30T00:00:00Z"
-model = "claude-sonnet-4-6"
-
-["analysis::audit::must_detect_must_by_deadline_conflicts_e_g_an_operation_with_a_10"]
-clause_hash = "658e8adb4a53868b"
 source_hash = ""
 generated_at = "2026-03-30T00:00:00Z"
 model = "claude-sonnet-4-6"
@@ -1888,22 +1756,10 @@ source_hash = ""
 generated_at = "2026-03-30T22:29:02.819652Z"
 model = "claude-sonnet-4-6"
 
-["ought::llm_powered_analysis::must_support_auditing_specs_for_contradictions_gaps_and_coherence"]
-clause_hash = "dc7b98cb8a6f6613"
-source_hash = ""
-generated_at = "2026-03-30T22:49:40.526702Z"
-model = "claude-sonnet-4-6"
-
 ["reporter::otherwise_chain_display::must_show_the_full_chain_status_if_the_parent_passes_otherwise_cl"]
 clause_hash = "24f61f0808cc8510"
 source_hash = ""
 generated_at = "2026-03-30T21:09:34.279294Z"
-model = "claude-sonnet-4-6"
-
-["ought::llm_powered_analysis::must_support_surveying_source_code_to_discover_behaviors_not_cove"]
-clause_hash = "16c0fc7d37c1aa2f"
-source_hash = ""
-generated_at = "2026-03-30T22:49:40.526571Z"
 model = "claude-sonnet-4-6"
 
 ["cli::diff::must_show_the_diff_between_current_generated_tests_and_what_would"]
@@ -2060,12 +1916,6 @@ model = "claude-sonnet-4-6"
 clause_hash = "4eabdd70d996bc8d"
 source_hash = ""
 generated_at = "2026-03-30T22:55:10.444318Z"
-model = "claude-sonnet-4-6"
-
-["analysis::survey::wont_auto_add_clauses_without_user_confirmation"]
-clause_hash = "52086054b37ca897"
-source_hash = ""
-generated_at = "2026-03-30T00:00:00Z"
 model = "claude-sonnet-4-6"
 
 ["generator::otherwise_chain_generation::must_generate_a_separate_test_for_each_otherwise_clause_in_the_ch"]

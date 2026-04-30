@@ -3,7 +3,7 @@
 Model Context Protocol (MCP) server for ought.
 
 Exposes ought's functionality — running specs, generating tests, inspecting
-clauses, surveying source, auditing specs — as MCP tools and resources so
+clauses, and debugging failures — as MCP tools and resources so
 that AI assistants and IDE extensions can interact with ought programmatically
 over stdio or SSE.
 
@@ -16,8 +16,8 @@ Loading config from disk is the CLI's responsibility.
 - Speak JSON-RPC 2.0 over stdio, routing `tools/*` and `resources/*` methods
   to `ToolHandler` and `ResourceHandler`.
 - Advertise the ought tool set (`ought_run`, `ought_generate`, `ought_check`,
-  `ought_inspect`, `ought_status`, `ought_survey`, `ought_audit`,
-  `ought_blame`, `ought_bisect`) and resource URIs (`ought://specs`,
+  `ought_inspect`, `ought_status`, `ought_blame`, `ought_bisect`) and
+  resource URIs (`ought://specs`,
   `ought://specs/{name}`, `ought://results/latest`, `ought://coverage`,
   `ought://manifest`).
 - Provide a separate "generation-mode" server (`GenMcpServer`) that agents

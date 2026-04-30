@@ -9,12 +9,10 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use ought_cli::config::Config;
-use ought_spec::{OughtMdParser, Parser, SpecGraph};
 use ought_spec::types::*;
+use ought_spec::{OughtMdParser, Parser, SpecGraph};
 
-use crate::helpers::{
-    ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test,
-};
+use crate::helpers::{ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test};
 
 /// MUST accept a glob pattern to run a subset:
 /// `ought run "ought/auth*.ought.md"`
@@ -96,11 +94,7 @@ fn test_cli__run__must_exit_with_code_0_if_any_otherwise_clause_in_the_chain_pas
     .unwrap();
 
     // Primary obligation fails
-    write_test(
-        &dir,
-        "spec__section__must_respond_in_under_100ms",
-        false,
-    );
+    write_test(&dir, "spec__section__must_respond_in_under_100ms", false);
     // OTHERWISE fallback passes — the degradation chain is satisfied
     write_test(
         &dir,
@@ -173,11 +167,7 @@ fn test_cli__run__must_exit_with_code_1_if_all_otherwise_clauses_also_fail_full_
     .unwrap();
 
     // Both the primary and the OTHERWISE fallback fail — full chain exhausted
-    write_test(
-        &dir,
-        "spec__section__must_respond_in_under_100ms",
-        false,
-    );
+    write_test(&dir, "spec__section__must_respond_in_under_100ms", false);
     write_test(
         &dir,
         "spec__section__must_respond_in_under_100ms__otherwise_respond_in_under_1s",
@@ -319,9 +309,7 @@ fn test_cli__run__should_print_a_summary_at_the_end_showing_pass_fail_counts_by_
     // The summary must contain at least one count keyword.
     // The terminal reporter emits lines like "1 passed", "MUST coverage: 1/1 (100%)"
     assert!(
-        stdout.contains("passed")
-            || stdout.contains("failed")
-            || stdout.contains("coverage"),
+        stdout.contains("passed") || stdout.contains("failed") || stdout.contains("coverage"),
         "ought run must print a summary with pass/fail counts; stdout was:\n{stdout}"
     );
 
@@ -386,4 +374,3 @@ fn test_cli__run__wont_execute_tests_in_parallel_by_default_in_v0_1_sequential_i
         String::from_utf8_lossy(&out.stderr)
     );
 }
-

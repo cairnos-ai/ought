@@ -17,7 +17,6 @@ use ought_spec::types::*;
 /// MUST build a dependency graph from cross-file references
 #[test]
 fn test_parser__cross_file_references__must_build_a_dependency_graph_from_cross_file_references() {
-
     let nanos = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
@@ -39,8 +38,8 @@ fn test_parser__cross_file_references__must_build_a_dependency_graph_from_cross_
     )
     .unwrap();
 
-    let graph =
-        SpecGraph::from_roots(&[tmp.clone()]).expect("graph must build successfully with no cycles");
+    let graph = SpecGraph::from_roots(&[tmp.clone()])
+        .expect("graph must build successfully with no cycles");
 
     assert_eq!(
         graph.specs().len(),
@@ -76,8 +75,8 @@ fn test_parser__cross_file_references__must_build_a_dependency_graph_from_cross_
 // --- must_detect_circular_dependencies_and_report_them_as_errors_test.rs ---
 /// MUST detect circular dependencies and report them as errors
 #[test]
-fn test_parser__cross_file_references__must_detect_circular_dependencies_and_report_them_as_errors() {
-
+fn test_parser__cross_file_references__must_detect_circular_dependencies_and_report_them_as_errors()
+{
     let nanos = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
@@ -120,7 +119,8 @@ fn test_parser__cross_file_references__must_detect_circular_dependencies_and_rep
 // --- must_parse_anchor_links_e_g_pricing_ought_md_discount_rules_as_re_test.rs ---
 /// MUST parse anchor links (e.g. `pricing.ought.md#discount-rules`) as references to specific sections
 #[test]
-fn test_parser__cross_file_references__must_parse_anchor_links_e_g_pricing_ought_md_discount_rules_as_re() {
+fn test_parser__cross_file_references__must_parse_anchor_links_e_g_pricing_ought_md_discount_rules_as_re()
+ {
     let md = r#"# Checkout
 
 requires: [Pricing](pricing.ought.md#discount-rules), [Auth](auth.ought.md#session-tokens)
@@ -129,7 +129,8 @@ requires: [Pricing](pricing.ought.md#discount-rules), [Auth](auth.ought.md#sessi
 
 - **MUST** apply discount rules from the pricing spec
 "#;
-    let spec = OughtMdParser.parse_string(md, Path::new("checkout.ought.md"))
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("checkout.ought.md"))
         .expect("parse failed");
 
     assert_eq!(
@@ -170,7 +171,8 @@ requires: [Pricing](pricing.ought.md#discount-rules), [Auth](auth.ought.md#sessi
 // --- must_parse_inline_markdown_links_to_other_ought_md_files_as_cross_test.rs ---
 /// MUST parse inline markdown links to other .ought.md files as cross-references
 #[test]
-fn test_parser__cross_file_references__must_parse_inline_markdown_links_to_other_ought_md_files_as_cross() {
+fn test_parser__cross_file_references__must_parse_inline_markdown_links_to_other_ought_md_files_as_cross()
+ {
     let md = r#"# Checkout
 
 requires: [Pricing](pricing.ought.md), [Users](users.ought.md)
@@ -179,7 +181,8 @@ requires: [Pricing](pricing.ought.md), [Users](users.ought.md)
 
 - **MUST** apply pricing rules
 "#;
-    let spec = OughtMdParser.parse_string(md, Path::new("checkout.ought.md"))
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("checkout.ought.md"))
         .expect("parse failed");
 
     assert_eq!(
@@ -204,10 +207,7 @@ requires: [Pricing](pricing.ought.md), [Users](users.ought.md)
     );
 
     let users = &spec.metadata.requires[1];
-    assert_eq!(
-        users.label, "Users",
-        "second link label must be captured"
-    );
+    assert_eq!(users.label, "Users", "second link label must be captured");
     assert_eq!(
         users.path.to_str().unwrap(),
         "users.ought.md",
@@ -219,7 +219,8 @@ requires: [Pricing](pricing.ought.md), [Users](users.ought.md)
 // --- must_parse_requires_metadata_as_a_list_of_relative_paths_to_other_test.rs ---
 /// MUST parse `requires:` metadata as a list of relative paths to other .ought.md files
 #[test]
-fn test_parser__cross_file_references__must_parse_requires_metadata_as_a_list_of_relative_paths_to_other() {
+fn test_parser__cross_file_references__must_parse_requires_metadata_as_a_list_of_relative_paths_to_other()
+ {
     let md = r#"# Billing
 
 requires: pricing.ought.md
@@ -229,7 +230,8 @@ requires: users.ought.md
 
 - **MUST** calculate totals correctly
 "#;
-    let spec = OughtMdParser.parse_string(md, Path::new("billing.ought.md"))
+    let spec = OughtMdParser
+        .parse_string(md, Path::new("billing.ought.md"))
         .expect("parse failed");
 
     assert_eq!(
@@ -264,8 +266,8 @@ requires: users.ought.md
 // --- should_validate_that_all_cross_references_resolve_to_existing_files_test.rs ---
 /// SHOULD validate that all cross-references resolve to existing files and sections
 #[test]
-fn test_parser__cross_file_references__should_validate_that_all_cross_references_resolve_to_existing_files() {
-
+fn test_parser__cross_file_references__should_validate_that_all_cross_references_resolve_to_existing_files()
+ {
     let nanos = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
@@ -301,4 +303,3 @@ fn test_parser__cross_file_references__should_validate_that_all_cross_references
 
     let _ = std::fs::remove_dir_all(&tmp);
 }
-

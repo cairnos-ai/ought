@@ -1,5 +1,5 @@
 use super::{load_config, load_specs, resolve_primary_runner};
-use crate::{Cli, BisectArgs};
+use crate::{BisectArgs, Cli};
 
 pub fn run(cli: &Cli, args: &BisectArgs) -> anyhow::Result<()> {
     let (config_path, config) = load_config(&cli.config)?;

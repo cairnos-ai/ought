@@ -5,17 +5,17 @@
 
 #![allow(dead_code, clippy::all, non_snake_case, unused_imports)]
 
-use std::path::{Path, PathBuf};
-use std::fs;
-use std::time::Duration;
-use std::collections::HashMap;
-use ought_spec::ClauseId;
-use ought_run::RunnerConfig;
 use ought_gen::GeneratedTest;
 use ought_gen::generator::Language;
-use ought_run::{TestResult, TestStatus, TestDetails, RunResult};
+use ought_run::RunnerConfig;
 use ought_run::runner::Runner;
 use ought_run::runners;
+use ought_run::{RunResult, TestDetails, TestResult, TestStatus};
+use ought_spec::ClauseId;
+use std::collections::HashMap;
+use std::fs;
+use std::path::{Path, PathBuf};
+use std::time::Duration;
 
 /// Build a runner for the given preset name by filling in a test_dir over
 /// the preset config — matches the minimal `[runner.<name>]` form users write.
@@ -59,8 +59,7 @@ fn test_runner__language_runners__must_ship_with_a_rust_runner() {
 /// SHOULD ship with a Python runner
 #[test]
 fn test_runner__language_runners__should_ship_with_a_python_runner() {
-    let runner = runner_for("python")
-        .expect("python preset must resolve into a runner");
+    let runner = runner_for("python").expect("python preset must resolve into a runner");
 
     assert_eq!(
         runner.name(),
@@ -76,8 +75,7 @@ fn test_runner__language_runners__should_ship_with_a_python_runner() {
 /// SHOULD ship with a JavaScript/TypeScript runner
 #[test]
 fn test_runner__language_runners__should_ship_with_a_javascript_typescript_runner() {
-    let runner = runner_for("typescript")
-        .expect("typescript preset must resolve into a runner");
+    let runner = runner_for("typescript").expect("typescript preset must resolve into a runner");
 
     assert_eq!(
         runner.name(),
@@ -86,8 +84,7 @@ fn test_runner__language_runners__should_ship_with_a_javascript_typescript_runne
     );
 
     // "ts" is the documented short alias — it must resolve the same preset.
-    let runner_alias = runner_for("ts")
-        .expect("\"ts\" is the short alias for the TS preset");
+    let runner_alias = runner_for("ts").expect("\"ts\" is the short alias for the TS preset");
 
     assert_eq!(
         runner_alias.name(),
@@ -96,7 +93,8 @@ fn test_runner__language_runners__should_ship_with_a_javascript_typescript_runne
     );
     // Both should derive from the same preset config.
     let ts_preset = ought_run::presets::preset("ts").expect("ts preset exists");
-    let typescript_preset = ought_run::presets::preset("typescript").expect("typescript preset exists");
+    let typescript_preset =
+        ought_run::presets::preset("typescript").expect("typescript preset exists");
     assert_eq!(
         ts_preset.command, typescript_preset.command,
         "'ts' and 'typescript' must map to the same underlying preset command"
@@ -107,7 +105,8 @@ fn test_runner__language_runners__should_ship_with_a_javascript_typescript_runne
 
 /// SHOULD support custom runners via the `[runner.<name>]` config in `ought.toml`
 #[test]
-fn test_runner__language_runners__should_support_custom_runners_via_the_runner_name_config_in_ought_t() {
+fn test_runner__language_runners__should_support_custom_runners_via_the_runner_name_config_in_ought_t()
+ {
     // Arbitrary `[runner.<name>]` tables deserialize into `RunnerConfig`. The
     // aggregate config struct lives in `ought-cli` and is tested there.
     #[derive(serde::Deserialize)]
@@ -136,14 +135,23 @@ file_extensions = ["cs"]
         .expect("ought.toml with custom [runner.*] sections must load without error");
 
     // Built-in runner name is preserved and resolves via its preset.
-    let rust_cfg = parsed.runner.get("rust")
+    let rust_cfg = parsed
+        .runner
+        .get("rust")
         .expect("runner.rust must be present in parsed config");
-    let rust_resolved = rust_cfg.resolve("rust").expect("rust cfg must resolve via preset");
-    assert!(rust_resolved.command.contains("cargo"),
-        "rust preset command must invoke cargo; got {:?}", rust_resolved.command);
+    let rust_resolved = rust_cfg
+        .resolve("rust")
+        .expect("rust cfg must resolve via preset");
+    assert!(
+        rust_resolved.command.contains("cargo"),
+        "rust preset command must invoke cargo; got {:?}",
+        rust_resolved.command
+    );
 
     // Fully custom runner name is preserved with its command.
-    let ruby_cfg = parsed.runner.get("my-ruby-runner")
+    let ruby_cfg = parsed
+        .runner
+        .get("my-ruby-runner")
         .expect("runner.my-ruby-runner must be present — custom runner names must be supported");
     assert_eq!(
         ruby_cfg.command.as_deref(),
@@ -157,7 +165,9 @@ file_extensions = ["cs"]
     );
 
     // A second custom name also round-trips correctly.
-    let dotnet_cfg = parsed.runner.get("dotnet")
+    let dotnet_cfg = parsed
+        .runner
+        .get("dotnet")
         .expect("runner.dotnet must be present — arbitrary runner names must be supported");
     assert_eq!(
         dotnet_cfg.command.as_deref(),
@@ -186,11 +196,7 @@ fn test_runner__language_runners__may_ship_with_a_go_runner() {
     );
 
     let runner = result.unwrap();
-    assert_eq!(
-        runner.name(),
-        "go",
-        "Go runner must report name \"go\""
-    );
+    assert_eq!(runner.name(), "go", "Go runner must report name \"go\"");
 
     // Availability reflects whether `gotestsum` (the preset default) is on PATH.
     let _ = runner.is_available();

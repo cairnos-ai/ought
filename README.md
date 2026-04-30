@@ -204,10 +204,11 @@ Specs are hierarchical. A top-level spec captures broad product-level requiremen
 | `ought run` | Execute tests, report results mapped to clauses |
 | `ought run --fail-on-should` | Exit 1 on SHOULD failures too (default: MUST only) |
 | `ought check` | Validate spec syntax only (no LLM, no execution) |
-| `ought extract [paths...]` | Audit existing specs and reverse-engineer drafts for uncovered source |
+| `ought align [paths...]` | Report drift in existing specs with mapped source |
+| `ought discover [focus]` | Report source behavior that appears to be missing specs |
+| `ought discover --apply` | Write discovered specs under the first configured spec root |
 | `ought inspect <clause>` | Show generated test code for a clause |
 | `ought diff` | Show pending generation changes |
-| `ought analyze survey [path]` | Discover source behaviors not covered by any spec |
 | `ought debug blame <clause>` | Explain a failure with git history context |
 | `ought debug bisect <clause>` | Find the exact commit that broke a clause |
 | `ought watch` | Re-run on file changes |
@@ -225,25 +226,29 @@ The engine has four phases. **Parse** converts `.ought.md` files into a structur
 
 ## LLM Providers
 
-Ought invokes LLM CLIs directly by exec-ing `claude`, `chatgpt`, or `ollama` -- no API keys to manage in ought itself. Use your consumer account, pro plan, or API key as you normally would with the CLI tool.
+Ought runs its generator loop in-process through `open-harness` providers. Anthropic, OpenAI, and OpenRouter use API keys from environment variables; Ollama uses a local OpenAI-compatible endpoint; OpenAI Codex uses ChatGPT/Codex OAuth via `ought auth login openai-codex`.
 
 Configure the provider in `ought.toml`:
 
 ```toml
 [generator]
-provider = "anthropic"       # or "openai", "ollama"
+provider = "anthropic"       # or "openai", "openai-codex", "openrouter", "ollama"
 model = "claude-sonnet-4-6"
 ```
 
-Custom providers are supported by specifying an arbitrary executable.
+For ChatGPT/Codex subscription auth:
 
-## Analysis Commands
+```bash
+ought auth login openai-codex
+```
 
-Beyond test generation and execution, ought uses LLMs to reason about relationships between specs, source code, and results.
+## Alignment and Diagnostics
 
-**`ought analyze survey [path]`** -- Scans source code and identifies behaviors not covered by any spec. Suggests concrete clauses with appropriate keywords. Never auto-adds clauses without user confirmation.
+Beyond test generation and execution, ought can keep specs aligned with code and explain failures.
 
-**`ought extract [paths...]`** -- Cold-start sibling of survey that writes files. Runs a rule-based audit over your existing specs (contradictions, gaps, missing OTHERWISE chains, deadline conflicts), then dispatches LLM agents to draft `.ought.md` files for uncovered source areas.
+**`ought align [paths...]`** -- Agent-backed drift reporting for existing specs with `source:` mappings. It compares each mapped spec with the mapped code and relevant generated tests, then reports where the spec no longer reflects the implementation. It is report-only.
+
+**`ought discover [focus]`** -- Agent-backed discovery for source behavior that appears to be missing specs. It uses existing specs as context and reports candidate specs to add. Pass a quoted focus string, such as `ought discover "auth logout"`, to constrain the agent to that area. Add `--path <path>` to override configured source roots, and `--apply` to write new specs under the first configured spec root.
 
 **`ought debug blame <clause>`** -- Correlates a failing clause with git history to build a causal narrative: what commit broke it, who authored it, and what the change was trying to do.
 
@@ -251,7 +256,7 @@ Beyond test generation and execution, ought uses LLMs to reason about relationsh
 
 ## MCP Server
 
-Ought exposes an MCP (Model Context Protocol) server for AI assistants and IDE extensions. Running `ought mcp serve` starts a stdio-based server that exposes tools (`ought_run`, `ought_generate`, `ought_survey`, `ought_audit`, `ought_blame`, `ought_bisect`) and resources (`ought://specs`, `ought://results/latest`, `ought://coverage`, `ought://manifest`). This lets tools like Claude Code, Codex, and OpenCode interact with your specs and results programmatically. Install with `ought mcp install`.
+Ought exposes an MCP (Model Context Protocol) server for AI assistants and IDE extensions. Running `ought mcp serve` starts a stdio-based server that exposes tools (`ought_run`, `ought_generate`, `ought_blame`, `ought_bisect`) and resources (`ought://specs`, `ought://results/latest`, `ought://coverage`, `ought://manifest`). This lets tools like Claude Code, Codex, and OpenCode interact with your specs and results programmatically. Install with `ought mcp install`.
 
 ## Configuration
 
@@ -309,7 +314,7 @@ crates/
   ought-gen/         # generator trait + providers
   ought-run/         # runner trait + language runners
   ought-report/      # reporter + TUI
-  ought-analysis/    # survey, audit, blame, bisect
+  ought-analysis/    # blame, bisect diagnostics
   ought-mcp/         # MCP server
   ought-server/      # viewer web UI (Svelte + shadcn-svelte)
   ought-cli/         # CLI binary

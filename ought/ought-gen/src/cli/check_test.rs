@@ -9,18 +9,15 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use ought_cli::config::Config;
-use ought_spec::{OughtMdParser, Parser, SpecGraph};
 use ought_spec::types::*;
+use ought_spec::{OughtMdParser, Parser, SpecGraph};
 
-use crate::helpers::{
-    ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test,
-};
+use crate::helpers::{ought_bin, scaffold_project, unique_dir, walkdir, write_spec, write_test};
 
 /// MUST exit with code 0 if all specs are valid, 1 if any are invalid
 #[test]
 fn test_cli__check__must_exit_with_code_0_if_all_specs_are_valid_1_if_any_are_invalid() {
-    let base = std::env::temp_dir()
-        .join(format!("ought_check_exit_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("ought_check_exit_{}", std::process::id()));
     let valid_dir = base.join("valid");
     let invalid_dir = base.join("invalid");
     std::fs::create_dir_all(&valid_dir).unwrap();
@@ -69,10 +66,7 @@ fn test_cli__check__must_exit_with_code_0_if_all_specs_are_valid_1_if_any_are_in
     assert!(
         any_cycle_msg,
         "error must describe the circular dependency; got: {:?}",
-        errors
-            .iter()
-            .map(|e| e.to_string())
-            .collect::<Vec<_>>()
+        errors.iter().map(|e| e.to_string()).collect::<Vec<_>>()
     );
 
     let _ = std::fs::remove_dir_all(&base);
@@ -81,17 +75,20 @@ fn test_cli__check__must_exit_with_code_0_if_all_specs_are_valid_1_if_any_are_in
 /// MUST report parse errors with file, line number, and a human-readable message
 #[test]
 fn test_cli__check__must_report_parse_errors_with_file_line_number_and_a_human_readab() {
-    let base = std::env::temp_dir()
-        .join(format!("ought_check_errmsg_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("ought_check_errmsg_{}", std::process::id()));
     std::fs::create_dir_all(&base).unwrap();
 
     // A missing file is the canonical trigger for a file-level ParseError.
     let missing = base.join("nonexistent.ought.md");
 
-    let errors = OughtMdParser.parse_file(&missing)
+    let errors = OughtMdParser
+        .parse_file(&missing)
         .expect_err("parsing a missing file must return Vec<ParseError>");
 
-    assert!(!errors.is_empty(), "at least one parse error must be reported");
+    assert!(
+        !errors.is_empty(),
+        "at least one parse error must be reported"
+    );
     let err = &errors[0];
 
     // Must carry the correct file path.
@@ -128,8 +125,7 @@ fn test_cli__check__must_report_parse_errors_with_file_line_number_and_a_human_r
 /// MUST validate that cross-file references (links to other .ought.md files) resolve
 #[test]
 fn test_cli__check__must_validate_that_cross_file_references_links_to_other_ought_md() {
-    let base = std::env::temp_dir()
-        .join(format!("ought_check_xref_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("ought_check_xref_{}", std::process::id()));
     let valid_dir = base.join("valid");
     let broken_dir = base.join("broken");
     std::fs::create_dir_all(&valid_dir).unwrap();
@@ -194,8 +190,7 @@ fn test_cli__check__must_validate_that_cross_file_references_links_to_other_ough
 /// MUST validate the syntax of all spec files without generating or running anything
 #[test]
 fn test_cli__check__must_validate_the_syntax_of_all_spec_files_without_generating_or() {
-    let base = std::env::temp_dir()
-        .join(format!("ought_check_syntax_{}", std::process::id()));
+    let base = std::env::temp_dir().join(format!("ought_check_syntax_{}", std::process::id()));
     let spec_dir = base.join("specs");
     std::fs::create_dir_all(&spec_dir).unwrap();
 
@@ -239,11 +234,7 @@ fn test_cli__check__must_validate_the_syntax_of_all_spec_files_without_generatin
         .map(|e| e.path())
         .collect();
     after.sort();
-    assert_eq!(
-        before, after,
-        "check must not generate or write any files"
-    );
+    assert_eq!(before, after, "check must not generate or write any files");
 
     let _ = std::fs::remove_dir_all(&base);
 }
-
